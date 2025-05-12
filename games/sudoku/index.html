@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="title">Sudoku</h1>
+    </div>
+    <div class="container">
+        <div class="difficulty">
+            <select id="difficulty" onchange="newGame()">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </div>
+        <div class="sudoku-board" id="board"></div>
+        <div class="number-pad" id="numberPad"></div>
+        <div class="controls">
+            <button onclick="newGame()">New Game</button>
+            <button onclick="checkSolution()">Check Solution</button>
+            <button onclick="solvePuzzle()">Solve</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
