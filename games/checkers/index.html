@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkers</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="title">Checkers</h1>
+        </div>
+
+        <div class="game-info">
+            <div class="info-box">
+                <h3>Current Turn</h3>
+                <div id="currentTurn" class="score-value">Red</div>
+            </div>
+        </div>
+
+        <div class="game-board">
+            <div id="board"></div>
+        </div>
+
+        <button class="restart-btn" id="reset-button">Restart Game</button>
+
+        <div class="game-over" id="game-over-modal">
+            <div class="modal-content">
+                <h2>Game Over</h2>
+                <p id="winner-text"></p>
+                <button id="new-game-btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript Game Collection - Play Free Browser Games</title>
+    <meta name="description" content="A collection of AI-written JavaScript games, prompted and tested by a human. Play free browser games including action, board, card, and puzzle games.">
+    <meta name="keywords" content="JavaScript games, browser games, free games, online games, action games, board games, card games, puzzle games">
+    <meta name="author" content="flyingdog1310">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://flyingdog1310.github.io">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Game Collection">
+    <meta property="og:description"
+        content="A collection of AI-written JavaScript games, prompted and tested by a human.">
+    <meta property="og:image" content="assets/preview.webp">
+    <meta property="og:url" content="https://flyingdog1310.github.io">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Game Collection">
+    <meta name="twitter:description"
+        content="A collection of AI-written JavaScript games, prompted and tested by a human.">
+    <meta name="twitter:image" content="assets/preview.webp">
+
+    <link rel="icon" href="assets/javascript.ico" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "JavaScript Game Collection",
+        "url": "https://flyingdog1310.github.io",
+        "description": "A collection of AI-written JavaScript games, prompted and tested by a human. Play free browser games including action, board, card, and puzzle games.",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://flyingdog1310.github.io"
+            },
+            "query-input": "required name=search_term_string"
+        },
+        "about": {
+            "@type": "Thing",
+            "name": "Browser Games",
+            "description": "Free online games playable in any modern web browser"
+        },
+        "genre": ["Action Games", "Board Games", "Card Games", "Puzzle Games"],
+        "audience": {
+            "@type": "Audience",
+            "audienceType": "Gamers"
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="header">
+            <h1>flyingdog1310</h1>
+            <p class="ai-disclaimer">AI-written JavaScript games.<br>Prompted & tested by a human.</p>
+            <p class="github-link"><a href="https://github.com/flyingdog1310/flyingdog1310.github.io" target="_blank"><i
+                        class="fab fa-github"></i> View on GitHub</a></p>
+        </div>
+        <div class="search-container">
+            <input type="text" id="game-search" placeholder="Search games..." aria-label="Search games">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="category-container">
+            <select id="category-select" class="category-select" aria-label="Select category">
+                <option value="all">All Games</option>
+                <option value="action">Action</option>
+                <option value="board">Board Games</option>
+                <option value="card">Card Games</option>
+                <option value="puzzle">Puzzle</option>
+            </select>
+            <div class="category-list">
+                <button class="category-btn active" data-category="all">All Games</button>
+                <button class="category-btn" data-category="action">Action</button>
+                <button class="category-btn" data-category="board">Board Games</button>
+                <button class="category-btn" data-category="card">Card Games</button>
+                <button class="category-btn" data-category="puzzle">Puzzle</button>
+            </div>
+        </div>
+        <div class="ip-display">
+            <span id="visitor-ip">Loading...</span>
+            <img id="country-flag" class="flag" src="" alt="Country flag" style="display: none;">
+        </div>
+        <div class="deployment-info">
+            <span id="deployment-date">Last updated: Loading...</span>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="game-grid">
+            <!-- Game cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <div id="game-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <iframe id="modal-game-frame" frameborder="0" title="Game Content"></iframe>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

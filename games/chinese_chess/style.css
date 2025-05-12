@@ -1,0 +1,124 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #1a1a1a;
+    font-family: Arial, sans-serif;
+}
+
+#game-board {
+    position: relative;
+    width: 90vmin;
+    height: 100vmin;
+    max-width: 520px;
+    max-height: 576px;
+    background-color: #2c2c2c;
+    border: 2px solid #3a3a3a;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.grid-line {
+    position: absolute;
+    background-color: #4a4a4a;
+}
+
+.horizontal {
+    width: 100%;
+    height: 1px;
+}
+
+.vertical {
+    width: 1px;
+    height: 100%;
+}
+
+.vertical.right {
+    left: auto !important;
+    right: 0;
+}
+
+.horizontal.bottom {
+    top: auto !important;
+    bottom: 0;
+}
+
+.piece {
+    position: absolute;
+    width: 11vmin;
+    height: 11vmin;
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 50%;
+    background-color: #2c2c2c;
+    border: 2px solid #4a4a4a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: min(6vmin, 24px);
+    user-select: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: translate(-50%, -50%);
+}
+
+.piece:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.red {
+    color: #ff4444;
+    text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
+}
+
+.black {
+    color: #cccccc;
+    text-shadow: 0 0 5px rgba(204, 204, 204, 0.5);
+}
+
+.selected {
+    background-color: #3a3a3a;
+    border-color: #666666;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.modal-button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #4a4a4a;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.modal-button:hover {
+    background-color: #666666;
+}

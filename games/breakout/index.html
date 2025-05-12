@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container" role="application" aria-label="Breakout Game">
+        <div class="game-header">
+            <h1 class="title">Breakout</h1>
+        </div>
+
+        <div class="game-info" role="status" aria-live="polite">
+            <div class="info-box">
+                <h3>Score</h3>
+                <div id="score" class="score-value" aria-label="Current Score">0</div>
+            </div>
+            <div class="info-box">
+                <h3>Lives</h3>
+                <div id="lives" class="score-value" aria-label="Remaining Lives">3</div>
+            </div>
+        </div>
+
+        <div class="game-board" role="region" aria-label="Game Board">
+            <canvas id="gameCanvas" width="800" height="600" aria-label="Breakout Game Canvas"></canvas>
+        </div>
+
+        <button class="restart-btn" id="restart-btn" aria-label="Restart Game">Restart Game</button>
+
+        <div class="game-over" id="game-over" role="dialog" aria-labelledby="game-over-title" aria-hidden="true">
+            <div class="modal-content">
+                <h2 id="game-over-title">Game Over!</h2>
+                <p>Final Score: <span id="final-score" aria-label="Final Score">0</span></p>
+                <button id="play-again-btn" aria-label="Play Again">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
