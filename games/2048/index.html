@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2048</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="title">2048</h1>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-box">
+                <h3>Score</h3>
+                <div id="score" class="score-value">0</div>
+            </div>
+            <div class="info-box">
+                <h3>Best Score</h3>
+                <div id="best-score" class="score-value">0</div>
+            </div>
+        </div>
+
+        <div class="game-board">
+            <div class="grid">
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"></div>
+            </div>
+        </div>
+
+        <button class="restart-btn" id="restart-btn" onclick="restartGame()">Restart Game</button>
+
+        <div class="game-over" id="game-over">
+            <div class="modal-content">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <button id="play-again-btn" onclick="restartGame()">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

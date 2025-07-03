@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1 class="title">Minesweeper</h1>
+    </div>
+    <div class="game-container">
+        <div class="game-info">
+            <div>Mines: <span id="mines-count">10</span></div>
+            <div>Flags: <span id="flags-count">0</span></div>
+            <div>Time: <span id="timer">0</span></div>
+        </div>
+        <div class="controls">
+            <button onclick="startNewGame()">New Game</button>
+            <button onclick="toggleFlagMode()" id="flag-mode">Flag Mode: Off</button>
+        </div>
+        <div class="game-board" id="game-board"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

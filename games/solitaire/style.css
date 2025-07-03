@@ -1,0 +1,179 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121213; /* Main dark background */
+    color: white; /* Default text color */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding-top: 20px;
+    min-height: 100vh; /* Ensure body takes full height */
+    box-sizing: border-box;
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* 7 tableau piles */
+    grid-template-rows: auto auto 1fr; /* Stock/Waste, Foundations, Tableau */
+    gap: 10px;
+    padding: 20px;
+    background-color: #1a1a1a; /* Darker game board background */
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    width: fit-content;
+}
+
+.stock-waste-area {
+    grid-column: 1 / span 3; /* Adjusted span for better layout */
+    grid-row: 1;
+    display: flex;
+    gap: 10px;
+    align-items: center; /* Align items vertically */
+}
+
+.foundation-area {
+    grid-column: 4 / span 4; /* Align with rightmost tableau piles */
+    grid-row: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    align-items: center; /* Align items vertically */
+}
+
+.tableau-area {
+    grid-column: 1 / span 7;
+    grid-row: 2; /* Tableau piles below stock/waste and foundations */
+    display: flex;
+    gap: 10px;
+    align-items: flex-start; /* Important for stacking cards */
+}
+
+.pile {
+    width: 75px; /* Slightly wider piles */
+    min-height: 110px; /* Minimum height for the slot */
+    height: auto; /* Allow height to grow with content */
+    border: 1px solid #444; /* Darker border for piles */
+    border-radius: 5px;
+    background-color: #2d2d2d; /* Darker pile background */
+    display: flex;
+    flex-direction: column; /* For tableau stacking */
+    align-items: center;
+    justify-content: center; /* For empty foundation/stock display */
+    position: relative; /* For card stacking in tableau */
+    color: #888; /* Light gray for text/symbols on piles */
+}
+
+.tableau-pile .card {
+    margin-top: -90px; /* Adjust overlap for new card height */
+}
+
+.tableau-pile .card:first-child {
+    margin-top: 0; /* No negative margin for the first card */
+}
+
+.card {
+    width: 70px; /* Adjusted card width */
+    height: 105px; /* Adjusted card height */
+    background-color: #f0f0f0; /* Light background for cards for contrast */
+    border: 1px solid #555; /* Border for cards */
+    border-radius: 5px;
+    color: black; /* Default card text color (will be overridden by .red/.black) */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px; /* Slightly larger font */
+    font-weight: bold;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding: 3px;
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out; /* Smooth transition for selection */
+}
+
+.card.red {
+    color: #ff4040; /* Brighter red for dark theme */
+}
+
+.card.black {
+    color: #333; /* Dark gray for black suits on light card face */
+}
+
+.card.face-down {
+    background-color: #4a4a4a; /* Darker card back */
+    /* border: 1px solid #666; */
+    color: transparent;
+}
+
+/* Optional: Style for the card back pattern if you add one */
+.card.face-down::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    right: 5px;
+    border: 1px dashed #666;
+    border-radius: 3px;
+}
+
+.card-rank-suit {
+    align-self: flex-start;
+    padding-left: 5px;
+}
+
+.card-suit-center {
+    font-size: 28px; /* Larger central suit symbol */
+    flex-grow: 1; /* Allow it to take space to center */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-rank-suit.bottom {
+    align-self: flex-end;
+    transform: rotate(180deg);
+    padding-right: 5px;
+}
+
+.stock.pile::after {
+    content: '♻️';
+    font-size: 30px;
+    color: #538d4e; /* Use accent green for recycle symbol */
+    /* visibility: hidden; /* Hide if not empty */
+}
+
+.stock.pile.empty::after {
+    visibility: visible;
+}
+
+.stock.pile:not(.empty)::after {
+    display: none; /* Hide recycle symbol if stock pile has cards (represented by a face-down card) */
+}
+
+/* Styling for empty foundation piles to guide user */
+.foundation.pile::before {
+    font-family: Arial, sans-serif; /* Ensure consistent font */
+    font-size: 24px; /* Large suit symbol */
+    color: #444; /* Dark gray, subtle */
+    position: absolute;
+}
+
+/* Specific suit symbols for empty foundations (optional, but helpful) */
+/* This requires knowing which foundation is for which suit, 
+   or dynamically adding a class/data-attribute in JS when a suit is started */
+/* For now, a generic placeholder or rely on JS to add first card */
+
+/* Example: If you set data-suit on foundation piles in JS */
+/* .foundation.pile[data-suit="♥"]::before { content: "♥"; color: #ff7f7f; } */
+/* .foundation.pile[data-suit="♦"]::before { content: "♦"; color: #ff7f7f; } */
+/* .foundation.pile[data-suit="♣"]::before { content: "♣"; color: #777; } */
+/* .foundation.pile[data-suit="♠"]::before { content: "♠"; color: #777; } */
+
+/* Style for selected cards */
+.card.selected {
+    outline: 3px solid #ffd700; /* Gold color for selection */
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ffd700;
+}

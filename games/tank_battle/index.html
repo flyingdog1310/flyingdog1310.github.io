@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tank Battle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Tank Battle</h1>
+            <div class="score-board">
+                <span>Score: <span id="score">0</span></span>
+                <span>Lives: <span id="lives">3</span></span>
+            </div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="controls">
+            <button id="startButton">Start Game</button>
+            <div class="mobile-controls">
+                <button id="upButton">↑</button>
+                <button id="downButton">↓</button>
+                <button id="leftButton">←</button>
+                <button id="rightButton">→</button>
+                <button id="fireButton">Fire</button>
+            </div>
+        </div>
+    </div>
+    <div class="game-over" id="gameOver">
+        <h2>Game Over!</h2>
+        <p>Your score: <span id="finalScore">0</span></p>
+        <button id="playAgainButton">Play Again</button>
+    </div>
+    <script src="game.js"></script>
+</body>
+
+</html>

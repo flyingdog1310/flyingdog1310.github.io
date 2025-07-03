@@ -1,0 +1,149 @@
+[
+    {
+        "id": "2048",
+        "name": "2048",
+        "category": "puzzle",
+        "description": "Classic number puzzle game",
+        "src": "games/2048/index.html"
+    },
+    {
+        "id": "breakout",
+        "name": "Breakout",
+        "category": "action",
+        "description": "Classic brick-breaking game",
+        "src": "games/breakout/index.html"
+    },
+    {
+        "id": "bulls-and-cows",
+        "name": "Bulls and Cows",
+        "category": "puzzle",
+        "description": "Number guessing game",
+        "src": "games/bulls_and_cows/index.html"
+    },
+    {
+        "id": "checkers",
+        "name": "Checkers",
+        "category": "board",
+        "description": "Classic board game of strategy and capture",
+        "src": "games/checkers/index.html"
+    },
+    {
+        "id": "chess",
+        "name": "Chess",
+        "category": "board",
+        "description": "Classic strategy board game",
+        "src": "games/chess/index.html"
+    },
+    {
+        "id": "chinese-chess",
+        "name": "Chinese Chess",
+        "category": "board",
+        "description": "Traditional Chinese board game",
+        "src": "games/chinese_chess/index.html"
+    },
+    {
+        "id": "connect-four",
+        "name": "Connect Four",
+        "category": "board",
+        "description": "Classic board game",
+        "src": "games/connect_four/index.html"
+    },
+    {
+        "id": "dino-runner",
+        "name": "Dino Runner",
+        "category": "action",
+        "description": "Chrome-style dinosaur runner game",
+        "src": "games/dino_runner/index.html"
+    },
+    {
+        "id": "gomoku",
+        "name": "Gomoku",
+        "category": "board",
+        "description": "Classic five-in-a-row strategy game",
+        "src": "games/gomoku/index.html"
+    },
+    {
+        "id": "memory-match",
+        "name": "Memory Match",
+        "category": "puzzle",
+        "description": "Classic card matching memory game",
+        "src": "games/memory_match/index.html"
+    },
+    {
+        "id": "minesweeper",
+        "name": "Minesweeper",
+        "category": "puzzle",
+        "description": "Classic puzzle game",
+        "src": "games/minesweeper/index.html"
+    },
+    {
+        "id": "raiden-fighters",
+        "name": "Raiden Fighters",
+        "category": "action",
+        "description": "Classic vertical scrolling shooter",
+        "src": "games/raiden_fighters/index.html"
+    },
+    {
+        "id": "reversi",
+        "name": "Reversi",
+        "category": "board",
+        "description": "Classic strategy board game",
+        "src": "games/reversi/index.html"
+    },
+    {
+        "id": "snake",
+        "name": "Snake",
+        "category": "action",
+        "description": "Classic arcade game",
+        "src": "games/snake/index.html"
+    },
+    {
+        "id": "solitaire",
+        "name": "Solitaire",
+        "category": "card",
+        "description": "Classic single-player card game",
+        "src": "games/solitaire/index.html"
+    },
+    {
+        "id": "space-invaders",
+        "name": "Space Invaders",
+        "category": "action",
+        "description": "Classic arcade shooter game",
+        "src": "games/space_invaders/index.html"
+    },
+    {
+        "id": "sudoku",
+        "name": "Sudoku",
+        "category": "puzzle",
+        "description": "Number placement puzzle",
+        "src": "games/sudoku/index.html"
+    },
+    {
+        "id": "tank-battle",
+        "name": "Tank Battle",
+        "category": "action",
+        "description": "Classic tank shooting game",
+        "src": "games/tank_battle/index.html"
+    },
+    {
+        "id": "tetris",
+        "name": "Tetris",
+        "category": "action",
+        "description": "Classic block stacking game",
+        "src": "games/tetris/index.html"
+    },
+    {
+        "id": "tic-tac-toe",
+        "name": "Tic Tac Toe",
+        "category": "board",
+        "description": "Classic strategy game",
+        "src": "games/tic_tac_toe/index.html"
+    },
+    {
+        "id": "wordle",
+        "name": "Wordle",
+        "category": "puzzle",
+        "description": "Word guessing game",
+        "src": "games/wordle/index.html"
+    }
+]
