@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票投資組合</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📈 股票投資組合</h1>
+            <p class="subtitle">實時投資組合查詢</p>
+        </header>
+
+        <div class="controls">
+            <button id="refreshBtn" class="btn-refresh">🔄 刷新數據</button>
+            <span id="lastUpdate" class="last-update">載入中...</span>
+        </div>
+
+        <div id="loadingSpinner" class="spinner"></div>
+
+        <div id="content" style="display: none;">
+            <!-- 剩餘資金部分 -->
+            <div class="balance-card">
+                <h2>資產概況</h2>
+                <div class="balance-grid">
+                    <div class="balance-item">
+                        <span class="label">可用資金</span>
+                        <span id="remainingFunds" class="amount">--</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">股票現值</span>
+                        <span id="stockMarketValue" class="amount">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 股票明細部分 -->
+            <div class="stocks-card">
+                <h2>持股詳情</h2>
+                <div class="table-wrapper">
+                    <table id="stocksTable" class="stocks-table">
+                        <thead>
+                            <tr>
+                                <th>股票</th>
+                                <th>持有股數</th>
+                                <th>買入均價</th>
+                                <th>現價</th>
+                                <th>成本</th>
+                                <th>未實現損益</th>
+                                <th>未實現損益率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stocksTableBody">
+                            <tr><td colspan="7" class="text-center">載入中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="error-message" id="errorMessage" style="display: none;"></div>
+        </div>
+
+        <footer>
+            <p>數據來源：<a href="https://docs.google.com/spreadsheets/d/1fB2bHIsqryppo-_r5mXzBUxBOSgtYjcQ_WclKYELHnE/edit" target="_blank" rel="noopener noreferrer">Google Sheets</a> | 最後更新：<span id="footerTime">--</span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
