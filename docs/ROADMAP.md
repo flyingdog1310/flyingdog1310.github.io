@@ -137,14 +137,14 @@
 
 線上首頁（`https://flyingdog1310.github.io/`，Lighthouse 12，Mobile 模擬）：
 
-| 指標 | Phase 0（2026-09-29） | Phase 2 後 | Phase 6 後 |
+| 指標 | Phase 0（2026-09-29） | Phase 2 後（2026-09-29，跑 2 次） | Phase 6 後 |
 |------|---------|------------|------------|
-| Lighthouse Performance (Mobile) | 79 | | |
-| FCP / LCP | 3.3 s / 3.3 s | | |
-| TBT | 290 ms | | |
-| 請求數 | 77 | | |
-| 傳輸量 | 345 KB | | |
-| 第三方網域 | 5（cdnjs、ipify、ipapi、flagcdn…） | | |
+| Lighthouse Performance (Mobile) | 79 | 100 | |
+| FCP / LCP | 3.3 s / 3.3 s | 0.8–1.1 s / 1.0–1.1 s | |
+| TBT | 290 ms | 0 ms | |
+| 請求數 | 77 | 21 | |
+| 傳輸量 | 345 KB | 59 KB | |
+| 第三方網域 | 5（cdnjs、ipify、ipapi、flagcdn…） | 0 | |
 
 本機同條件比較（`python3 -m http.server`，Lighthouse Mobile，Phase 2 改動前後）：
 
