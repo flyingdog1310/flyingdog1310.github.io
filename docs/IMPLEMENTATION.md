@@ -236,4 +236,4 @@ shared/
 完成後需更新：
 
 - `README.md`：專案結構加入 `shared/`、`docs/`，新增遊戲流程加入縮圖步驟。
-- `AI_GUIDE.md`：模板改為引用 `shared/` 的 tokens 與 `game-shell.css`、`game-utils.js`，並移除已過時的寫死色碼段落。
+- ~~`AI_GUIDE.md`~~ → 已改寫為 `CLAUDE.md`：引用 `shared/` 的 tokens、`game-shell.css`、`game-utils.js`，記錄翻新後的遊戲結構（core.js + 測試），移除寫死色碼的舊模板。

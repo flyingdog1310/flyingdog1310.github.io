@@ -4,6 +4,20 @@
 
 排序原則：**先保護正在使用的功能（股票頁）→ 再處理效益最大的效能問題（首頁）→ 建立共用基礎 → 逐款翻新遊戲**。每個 Phase 都可以獨立上線。
 
+## 目前進度（2026-09-29）
+
+| Phase | 狀態 |
+|-------|------|
+| 0 準備與基準線 | ✅ 完成 |
+| 1 股票頁 | ✅ 完成（只剩選配的交易時段自動刷新，暫不做） |
+| 2 首頁效能 | ✅ 完成，Lighthouse Mobile 79 → 100 |
+| 3 共用設計系統 | ✅ 完成 |
+| 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
+| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 5 款（見 Phase 5 狀態表） |
+| 6 收尾 | 🔄 `AI_GUIDE.md` 已改寫為 `CLAUDE.md`，其餘未開始 |
+
+下一步：5a 剩下的 tank_battle、breakout，接著 5b 益智類。
+
 ---
 
 ## Phase 0 — 準備與基準線
@@ -114,7 +128,26 @@
 | 5c 棋盤類 | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | 棋盤 RWD、可選取狀態與合法步提示的視覺、ARIA |
 | 5d 卡牌 | solitaire | 拖曳改 Pointer Events（同時支援滑鼠與觸控）、動畫 |
 
-### 進度
+### 狀態
+
+「重新設計」代表不只套驗收清單，而是重寫規則與畫面：規則抽到 `core.js` 並有 `node --test`，畫面改用 `shared/game-shell.css` 的 `body.stage` 元件（做法記錄在 `CLAUDE.md`）。
+
+| 批次 | 遊戲 | 狀態 |
+|------|------|------|
+| 5a | tetris | ✅ 已上線，使用者實測沒問題 |
+| 5a | snake | ✅ 已上線，使用者實測沒問題 |
+| 5a | space_invaders | ✅ 已上線 |
+| 5a | raiden_fighters | ✅ 已上線；難度數值（頭目血量、敵彈速度）待實玩回饋 |
+| 5a | dino_runner | ✅ 已 commit（`7d835f1`），尚未 push |
+| 5a | tank_battle | ⬜ 下一款；需移除 `setInterval` loop |
+| 5a | breakout | ⬜ |
+| 5b | 2048、minesweeper、sudoku、wordle、memory_match、bulls_and_cows | ⬜ |
+| 5c | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | ⬜ |
+| 5d | solitaire | ⬜ |
+
+目前 `npm test` 共 98 項（股票頁、shared、5 款遊戲的 core.js）全部通過。已完成的 5 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
+
+### 各款內容
 
 - [x] tetris — 重新設計：SRS 旋轉 / 踢牆、7-bag、Hold、Ghost、5 格預覽、鎖定延遲、T-spin / Back-to-back / Combo 計分；規則抽到 `core.js` 並有 `node --test`；方塊改為預先繪製的立體 sprite、消行動畫與粒子、硬降光軌；手機手勢 + SVG 觸控按鈕；最高分；切分頁 / 失焦自動暫停
 - [x] snake — 重新設計：轉向佇列（快速連按不漏、不能迴轉）、速度隨長度上升、限時金色星星（越早吃分數越高）、填滿場地獲勝；規則在 `core.js` 並有測試；蛇身改為平滑插值移動的連續身體、眼睛看向果實、吞下的果實在身體裡鼓起；果實用 SVG path 繪製；滑動不需放開手指即可連續轉向 + 十字方向鍵
@@ -139,7 +172,8 @@
 
 ## Phase 6 — 收尾
 
-- [ ] 更新 `README.md`、`AI_GUIDE.md`（改成引用 `shared/`）
+- [x] `AI_GUIDE.md` 改寫為 `CLAUDE.md`（引用 `shared/`、記錄翻新後的遊戲結構與工作方式）
+- [ ] 更新 `README.md`（專案結構加入 `shared/`、`docs/`、`scripts/`，移除過時的色碼段落）
 - [ ] 最後一次 Lighthouse，與 Phase 0 基準對照
 - [ ] （選配）GitHub Actions：`prettier --check` + `node --test`
 

@@ -1,5 +1,6 @@
 /*
- * 遊戲共用版型：沿用 AI_GUIDE.md 的 class 名稱，需先引入 tokens.css
+ * 遊戲共用版型，需先引入 tokens.css。前半段是舊版 class（.game-container 等），
+ * 翻新後的遊戲使用檔案後半段的 body.stage 元件（見 CLAUDE.md）
  *
  *   <link rel="stylesheet" href="../../shared/tokens.css">
  *   <link rel="stylesheet" href="../../shared/game-shell.css">
