@@ -114,6 +114,10 @@
 | 5c 棋盤類 | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | 棋盤 RWD、可選取狀態與合法步提示的視覺、ARIA |
 | 5d 卡牌 | solitaire | 拖曳改 Pointer Events（同時支援滑鼠與觸控）、動畫 |
 
+### 進度
+
+- [x] tetris — 重新設計：SRS 旋轉 / 踢牆、7-bag、Hold、Ghost、5 格預覽、鎖定延遲、T-spin / Back-to-back / Combo 計分；規則抽到 `core.js` 並有 `node --test`；方塊改為預先繪製的立體 sprite、消行動畫與粒子、硬降光軌；手機手勢 + SVG 觸控按鈕；最高分；切分頁 / 失焦自動暫停
+
 ### 遊戲驗收清單（每款都要過）
 
 - [ ] 顏色全部改用 `shared/tokens.css`
