@@ -180,39 +180,24 @@
 
 ## 6. 共用設計系統（shared/）
 
-新增 `shared/` 目錄，所有頁面引用：
+`shared/` 目錄（Phase 3 建立）：
 
 ```
 shared/
-├── tokens.css        # 顏色、字體、間距、圓角、陰影、動畫時間（CSS custom properties）
-├── base.css          # reset、body、按鈕、focus ring、reduced-motion
-├── game-shell.css    # 遊戲共用版型：header / info bar / board / game-over modal
-└── game-utils.js     # ES module：canvas DPR 縮放、loop、暫停、最高分、輸入
+├── tokens.css        # 顏色、陰影、字體（CSS custom properties）；首頁與股票頁已引用
+├── game-shell.css    # 遊戲共用版型：header / info bar / board / controls / game-over modal
+├── game-utils.js     # ES module：canvas DPR 縮放、固定步長 loop、自動暫停、最高分、輸入
+└── __tests__/        # game-utils.js 的 node --test
 ```
 
-`tokens.css` 以現有色票為基礎：
+**tokens.css** 分兩層：原始色票（`--gray-*`、`--green-*`、`--red-*`）與用途（`--color-*`、`--shadow-*`、`--font-*`）。頁面只使用用途層。
 
-```css
-:root {
-    --color-bg: #121213;
-    --color-surface: #1a1a1a;
-    --color-surface-2: #2d2d2d;
-    --color-border: #3d3d3d;
-    --color-text: #ffffff;
-    --color-text-muted: #adadad;
-    --color-accent: #538d4e;
-    --color-gain: #d32f2f;   /* 股票頁：漲紅（台股慣例），勿與 accent 綠混用 */
-    --color-loss: #388e3c;   /* 股票頁：跌綠 */
+- 原始色票忠實保留翻新前兩頁實際用到的每一個值（包含很接近的灰色），所以改用 tokens 後畫面完全不變（以 `scripts/style-snapshot.js` 比對確認）。
+- 主要用途 tokens：`--color-bg` / `--color-surface*` / `--color-control*`（背景層級）、`--color-text*`、`--color-border*` / `--color-divider`、`--color-accent`、`--color-gain`（漲紅）/ `--color-loss`（跌綠）、`--color-danger-*`、`--shadow-md` / `--shadow-lg`、`--font-sans` / `--font-legacy`。
+- **尚未抽成 tokens**：間距與圓角。兩頁目前用的值不一致（5 / 6 / 8 / 10px），統一會改變畫面，留到 Phase 4 視覺調整時一起做，並同時合併相近的灰色。
+- 原規劃的 `base.css`（reset、focus ring、reduced-motion）同樣移到 Phase 4，因為套用它會改變畫面。
 
-    --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px;
-    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
-    --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
-    --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
-    --duration-fast: 120ms; --duration-base: 200ms;
-}
-```
-
-遷移方式：每款遊戲先把寫死的色碼換成 token（純視覺等價替換），再逐步套用 `game-shell.css`。
+遷移方式：每款遊戲先把寫死的色碼換成 token（純視覺等價替換，用 `style-snapshot.js` 確認），再逐步套用 `game-shell.css`。
 
 ---
 
@@ -220,11 +205,11 @@ shared/
 
 | 功能 | API 草案 | 說明 |
 |------|----------|------|
-| 高解析 canvas | `setupCanvas(canvas, cssWidth, cssHeight)` → `ctx` | 依 `devicePixelRatio` 設定實際像素並 `ctx.scale`，遊戲邏輯仍用 CSS 座標 |
-| 遊戲 loop | `createLoop({ update(dt), render() })` → `{ start, stop }` | rAF + fixed timestep，避免高更新率螢幕（120Hz）跑兩倍速 |
-| 自動暫停 | `autoPause(loop)` | `visibilitychange` 與 iframe 失焦時暫停 |
-| 最高分 | `highScore(gameId)` → `{ get, submit }` | localStorage，key 前綴 `jsgames:`，包 try/catch |
-| 輸入 | `onSwipe(el, cb)`、`bindKeys(map)` | 統一觸控滑動與鍵盤 |
+| 高解析 canvas | `setupCanvas(canvas, cssWidth, cssHeight, { setStyle })` → `ctx` | 依 `devicePixelRatio` 設定實際像素並 `setTransform`，遊戲邏輯仍用 CSS 座標；版面由 CSS 控制尺寸時傳 `setStyle: false` |
+| 遊戲 loop | `createLoop({ update(dt), render(alpha), step })` → `{ start, stop, running }` | rAF + fixed timestep，避免高更新率螢幕（120Hz）跑兩倍速；長時間中斷後最多補算 0.25 秒 |
+| 自動暫停 | `autoPause({ pause, resume })` → `dispose` | `visibilitychange`（分頁切走、首頁 modal 關閉）時暫停 |
+| 最高分 | `highScore(gameId, { order })` → `{ get, submit }` | localStorage，key 為 `jsgames:<gameId>:best`，`order: 'asc'` 用於「越少越好」（例如秒數）；不可用時不丟錯 |
+| 輸入 | `onSwipe(el, cb)`、`bindKeys(map)` → `dispose` | Pointer Events 滑動（滑鼠 + 觸控）；鍵盤以 `event.key` 對應，會 preventDefault 避免捲動頁面 |
 
 套用順序：先 canvas 遊戲（DPR + 暫停效益最大），再 DOM 遊戲（ARIA、鍵盤、最高分）。
 
@@ -236,10 +221,12 @@ shared/
 
 | 範圍 | 方式 |
 |------|------|
-| 股票頁邏輯 | `node --test stock/`（golden fixture） |
+| 股票頁邏輯 | `npm test`（golden fixture，對照重構前版本） |
 | 股票頁畫面 | 本機 `python3 -m http.server` 開啟，對真實 Sheet 比對數字與重構前一致；手機寬度 375px 檢查 |
 | 首頁效能 | Lighthouse（Mobile）翻新前後各跑一次記錄在 PR；指標：LCP、TBT、總傳輸量、請求數 |
 | 遊戲 | 每款手動遊玩：開始 → 得分 → Game Over → 重玩；桌機鍵盤 + 手機觸控；切分頁回來應為暫停 |
+| 只改 CSS 結構、不改外觀 | `scripts/style-snapshot.js`：用 `git worktree` 取出改動前版本，以 `--root` 記錄前後兩份 computed style 再 `--diff`；桌機 1280px 與手機 375px 各比一次 |
+| 共用工具 | `npm test`（`shared/__tests__/`） |
 | 格式 | `npx prettier --check .`（沿用現有 `.prettierrc`） |
 
 ---

@@ -1,0 +1,184 @@
+/*
+ * 遊戲共用版型：沿用 AI_GUIDE.md 的 class 名稱，需先引入 tokens.css
+ *
+ *   <link rel="stylesheet" href="../../shared/tokens.css">
+ *   <link rel="stylesheet" href="../../shared/game-shell.css">
+ *   <link rel="stylesheet" href="style.css">   ← 遊戲自己的樣式，只寫這款遊戲特有的部分
+ *
+ * 結構：
+ *   .game-container
+ *     .game-header > .title
+ *     .game-info > .info-box > h3 + 數值
+ *     .game-board
+ *     .controls > button.btn
+ *   .game-over（加上 .is-open 顯示）> .modal-content
+ */
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-legacy);
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.game-header {
+    width: 100%;
+    text-align: center;
+}
+
+.game-header .title {
+    margin: 0;
+    font-size: 36px;
+    color: var(--color-text);
+}
+
+.game-info {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.info-box {
+    min-width: 80px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    background: var(--color-control);
+    text-align: center;
+}
+
+.info-box h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+}
+
+.info-box > :not(h3) {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.game-board {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-control-hover);
+    border-radius: 6px;
+    background: var(--color-control);
+    box-sizing: border-box;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn,
+.restart-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    background: var(--color-accent);
+    color: var(--color-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn:hover,
+.restart-btn:hover {
+    filter: brightness(1.1);
+}
+
+.btn:focus-visible,
+.restart-btn:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+.btn--secondary {
+    background: var(--color-control);
+}
+
+/* Game Over / 勝利畫面 */
+.game-over {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-overlay);
+}
+
+.game-over.is-open {
+    display: flex;
+}
+
+.game-over .modal-content {
+    min-width: 240px;
+    padding: 24px 32px;
+    border: 1px solid var(--color-control-hover);
+    border-radius: 10px;
+    background: var(--color-surface);
+    text-align: center;
+}
+
+.game-over h2 {
+    margin: 0 0 12px;
+}
+
+.game-over p {
+    margin: 0 0 20px;
+    color: var(--color-text-muted);
+}
+
+@media (max-width: 480px) {
+    .game-container {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .game-header .title {
+        font-size: 28px;
+    }
+
+    .info-box {
+        padding: 8px 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

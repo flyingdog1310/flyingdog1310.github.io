@@ -1,0 +1,84 @@
+/*
+ * 全站設計 tokens：顏色、陰影、字體
+ *
+ * 第一層是原始色票（--gray-*、--green-* …），第二層是用途（--color-*）。
+ * 頁面與遊戲只使用第二層；要調整配色時改這裡即可。
+ *
+ * 目前的色票忠實保留翻新前各頁實際使用的值（包含彼此很接近的灰色），
+ * 以確保改用 tokens 後畫面完全不變。合併相近色、加入間距 / 圓角 tokens 在 Phase 4 視覺調整時進行。
+ */
+:root {
+    /* ---- 原始色票 ---- */
+    --gray-50: #ffffff;
+    --gray-100: #e0e0e0;
+    --gray-200: #cccccc;
+    --gray-300: #adadad;
+    --gray-350: #aaaaaa;
+    --gray-400: #999999;
+    --gray-500: #666666;
+    --gray-600: #4a4a4a;
+    --gray-650: #444444;
+    --gray-700: #3d3d3d;
+    --gray-750: #333333;
+    --gray-775: #2d2d2d;
+    --gray-800: #2a2a2a;
+    --gray-825: #262626;
+    --gray-850: #242424;
+    --gray-875: #1f1f1f;
+    --gray-900: #1a1a1a;
+    --gray-950: #121213;
+
+    --green-500: #538d4e;
+    --green-700: #388e3c;
+    --red-300: #ff8a80;
+    --red-700: #d32f2f;
+    --red-900: #3d2424;
+    --red-850: #4a2a2a;
+    --red-800: #5d2424;
+
+    /* ---- 文字 ---- */
+    --color-text: var(--gray-50);
+    --color-text-soft: var(--gray-100);
+    --color-text-secondary: var(--gray-200);
+    --color-text-muted: var(--gray-300);
+    --color-link: var(--gray-350);
+    --color-text-subtle: var(--gray-400);
+    --color-text-faint: var(--gray-500);
+
+    /* ---- 背景與表面（由深到淺） ---- */
+    --color-bg: var(--gray-950);
+    --color-surface: var(--gray-900);
+    --color-surface-sunken: var(--gray-875);
+    --color-surface-raised: var(--gray-850);
+    --color-surface-highlight: var(--gray-825);
+    --color-control: var(--gray-775);
+    --color-control-alt: var(--gray-800);
+    --color-control-alt-hover: var(--gray-750);
+    --color-control-hover: var(--gray-700);
+
+    /* ---- 邊框 ---- */
+    --color-divider: var(--gray-800);
+    --color-border: var(--gray-750);
+    --color-border-strong: var(--gray-650);
+    --color-border-highlight: var(--gray-600);
+    --color-border-hover: var(--gray-500);
+
+    /* ---- 品牌與狀態 ---- */
+    --color-accent: var(--green-500);
+    /* 股票漲跌：台股慣例漲紅跌綠，不要與 accent 綠混用 */
+    --color-gain: var(--red-700);
+    --color-loss: var(--green-700);
+    --color-danger-text: var(--red-300);
+    --color-danger-bg: var(--red-900);
+    --color-danger-bg-hover: var(--red-850);
+    --color-danger-border: var(--red-800);
+
+    /* ---- 陰影與遮罩 ---- */
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 2px 12px rgba(0, 0, 0, 0.5);
+    --color-overlay: rgba(0, 0, 0, 0.8);
+
+    /* ---- 字體 ---- */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-legacy: Arial, sans-serif;
+}

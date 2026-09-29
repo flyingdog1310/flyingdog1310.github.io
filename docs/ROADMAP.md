@@ -77,10 +77,12 @@
 
 ## Phase 3 — 共用設計系統
 
-- [ ] 建立 `shared/tokens.css`、`shared/base.css`
-- [ ] 首頁與股票頁改用 tokens（視覺等價替換，股票頁再跑一次比對）
-- [ ] 建立 `shared/game-shell.css`、`shared/game-utils.js`（DPR、loop、自動暫停、最高分、輸入）
-- [ ] 為 `game-utils.js` 的純邏輯寫 `node --test`
+- [x] 建立 `shared/tokens.css`（顏色、陰影、字體）
+- [x] 首頁與股票頁改用 tokens：兩頁在 1280px / 375px 下 computed style 與改動前完全相同（`scripts/style-snapshot.js`）；股票頁 `npm test` 通過
+- [x] 建立 `shared/game-shell.css`、`shared/game-utils.js`（DPR、loop、自動暫停、最高分、輸入）— 尚未套用到遊戲，Phase 5 使用
+- [x] 為 `game-utils.js` 寫 `node --test`（10 項）
+- [x] 抽出 `scripts/lib/cdp.js`（本機 Chrome 控制），`capture-thumbs.js` 與 `style-snapshot.js` 共用
+- [ ] ~~`shared/base.css`、間距 / 圓角 tokens~~ → 移到 Phase 4（套用會改變畫面）
 
 **完成條件**：三個主要頁面引用同一份 tokens；換色只需要改 `tokens.css`。
 
@@ -88,6 +90,7 @@
 
 ## Phase 4 — 首頁 UI / 視覺
 
+- [ ] 建立 `shared/base.css`（reset、focus ring、reduced-motion），加入間距 / 圓角 tokens，合併相近的灰色
 - [ ] 篩選合併為 `applyFilters`，修正分類忽略搜尋字串的 bug（U1）
 - [ ] 篩選狀態同步到 URL
 - [ ] Empty state（U2）
