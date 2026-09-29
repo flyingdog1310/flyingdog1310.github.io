@@ -17,31 +17,6 @@
     --page-pad: 1rem;
 }
 
-html,
-body {
-    height: 100%;
-}
-
-body {
-    display: block;
-    min-height: 0;
-    overflow: hidden;
-    font-family: var(--font-sans);
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-svg {
-    width: 24px;
-    height: 24px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
 /* ---- 版面：桌機 [Hold + 分數] [場地] [Next] ---- */
 .tetris {
     display: grid;
@@ -91,9 +66,7 @@ button.slot {
     cursor: pointer;
 }
 
-button.slot:focus-visible,
-.icon-btn:focus-visible,
-.pad__btn:focus-visible {
+button.slot:focus-visible {
     outline: 2px solid var(--color-text);
     outline-offset: 2px;
 }
@@ -146,27 +119,12 @@ button.slot:focus-visible,
     color: var(--color-text-subtle);
 }
 
-.icon-btn {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    margin-top: auto;
-    padding: 0;
-    border: 1px solid var(--color-divider);
-    border-radius: 50%;
-    background: var(--color-surface);
-    color: var(--color-text-muted);
-    cursor: pointer;
-}
-
-.icon-btn:hover {
-    color: var(--color-text);
-    background: var(--color-control);
-}
-
 .tetris:not([data-state='playing']) .icon-btn {
     visibility: hidden;
+}
+
+#pause-btn {
+    margin-top: auto;
 }
 
 /* ---- 場地 ---- */
@@ -252,170 +210,15 @@ button.slot:focus-visible,
     }
 }
 
-/* ---- 開始 / 暫停 / 結束 ---- */
-.overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 1.5rem;
-    border-radius: inherit;
-    background: rgba(9, 9, 11, 0.8);
-    backdrop-filter: blur(3px);
-    text-align: center;
-}
-
 /* 開始畫面：讓示意盤面透出來 */
 #overlay-ready {
     background: linear-gradient(rgba(9, 9, 11, 0.86) 55%, rgba(9, 9, 11, 0.45));
     backdrop-filter: none;
 }
 
-.overlay[hidden] {
-    display: none;
-}
-
-.overlay__title {
-    margin: 0 0 0.5rem;
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-}
-
-.overlay .btn {
-    min-width: 10rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 999px;
-    font-size: 1rem;
-}
-
-.btn--quiet {
-    background: transparent;
-    color: var(--color-text-muted);
-}
-
-.btn--quiet:hover {
-    color: var(--color-text);
-}
-
-.keys {
-    margin-bottom: 0.75rem;
-    border-spacing: 0.75rem 0.375rem;
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-}
-
-.keys td:first-child {
-    text-align: right;
-}
-
-.keys td:last-child {
-    text-align: left;
-}
-
-kbd {
-    display: inline-block;
-    min-width: 1.5em;
-    padding: 0.125rem 0.375rem;
-    border: 1px solid var(--color-border-strong);
-    border-bottom-width: 2px;
-    border-radius: 4px;
-    background: var(--color-surface);
-    color: var(--color-text);
-    font: inherit;
-    font-size: 0.8125rem;
-    text-align: center;
-}
-
-.gestures {
-    margin: 0 0 0.75rem;
-    padding: 0;
-    list-style: none;
-    font-size: 0.9375rem;
-    line-height: 1.8;
-    color: var(--color-text-muted);
-}
-
-.final-score {
-    margin: 0;
-    font-size: 2.75rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-}
-
-.final-note {
-    margin: 0 0 0.75rem;
-    color: var(--color-text-muted);
-}
-
-.final-note.is-record {
-    color: var(--piece-o);
-    font-weight: 700;
-}
-
-/* ---- 觸控按鈕（只在觸控裝置顯示） ---- */
 .pad {
     grid-area: pad;
-    display: none;
     justify-content: space-between;
-    gap: 1rem;
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-.pad__group {
-    display: flex;
-    gap: 0.625rem;
-}
-
-.pad__btn {
-    display: grid;
-    place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    padding: 0;
-    border: 1px solid var(--color-divider);
-    border-radius: 50%;
-    background: var(--color-surface);
-    color: var(--color-text-secondary);
-    touch-action: none;
-}
-
-.pad__btn.is-pressed {
-    background: var(--color-control-hover);
-    color: var(--color-text);
-}
-
-.pad__btn--main {
-    background: var(--color-accent);
-    border-color: transparent;
-    color: var(--color-text);
-}
-
-.pad__btn--main.is-pressed {
-    background: var(--color-accent);
-    filter: brightness(1.15);
-}
-
-.only-coarse {
-    display: none;
-}
-
-@media (pointer: coarse) {
-    .pad {
-        display: flex;
-    }
-
-    .only-coarse {
-        display: block;
-    }
-
-    .only-fine {
-        display: none;
-    }
 }
 
 /* ---- 手機直向：上方資訊列、場地、下方按鈕 ---- */
@@ -492,6 +295,9 @@ kbd {
     .icon-btn {
         width: 40px;
         height: 40px;
+    }
+
+    #pause-btn {
         margin: auto 0;
     }
 

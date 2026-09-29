@@ -1,69 +1,251 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 10px;
-    background-color: #121213;
-    font-family: Arial, sans-serif;
+/* 貪食蛇：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    /* 場地與角色顏色（script.js 讀取這些變數來畫 canvas） */
+    --field-a: #121a15;
+    --field-b: #0f1612;
+    --snake-head: #8fe39a;
+    --snake-tail: #2e7d50;
+    --snake-outline: #0b2416;
+    --fruit: #e85a5a;
+    --fruit-leaf: #5cc26a;
+    --fruit-stem: #7a4a2a;
+    --bonus: var(--color-highlight);
+
+    /* 場地邊長，由 script.js 依可用空間設定 */
+    --board-size: 400px;
+    --gap: 0.875rem;
+    --page-pad: 1rem;
+}
+
+.snake {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
     box-sizing: border-box;
-    color: #ffffff;
 }
 
-canvas {
-    border: 2px solid #2d2d2d;
-    background-color: #1a1a1a;
-    max-width: 100%;
-    height: auto;
-}
-
-.score-container {
+/* ---- 分數列：與場地同寬 ---- */
+.hud {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 20px;
-    justify-content: center;
-    width: 100%;
-    max-width: 400px;
+    align-items: center;
+    gap: 1rem;
+    width: var(--board-size);
+    max-width: 100%;
 }
 
-.score-box {
-    font-size: clamp(16px, 4vw, 24px);
-    padding: 8px 16px;
-    background-color: #2d2d2d;
-    border: 2px solid #3d3d3d;
-    border-radius: 5px;
-    color: white;
-    text-align: center;
+.stats {
+    display: flex;
     flex: 1;
-    min-width: 120px;
+    align-items: baseline;
+    gap: 1.75rem;
+    margin: 0;
 }
 
-#startBtn {
-    margin-top: 20px;
-    padding: 12px 24px;
-    font-size: clamp(16px, 4vw, 18px);
-    cursor: pointer;
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    border-radius: 5px;
+.stat dt {
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    margin: 0.125rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.stat--score dd {
+    font-size: 1.75rem;
+}
+
+.stat--best dd {
+    color: var(--color-text-subtle);
+}
+
+.snake:not([data-state='playing']) #pause-btn {
+    visibility: hidden;
+}
+
+/* ---- 場地 ---- */
+.field-area {
+    display: grid;
+    place-items: center;
     width: 100%;
-    max-width: 200px;
+    min-height: 0;
+    overflow: hidden;
 }
 
-#startBtn:hover {
-    background-color: #4a7d45;
+.field {
+    position: relative;
+    border-radius: 10px;
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+    touch-action: none;
 }
 
-@media (max-width: 400px) {
-    .score-container {
-        gap: 5px;
+.field.is-shake {
+    animation: shake 320ms ease-out;
+}
+
+@keyframes shake {
+    20% {
+        transform: translateX(-5px);
+    }
+    40% {
+        transform: translateX(4px);
+    }
+    60% {
+        transform: translateX(-2px);
+    }
+    80% {
+        transform: translateX(1px);
+    }
+}
+
+#board {
+    display: block;
+    border-radius: inherit;
+}
+
+.callout {
+    position: absolute;
+    inset: 38% 0 auto;
+    margin: 0;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    opacity: 0;
+}
+
+.callout.is-showing {
+    animation: callout 1.2s ease-out forwards;
+}
+
+@keyframes callout {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.04);
+    }
+    25% {
+        transform: scale(1);
+    }
+    75% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+}
+
+.overlay {
+    border-radius: inherit;
+}
+
+/* 開始畫面：讓後面的示意畫面透出來 */
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.62);
+    backdrop-filter: none;
+}
+
+.overlay__text {
+    max-width: 22rem;
+    margin: 0 0 0.75rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+/* ---- 觸控方向鍵：十字排列 ---- */
+.pad {
+    display: none;
+    grid-template-columns: repeat(3, 3.5rem);
+    grid-template-rows: repeat(3, 3.25rem);
+    grid-template-areas:
+        '. up .'
+        'left . right'
+        '. down .';
+    gap: 0.25rem;
+}
+
+@media (pointer: coarse) {
+    .pad {
+        display: grid;
+    }
+}
+
+.pad__btn {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+}
+
+.pad__btn--up {
+    grid-area: up;
+}
+
+.pad__btn--down {
+    grid-area: down;
+}
+
+.pad__btn--left {
+    grid-area: left;
+}
+
+.pad__btn--right {
+    grid-area: right;
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.625rem;
+        --page-pad: 0.625rem;
     }
 
-    .score-box {
-        padding: 6px 12px;
+    .stats {
+        gap: 1.25rem;
+    }
+
+    /* 場地緊接在分數列下方，方向鍵留在底部方便拇指操作 */
+    .field-area {
+        place-items: start center;
+    }
+
+    .pad {
+        grid-template-columns: repeat(3, 4.5rem);
+        grid-template-rows: repeat(3, 4rem);
+    }
+
+    .stat dd {
+        font-size: 1.125rem;
+    }
+
+    .stat--score dd {
+        font-size: 1.375rem;
+    }
+
+    .callout {
+        font-size: 1.375rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .field.is-shake {
+        animation: none;
     }
 }

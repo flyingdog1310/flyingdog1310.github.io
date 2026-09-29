@@ -117,6 +117,8 @@
 ### 進度
 
 - [x] tetris — 重新設計：SRS 旋轉 / 踢牆、7-bag、Hold、Ghost、5 格預覽、鎖定延遲、T-spin / Back-to-back / Combo 計分；規則抽到 `core.js` 並有 `node --test`；方塊改為預先繪製的立體 sprite、消行動畫與粒子、硬降光軌；手機手勢 + SVG 觸控按鈕；最高分；切分頁 / 失焦自動暫停
+- [x] snake — 重新設計：轉向佇列（快速連按不漏、不能迴轉）、速度隨長度上升、限時金色星星（越早吃分數越高）、填滿場地獲勝；規則在 `core.js` 並有測試；蛇身改為平滑插值移動的連續身體、眼睛看向果實、吞下的果實在身體裡鼓起；果實用 SVG path 繪製；滑動不需放開手指即可連續轉向 + 十字方向鍵
+- [x] 共用：開始 / 暫停 / 結束畫面、`kbd`、觸控按鈕、圖示按鈕從 tetris 抽到 `shared/game-shell.css`（`<body class="stage">`），新增 `--color-highlight`、`--color-stage-overlay` tokens
 
 ### 遊戲驗收清單（每款都要過）
 

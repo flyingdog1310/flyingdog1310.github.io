@@ -3,23 +3,80 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Snake</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header">
-        <h1 class="title">Snake</h1>
-    </div>
-    <div class="score-container">
-        <div id="score" class="score-box">Score: 0</div>
-        <div id="highScore" class="score-box">Best: 0</div>
-        <div id="speed" class="score-box">Speed: 1</div>
-    </div>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <button id="startBtn" style="display: block;">Start Game</button>
-    <script src="script.js"></script>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-up" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7" /></symbol>
+        <symbol id="i-down" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7" /></symbol>
+        <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></symbol>
+        <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" /></symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+    </svg>
+
+    <main class="snake" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd id="score">0</dd>
+                </div>
+                <div class="stat">
+                    <dt>Length</dt>
+                    <dd id="length">3</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+        </header>
+
+        <div class="field-area" id="field-area">
+            <div class="field" id="field">
+                <canvas id="board" role="img" aria-label="Snake playfield"></canvas>
+                <p class="callout" id="callout" aria-live="polite"></p>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Snake</h1>
+                    <p class="overlay__text only-fine">Steer with the arrow keys or <span class="nowrap"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></span>. Golden stars are worth more the sooner you reach them.</p>
+                    <p class="overlay__text only-coarse">Swipe anywhere on the field to turn. Golden stars are worth more the sooner you reach them.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                    <button class="btn btn--quiet" type="button" data-action="restart">Restart</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title" id="over-title">Game over</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="restart">Play again</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="pad" aria-label="Touch controls">
+            <button class="pad__btn pad__btn--up" type="button" data-dir="up" aria-label="Up"><svg><use href="#i-up" /></svg></button>
+            <button class="pad__btn pad__btn--left" type="button" data-dir="left" aria-label="Left"><svg><use href="#i-left" /></svg></button>
+            <button class="pad__btn pad__btn--right" type="button" data-dir="right" aria-label="Right"><svg><use href="#i-right" /></svg></button>
+            <button class="pad__btn pad__btn--down" type="button" data-dir="down" aria-label="Down"><svg><use href="#i-down" /></svg></button>
+        </div>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
