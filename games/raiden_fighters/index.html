@@ -3,24 +3,92 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Raiden Fighters</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="game-wrapper">
-        <div id="game-container">
-            <canvas id="gameCanvas"></canvas>
-            <div id="score">Score: <span id="scoreValue">0</span></div>
-            <div id="game-over">
-                Game Over!<br>
-                Score: <span id="finalScore">0</span><br>
-                <button onclick="restartGame()">Play Again</button>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+        <symbol id="i-bomb" viewBox="0 0 24 24"><circle cx="11" cy="14" r="6.5" /><path d="M15.5 9.5l2-2M17 5l1.5-1.5M19.5 7.5L21 6M18 3v1.5M21.5 9.5H20" /></symbol>
+    </svg>
+
+    <main class="raiden" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd id="score">0</dd>
+                </div>
+                <div class="stat">
+                    <dt>Weapon</dt>
+                    <dd class="weapon" id="weapon">
+                        <span class="weapon__name" id="weapon-name">Vulcan</span>
+                        <span class="pips" id="weapon-power" aria-label="Power 1 of 4"></span>
+                    </dd>
+                </div>
+                <div class="stat">
+                    <dt>Lives</dt>
+                    <dd class="icons" id="lives" aria-label="3 lives"></dd>
+                </div>
+                <div class="stat">
+                    <dt>Bombs</dt>
+                    <dd class="icons icons--bombs" id="bombs" aria-label="2 bombs"></dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+        </header>
+
+        <div class="field-area" id="field-area">
+            <div class="field" id="field">
+                <canvas id="board" role="img" aria-label="Raiden Fighters playfield"></canvas>
+                <p class="callout" id="callout" aria-live="polite"></p>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Raiden Fighters</h1>
+                    <ul class="legend" aria-label="Items">
+                        <li><span class="item-dot item-dot--power">P</span>Red for Vulcan spread, blue for Laser. It switches color every few seconds.</li>
+                        <li><span class="item-dot item-dot--missile">M</span>Homing missiles</li>
+                        <li><span class="item-dot item-dot--bomb">B</span>Extra bomb, clears every bullet on screen</li>
+                    </ul>
+                    <table class="keys only-fine" aria-label="Keyboard controls">
+                        <tr><td class="nowrap"><kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd></td><td>Move</td></tr>
+                        <tr><td><kbd>Shift</kbd></td><td>Move slowly</td></tr>
+                        <tr><td><kbd>X</kbd></td><td>Bomb</td></tr>
+                    </table>
+                    <p class="overlay__text only-fine">Your ship fires automatically.</p>
+                    <p class="overlay__text only-coarse">Drag anywhere to fly, even below the field. You fire automatically.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                    <button class="btn btn--quiet" type="button" data-action="restart">Restart</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title">Game over</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="restart">Play again</button>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="script.js"></script>
+
+        <button class="bomb-btn" id="bomb-btn" type="button" aria-label="Bomb">
+            <svg><use href="#i-bomb" /></svg>
+            <span class="bomb-btn__count" id="bomb-count">2</span>
+        </button>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

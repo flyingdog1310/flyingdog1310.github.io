@@ -1,50 +1,384 @@
-body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #000;
-    font-family: Arial, sans-serif;
+/* 雷電：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    /* 場景與角色顏色（script.js 讀取這些變數來畫 canvas） */
+    --sky-top: #0b1428;
+    --sky-bottom: #132447;
+    --map-line: rgba(140, 180, 255, 0.055);
+    --player: #dfe8f3;
+    --player-accent: #3ec6d6;
+    --drone: #e85a5a;
+    --fighter: #a878e0;
+    --gunship: #7c8aa3;
+    --boss: #8e98ad;
+    --boss-core: #ff5d73;
+    --vulcan: #ffb347;
+    --laser: #5fd3e6;
+    --missile: #7be08a;
+    --enemy-bullet: #ff5d8f;
+    --enemy-bullet-large: #ffa24a;
+    --item-bomb: var(--color-highlight);
+
+    /* 場地大小，由 script.js 依可用空間設定 */
+    --board-width: 360px;
+    --gap: 0.75rem;
+    --page-pad: 1rem;
 }
-.game-wrapper {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 10px;
-}
-#game-container {
+
+.raiden {
     position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    box-sizing: border-box;
+    touch-action: none;
 }
-canvas {
-    border: 2px solid #333;
-    background: #000;
+
+/* ---- 分數列：與場地同寬 ---- */
+.hud {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: var(--board-width);
+    max-width: 100%;
 }
-#score {
+
+.stats {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 1.125rem;
+    margin: 0;
+}
+
+.stat dt {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    margin: 0.125rem 0 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+.stat--score dd {
+    font-size: 1.5rem;
+}
+
+.weapon {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.weapon__name {
+    font-size: 0.9375rem;
+}
+
+.weapon[data-weapon='vulcan'] .weapon__name {
+    color: var(--vulcan);
+}
+
+.weapon[data-weapon='laser'] .weapon__name {
+    color: var(--laser);
+}
+
+/* 武器等級：4 個小格 */
+.pips {
+    display: flex;
+    gap: 2px;
+}
+
+.pips i {
+    width: 4px;
+    height: 10px;
+    border-radius: 1px;
+    background: var(--color-control-hover);
+}
+
+.pips i.is-on {
+    background: currentColor;
+}
+
+.weapon[data-weapon='vulcan'] .pips {
+    color: var(--vulcan);
+}
+
+.weapon[data-weapon='laser'] .pips {
+    color: var(--laser);
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 1.35rem;
+}
+
+.icons svg {
+    width: 14px;
+    height: 16px;
+    fill: var(--player);
+    stroke: none;
+}
+
+.icons--bombs svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: var(--item-bomb);
+}
+
+.raiden:not([data-state='playing']) #pause-btn {
+    visibility: hidden;
+}
+
+/* ---- 場地 ---- */
+.field-area {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.field {
+    position: relative;
+    border-radius: 10px;
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.field.is-shake {
+    animation: shake 400ms ease-out;
+}
+
+@keyframes shake {
+    15% {
+        transform: translate(-4px, 3px);
+    }
+    35% {
+        transform: translate(4px, -2px);
+    }
+    55% {
+        transform: translate(-3px, 1px);
+    }
+    75% {
+        transform: translate(2px, -1px);
+    }
+}
+
+#board {
+    display: block;
+    border-radius: inherit;
+}
+
+.callout {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    color: white;
-    font-size: 20px;
-}
-#game-over {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 24px;
+    inset: 40% 0 auto;
+    margin: 0;
     text-align: center;
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+    opacity: 0;
 }
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    margin-top: 10px;
-    cursor: pointer;
-    background: #4caf50;
-    border: none;
-    color: white;
-    border-radius: 5px;
+
+.callout small {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.callout.is-showing {
+    animation: callout 2s ease-out forwards;
+}
+
+.callout.is-warning {
+    color: var(--boss-core);
+}
+
+@keyframes callout {
+    0% {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    10% {
+        opacity: 1;
+        transform: scale(1.04);
+    }
+    18% {
+        transform: scale(1);
+    }
+    82% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.overlay {
+    border-radius: inherit;
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.overlay__text {
+    max-width: 20rem;
+    margin: 0 0 0.75rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.legend {
+    display: grid;
+    gap: 0.5rem;
+    max-width: 20rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    text-align: left;
+    color: var(--color-text-secondary);
+}
+
+.legend li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+}
+
+.item-dot {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #10131c;
+}
+
+.item-dot--power {
+    background: linear-gradient(90deg, var(--vulcan) 50%, var(--laser) 50%);
+}
+
+.item-dot--missile {
+    background: var(--missile);
+}
+
+.item-dot--bomb {
+    background: var(--item-bomb);
+}
+
+/* ---- 觸控炸彈按鈕：右下角 ---- */
+.bomb-btn {
+    position: absolute;
+    right: calc(var(--page-pad) + 0.5rem);
+    bottom: calc(var(--page-pad) + env(safe-area-inset-bottom) + 0.5rem);
+    display: none;
+    place-items: center;
+    width: 4rem;
+    height: 4rem;
+    padding: 0;
+    border: 2px solid var(--item-bomb);
+    border-radius: 50%;
+    background: rgba(18, 18, 19, 0.75);
+    color: var(--item-bomb);
+    touch-action: none;
+}
+
+.bomb-btn svg {
+    width: 28px;
+    height: 28px;
+}
+
+.bomb-btn__count {
+    position: absolute;
+    right: -0.25rem;
+    top: -0.25rem;
+    display: grid;
+    place-items: center;
+    min-width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 999px;
+    background: var(--item-bomb);
+    color: #10131c;
+    font-size: 0.8125rem;
+    font-weight: 800;
+}
+
+.bomb-btn:disabled {
+    opacity: 0.35;
+}
+
+@media (pointer: coarse) {
+    .raiden[data-state='playing'] .bomb-btn {
+        display: grid;
+    }
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
+    }
+
+    .stats {
+        gap: 0.875rem;
+    }
+
+    .stat--score dd {
+        font-size: 1.25rem;
+    }
+
+    .field-area {
+        place-items: start center;
+    }
+
+    .overlay {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .nowrap {
+    white-space: nowrap;
+}
+
+.legend {
+        font-size: 0.8125rem;
+    }
+
+    .callout {
+        font-size: 1.375rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .field.is-shake {
+        animation: none;
+    }
 }
