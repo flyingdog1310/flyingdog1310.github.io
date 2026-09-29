@@ -3,23 +3,71 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Dino Runner</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div id="game-container">
-        <canvas id="game-canvas" width="800" height="300"></canvas>
-        <div id="score">Score: 0</div>
-        <div id="high-score">High Score: 0</div>
-        <div class="game-over" id="game-over">
-            <h2>Game Over!</h2>
-            <p>Your Score: <span id="final-score">0</span></p>
-            <button id="restart-button">Play Again</button>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+        <symbol id="i-jump" viewBox="0 0 24 24"><path d="M6 14l6-6 6 6" /><path d="M5 20h14" /></symbol>
+        <symbol id="i-duck" viewBox="0 0 24 24"><path d="M6 8l6 6 6-6" /><path d="M5 20h14" /></symbol>
+    </svg>
+
+    <main class="runner" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd id="score">0</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+        </header>
+
+        <div class="field-area" id="field-area">
+            <div class="field" id="field">
+                <canvas id="board" role="img" aria-label="Dino Runner playfield"></canvas>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Dino Runner</h1>
+                    <p class="overlay__text only-fine">Jump with <kbd>Space</kbd> or <kbd>↑</kbd>, hold it to jump higher. Duck with <kbd>↓</kbd>.</p>
+                    <p class="overlay__text only-coarse">Tap to jump, hold to jump higher. Use the buttons to duck.</p>
+                    <button class="btn" type="button" data-action="start">Start running</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                    <button class="btn btn--quiet" type="button" data-action="restart">Restart</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title">Game over</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="restart">Run again</button>
+                </div>
+            </div>
         </div>
-    </div>
-    <script src="script.js"></script>
+
+        <div class="pad" aria-label="Touch controls">
+            <button class="pad__btn pad__btn--wide" type="button" data-hold="duck" aria-label="Duck"><svg><use href="#i-duck" /></svg>Duck</button>
+            <button class="pad__btn pad__btn--wide pad__btn--main" type="button" data-hold="jump" aria-label="Jump"><svg><use href="#i-jump" /></svg>Jump</button>
+        </div>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
