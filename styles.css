@@ -55,8 +55,9 @@ body {
     color: #fff;
 }
 
-.github-link .fab.fa-github {
+.github-link .icon {
     margin-right: 5px;
+    vertical-align: -3px;
 }
 
 .search-container {
@@ -74,18 +75,12 @@ body {
     box-sizing: border-box;
 }
 
-.search-container i {
+.search-container .icon {
     position: absolute;
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #adadad;
-}
-
-.search-icon {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
 }
 
 .category-container {
@@ -162,22 +157,6 @@ body {
     background-color: #3d3d3d; /* Keep existing focus background change */
 }
 
-.ip-display {
-    color: #adadad;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding-top: 8px;
-}
-
-.flag {
-    width: 20px;
-    height: 15px;
-    object-fit: cover;
-    border: 1px solid #444;
-}
-
 .main-content {
     flex-grow: 1;
     padding: 20px;
@@ -211,11 +190,12 @@ body {
     position: relative;
 }
 
-.game-preview iframe {
+.game-preview img {
+    display: block;
     width: 100%;
     height: 100%;
-    border: none;
-    pointer-events: none;
+    object-fit: cover;
+    object-position: center top;
 }
 
 .game-info {
@@ -270,29 +250,6 @@ body {
     width: 100%;
     height: 100%;
     border: none;
-}
-
-.deployment-info {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    font-size: 0.8em;
-    color: #adadad;
-    padding: 8px 12px;
-    background-color: rgba(26, 26, 26, 0.9);
-    border-radius: 4px;
-    border: 1px solid #2d2d2d;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.deployment-info span {
-    font-family: monospace;
-    opacity: 0.9;
-}
-
-.deployment-info:hover {
-    background-color: rgba(45, 45, 45, 0.9);
-    border-color: #3d3d3d;
 }
 
 @media screen and (max-width: 768px) {
@@ -378,10 +335,6 @@ body {
         right: 15px;
         top: 15px;
         font-size: 24px;
-    }
-
-    .ip-display {
-        display: none;
     }
 }
 

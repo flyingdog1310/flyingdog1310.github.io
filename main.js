@@ -4,18 +4,26 @@ const modalFrame = document.getElementById('modal-game-frame');
 const closeModalBtn = document.querySelector('.close-modal');
 let gameCards = []; // Will be populated after rendering
 
+// Cards above the fold load their thumbnail right away; the rest load lazily
+const EAGER_THUMBNAILS = 4;
+
+// Start loading the game list immediately instead of waiting for DOMContentLoaded
+const gamesRequest = fetch('./games.json');
+
 // Function to render game cards
 function renderGameCards(gamesToRender) {
     gameGrid.innerHTML = ''; // Clear existing cards
-    gamesToRender.forEach((game) => {
+    gamesToRender.forEach((game, index) => {
         const card = document.createElement('div');
         card.classList.add('game-card');
         card.dataset.category = game.category;
         card.dataset.game = game.id;
+        card.dataset.src = game.src;
 
         card.innerHTML = `
       <div class="game-preview">
-        <iframe src="${game.src}" frameborder="0"></iframe>
+        <img src="${game.thumbnail}" alt="${game.name} preview" width="480" height="320"
+          loading="${index < EAGER_THUMBNAILS ? 'eager' : 'lazy'}" decoding="async">
       </div>
       <div class="game-info">
         <h3>${game.name}</h3>
@@ -34,8 +42,7 @@ function renderGameCards(gamesToRender) {
 function attachModalListeners() {
     gameCards.forEach((card) => {
         card.addEventListener('click', () => {
-            const gameSrc = card.querySelector('iframe').src; // Get src from the new card structure
-            modalFrame.src = gameSrc;
+            modalFrame.src = card.dataset.src;
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
             setTimeout(() => {
@@ -59,57 +66,10 @@ window.addEventListener('click', (e) => {
     }
 });
 
-// Function to get visitor's IP and country
-async function getVisitorIP() {
-    const visitorIpElement = document.getElementById('visitor-ip');
-    const countryFlagElement = document.getElementById('country-flag');
-
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        if (!response.ok) {
-            throw new Error(`IPify API error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        visitorIpElement.textContent = `Your IP : ${data.ip}`;
-
-        try {
-            const countryResponse = await fetch(`https://ipapi.co/${data.ip}/json/`);
-            if (!countryResponse.ok) {
-                throw new Error(`ipapi.co API error! status: ${countryResponse.status}`);
-            }
-            const countryData = await countryResponse.json();
-            if (countryData.country_code) {
-                const countryCode = countryData.country_code.toLowerCase();
-                countryFlagElement.src = `https://flagcdn.com/w20/${countryCode}.png`;
-                countryFlagElement.alt = countryData.country_name || 'Country flag'; // Add alt text
-                countryFlagElement.style.display = 'inline-block';
-            } else {
-                // Handle cases where country_code is not available but IP was fetched
-                console.warn('Country code not found in ipapi.co response.');
-                countryFlagElement.style.display = 'none';
-                countryFlagElement.alt = 'Country flag not available';
-            }
-        } catch (countryError) {
-            console.error('Failed to fetch country information:', countryError);
-            countryFlagElement.style.display = 'none';
-            countryFlagElement.alt = 'Country flag not available'; // Set alt text
-            // Optionally, update visitorIpElement text or add a message here
-        }
-    } catch (error) {
-        console.error('Failed to fetch IP address:', error);
-        visitorIpElement.textContent = 'Unable to fetch IP';
-        countryFlagElement.style.display = 'none';
-        countryFlagElement.alt = 'Country flag not available'; // Set alt text
-    }
-}
-
-// Call the function when page loads
-getVisitorIP();
-
 // Initial render of all games
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('./games.json');
+        const response = await gamesRequest;
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -179,20 +139,3 @@ function initializeFilteringAndSearch() {
         });
     });
 }
-
-// Fetch and display deployment date
-fetch('deployment-info.json')
-    .then((response) => response.json())
-    .then((data) => {
-        const deploymentDateElement = document.getElementById('deployment-date');
-        if (deploymentDateElement) {
-            deploymentDateElement.textContent = `Last updated: ${data.deploymentDate}`;
-        }
-    })
-    .catch((error) => {
-        console.error('Error fetching deployment date:', error);
-        const deploymentDateElement = document.getElementById('deployment-date');
-        if (deploymentDateElement) {
-            deploymentDateElement.textContent = 'Last updated: Unknown';
-        }
-    });

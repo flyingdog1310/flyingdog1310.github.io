@@ -54,8 +54,9 @@ To add a new game:
 1. Create a new directory under `games/`
 2. Implement the game logic in a Html, Css, and JavaScript file
 3. Add necessary assets to the `assets/` directory
-4. Update the main index.html & games.json to include the new game
-5. Follow the project's color theme guidelines
+4. Add the game to `games.json` (including `"thumbnail": "games/<name>/thumb.webp"`)
+5. Generate its thumbnail with `node scripts/capture-thumbs.js <game-id>` (uses your local Chrome; set `CHROME_PATH` if it is not in the default macOS location)
+6. Follow the project's color theme guidelines
 
 ## 🧪 Testing
 

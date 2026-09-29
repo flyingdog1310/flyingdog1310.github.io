@@ -8,10 +8,10 @@
 
 ## Phase 0 — 準備與基準線
 
-- [ ] 刪除本機空資料夾 `games/super_mario/`
-- [ ] 對首頁跑 Lighthouse（Mobile），記錄 LCP / TBT / 傳輸量 / 請求數作為基準
-- [ ] 對股票頁截圖（桌機 + 375px 手機），作為視覺比對基準
-- [ ] 確認 IMPLEMENTATION §5 的決策項目
+- [x] 刪除本機空資料夾 `games/super_mario/`
+- [x] 對首頁跑 Lighthouse（Mobile），記錄 LCP / TBT / 傳輸量 / 請求數作為基準
+- [x] ~~對股票頁截圖作為視覺比對基準~~ → 改用 golden test 對照重構前的版本（Phase 1a）
+- [x] 確認 IMPLEMENTATION §5 的決策項目
 
 **完成條件**：基準數據記錄在 PR 或本文件底部的「基準紀錄」。
 
@@ -62,11 +62,14 @@
 
 ## Phase 2 — 首頁效能
 
-- [ ] 縮圖產生腳本 `scripts/capture-thumbs`（headless Chrome），產出 21 張 `thumb.webp`
-- [ ] `games.json` 加入 `thumbnail`；卡片改 `<img loading="lazy">`，移除預覽 iframe（H1）
-- [ ] 移除 Font Awesome，改 inline SVG（H2）
-- [ ] 移除訪客 IP / 國旗（H3，依決策）
-- [ ] 處理 `deployment-info.json`：加 Actions workflow 或移除（H4，依決策）
+- [x] 縮圖產生腳本 `scripts/capture-thumbs.js`（本機 Chrome + DevTools Protocol，無相依套件），產出 21 張 `thumb.webp`（每張 2–5 KB）
+- [x] `games.json` 加入 `thumbnail`；卡片改 `<img>`（前 4 張立即載入、其餘 `loading="lazy"`），移除預覽 iframe（H1）
+- [x] 移除 Font Awesome，改 inline SVG（H2）
+- [x] 移除訪客 IP / 國旗（H3）
+- [x] 移除「Last updated」與 `deployment-info.json` 請求（H4）
+- [x] `games.json` 在腳本一載入就開始抓，不等 DOMContentLoaded
+
+> 縮圖更新：`node scripts/capture-thumbs.js [game-id ...]`（不帶參數則全部重截）。
 
 **完成條件**：首頁不再有任何 iframe 在背景執行；Lighthouse Mobile 效能分數與傳輸量相比 Phase 0 基準有明顯改善（目標：請求數 < 30、無第三方請求、TBT < 200ms）。
 
@@ -132,10 +135,24 @@
 
 ## 基準紀錄
 
-| 指標 | Phase 0 | Phase 2 後 | Phase 6 後 |
+線上首頁（`https://flyingdog1310.github.io/`，Lighthouse 12，Mobile 模擬）：
+
+| 指標 | Phase 0（2026-09-29） | Phase 2 後 | Phase 6 後 |
 |------|---------|------------|------------|
-| Lighthouse Performance (Mobile) | | | |
-| LCP | | | |
-| TBT | | | |
-| 請求數 | | | |
-| 傳輸量 | | | |
+| Lighthouse Performance (Mobile) | 79 | | |
+| FCP / LCP | 3.3 s / 3.3 s | | |
+| TBT | 290 ms | | |
+| 請求數 | 77 | | |
+| 傳輸量 | 345 KB | | |
+| 第三方網域 | 5（cdnjs、ipify、ipapi、flagcdn…） | | |
+
+本機同條件比較（`python3 -m http.server`，Lighthouse Mobile，Phase 2 改動前後）：
+
+| 指標 | 改動前 | 改動後 |
+|------|--------|--------|
+| 主執行緒工作 | 1.6 s | 0.1 s |
+| 請求數 | 77 | 21 |
+| 傳輸量 | 552 KB | 75 KB |
+| FCP / LCP | 1.6 s / 1.6 s | 0.9 s / 1.3 s |
+
+> Lighthouse 只量到載入完成為止；舊版 21 個 iframe 遊戲在載入後仍持續執行，實際 CPU / 電量差距比表上更大。
