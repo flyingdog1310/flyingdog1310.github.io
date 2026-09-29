@@ -23,10 +23,14 @@
 
 ### 1a. 安全網（純重構，行為零變化）
 
-- [ ] 抽出純函式到 `stock/lib.js`（ES module），`script.js` 只留 DOM 操作
-- [ ] 刪除重複的 `parseCSVLine`（S2）
-- [ ] 從真實 Sheet 抓 CSV 快照當 fixture（真實資料，不去識別化）
-- [ ] `node --test` golden test：fixture → 顯示資料，期望值直接對照 Google Sheet
+- [x] 抽出純函式到 `stock/lib.js`（ES module），`script.js` 只留 DOM 操作
+- [x] 刪除重複的 `parseCSVLine`（S2）
+- [x] 從真實 Sheet 抓 CSV 快照當 fixture（真實資料，不去識別化）
+- [x] `node --test` golden test：fixture → 顯示資料，期望值直接對照 Google Sheet
+
+> 測試方式：`npm test`。golden 由重構前的 script.js（`64a88b7`）在假 DOM 裡執行產生，新版必須輸出完全相同。
+> 更新真實資料：`npm run stock:fixtures`，接著 `npm run stock:golden` 重新產生期望值。
+> 1b 起若有「刻意的」行為改變，golden 改由當下已驗證的版本產生，並在 commit 說明差異。
 
 **完成條件**：測試通過；本機開頁面，每個數字與 Google Sheet 逐欄對照一致。
 

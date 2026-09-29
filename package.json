@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "node --test",
+        "stock:fixtures": "node stock/__tests__/update-fixtures.js",
+        "stock:golden": "node stock/__tests__/generate-golden.js"
+    }
+}
