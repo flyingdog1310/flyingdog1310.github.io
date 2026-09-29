@@ -3,25 +3,84 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Space Invaders</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="game-container">
-        <canvas id="gameCanvas"></canvas>
-        <div class="game-info">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="lives">Lives: <span id="lives">3</span></div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+    </svg>
+
+    <main class="invaders" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd id="score">0</dd>
+                </div>
+                <div class="stat">
+                    <dt>Wave</dt>
+                    <dd id="wave">1</dd>
+                </div>
+                <div class="stat">
+                    <dt>Lives</dt>
+                    <dd class="lives" id="lives" aria-label="3 lives"></dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+        </header>
+
+        <div class="field-area" id="field-area">
+            <div class="field" id="field">
+                <canvas id="board" role="img" aria-label="Space Invaders playfield"></canvas>
+                <p class="callout" id="callout" aria-live="polite"></p>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Space Invaders</h1>
+                    <table class="points" aria-label="Points per invader">
+                        <tr><td><canvas class="points__icon" data-sprite="ufo"></canvas></td><td>? mystery</td></tr>
+                        <tr><td><canvas class="points__icon" data-sprite="squid"></canvas></td><td>30 points</td></tr>
+                        <tr><td><canvas class="points__icon" data-sprite="crab"></canvas></td><td>20 points</td></tr>
+                        <tr><td><canvas class="points__icon" data-sprite="octopus"></canvas></td><td>10 points</td></tr>
+                    </table>
+                    <p class="overlay__text only-fine">Move with <kbd>←</kbd> <kbd>→</kbd>, hold <kbd>Space</kbd> to fire.</p>
+                    <p class="overlay__text only-coarse">Drag anywhere on the screen to move, even below the field. Your ship fires while you hold.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                    <button class="btn btn--quiet" type="button" data-action="restart">Restart</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title" id="over-title">Game over</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="restart">Play again</button>
+                </div>
+            </div>
         </div>
-        <div id="gameOver" class="game-over hidden">
-            <h2>Game Over</h2>
-            <p>Final Score: <span id="finalScore">0</span></p>
-            <button id="restartButton">Play Again</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+
+        <p class="touch-hint only-coarse" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M4 12h16" /></svg>
+            Drag anywhere to move
+        </p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
