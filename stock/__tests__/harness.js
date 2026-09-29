@@ -8,10 +8,25 @@ class FakeElement {
         this.textContent = '';
         this.className = '';
         this.disabled = false;
+        this.hidden = false;
+        this.value = '';
+        this.dataset = {};
+        this.attributes = {};
         this._innerHTML = '';
         this.style = { display: '' };
         this.children = [];
         this.listeners = {};
+
+        const classes = new Set();
+        this.classList = {
+            add: (...names) => names.forEach((name) => classes.add(name)),
+            remove: (...names) => names.forEach((name) => classes.delete(name)),
+            contains: (name) => classes.has(name),
+        };
+    }
+
+    setAttribute(name, value) {
+        this.attributes[name] = String(value);
     }
 
     get innerHTML() {
@@ -86,6 +101,7 @@ function createEnv({ sheets, failures = {}, storage, storageThrows = false, defe
     const elements = new Map();
     const docListeners = {};
     const fetchCalls = [];
+    const fetchOptions = [];
     const pending = [];
     const localStorage = createLocalStorage(storage, { throws: storageThrows });
 
@@ -97,14 +113,19 @@ function createEnv({ sheets, failures = {}, storage, storageThrows = false, defe
         createElement() {
             return new FakeElement();
         },
+        // 表頭排序在測試裡不綁定，排序邏輯由 lib.js 的 sortRows 單元測試涵蓋
+        querySelectorAll() {
+            return [];
+        },
         addEventListener(type, fn) {
             (docListeners[type] ||= []).push(fn);
         },
     };
 
-    async function fetch(url) {
+    async function fetch(url, options) {
         const sheet = new URL(url).searchParams.get('sheet');
         fetchCalls.push(sheet);
+        fetchOptions.push(options);
         if (deferred) await new Promise((resolve) => pending.push(resolve));
         if (failures[sheet]) {
             return { ok: false, status: failures[sheet], text: async () => '' };
@@ -137,6 +158,7 @@ function createEnv({ sheets, failures = {}, storage, storageThrows = false, defe
         console,
         localStorage,
         fetchCalls,
+        fetchOptions,
         snapshot,
         settle,
         // deferred 模式下讓卡住的 fetch 全部回應
@@ -150,6 +172,16 @@ function createEnv({ sheets, failures = {}, storage, storageThrows = false, defe
         },
         async clickRefresh() {
             document.getElementById('refreshBtn').dispatch('click');
+            await settle();
+        },
+        async click(id) {
+            document.getElementById(id).dispatch('click');
+            await settle();
+        },
+        async selectSort(value) {
+            const select = document.getElementById('sortSelect');
+            select.value = value;
+            (select.listeners.change || []).forEach((fn) => fn({ type: 'change', target: select }));
             await settle();
         },
     };

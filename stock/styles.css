@@ -144,6 +144,94 @@ header h1 {
     color: #ffffff;
 }
 
+.balance-item .sub-amount {
+    font-size: 13px;
+    font-weight: 600;
+    color: #999;
+}
+
+.balance-item--primary {
+    border-color: #4a4a4a;
+    background: #262626;
+}
+
+/* 漲紅跌綠（台股慣例） */
+.balance-item .positive {
+    color: #d32f2f;
+}
+
+.balance-item .negative {
+    color: #388e3c;
+}
+
+.amount,
+.sub-amount,
+.stocks-table td {
+    font-variant-numeric: tabular-nums;
+}
+
+/* 刷新中保留畫面、只淡化 */
+#content {
+    transition: opacity 0.2s ease;
+}
+
+#content.is-refreshing {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.error-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.error-row .error-message {
+    flex: 1;
+}
+
+.btn-retry {
+    background: #3d2424;
+    color: #ff8a80;
+    border: 1px solid #5d2424;
+    border-radius: 6px;
+    padding: 0 18px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-retry:hover {
+    background: #4a2a2a;
+}
+
+.btn-retry[hidden] {
+    display: none;
+}
+
+.stocks-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stocks-card-header h2 {
+    margin-bottom: 0;
+}
+
+.sort-select {
+    display: none;
+    background: #1f1f1f;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 13px;
+}
+
 .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -170,6 +258,39 @@ header h1 {
 
 .stocks-table th:first-child {
     text-align: left;
+}
+
+.sort-btn {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.sort-btn:hover {
+    color: #e0e0e0;
+}
+
+.sort-btn:focus-visible {
+    outline: 2px solid #666;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.stocks-table th[aria-sort='ascending'] .sort-btn,
+.stocks-table th[aria-sort='descending'] .sort-btn {
+    color: #ffffff;
+}
+
+.stocks-table th[aria-sort='ascending'] .sort-btn::after {
+    content: ' ▲';
+}
+
+.stocks-table th[aria-sort='descending'] .sort-btn::after {
+    content: ' ▼';
 }
 
 .stocks-table td {
@@ -270,6 +391,87 @@ footer a:hover {
 
     .balance-item .amount {
         font-size: 18px;
+    }
+}
+
+/* 手機版：表格改為每檔股票一張卡片 */
+@media (max-width: 600px) {
+    .balance-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .balance-item--primary {
+        grid-column: 1 / -1;
+    }
+
+    .sort-select {
+        display: block;
+    }
+
+    .table-wrapper {
+        overflow-x: visible;
+    }
+
+    .stocks-table thead {
+        display: none;
+    }
+
+    .stocks-table,
+    .stocks-table tbody {
+        display: block;
+    }
+
+    .stocks-table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 6px 16px;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #1f1f1f;
+        border: 1px solid #333;
+        border-radius: 8px;
+    }
+
+    .stocks-table tbody tr:hover {
+        background: #1f1f1f;
+    }
+
+    .stocks-table tbody td,
+    .stocks-table tbody td:first-child {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0;
+        border: none;
+        font-size: 13px;
+    }
+
+    .stocks-table tbody td::before {
+        content: attr(data-label);
+        color: #999;
+        font-weight: 400;
+        font-size: 12px;
+        white-space: nowrap;
+        align-self: center;
+    }
+
+    /* 股票名稱當卡片標題，損益放大 */
+    .stocks-table tbody td:first-child {
+        grid-column: 1 / -1;
+        font-size: 16px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #2a2a2a;
+    }
+
+    .stocks-table tbody td:first-child::before,
+    .stocks-table tbody td[colspan]::before {
+        content: none;
+    }
+
+    .stocks-table tbody td:nth-child(6),
+    .stocks-table tbody td:nth-child(7) {
+        font-size: 15px;
     }
 }
 

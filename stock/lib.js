@@ -95,23 +95,45 @@ export function filterValidStocks(stocks) {
     });
 }
 
-// 計算數據摘要
+// 表格欄位（與 index.html 的 th 順序一致，手機卡片版用來當標籤）
+export const COLUMNS = ['股票', '持有股數', '買入均價', '現價', '成本', '未實現損益', '未實現損益率'];
+
+// 去掉千分位後轉數字（空值視為 0）
+const parseAmount = (value) => parseFloat((value || '0').replace(/,/g, ''));
+
+// 去掉千分位與 % 後轉數字；無法解析時為 NaN
+const parseSigned = (value) => parseFloat(value.replace(/[,%]/g, '').trim());
+
+// 計算數據摘要（皆排除「總和」行）
+// totalCost 與表格「成本」欄相同：持有股數 × 買入均價
 export function calculateSummary(stocks) {
     let totalMarketValue = 0;
+    let totalCost = 0;
+    let totalUnrealizedProfit = 0;
 
-    // 遍歷所有股票（排除「總和」行），加總市值
     stocks.forEach((stock) => {
         if (stock['股票'] !== '總和') {
-            const marketValueStr = (stock['市值'] || '0').replace(/,/g, '');
-            const marketValue = parseFloat(marketValueStr);
+            const marketValue = parseAmount(stock['市值']);
             if (!isNaN(marketValue)) {
                 totalMarketValue += marketValue;
+            }
+
+            const cost = parseAmount(stock['持有股數']) * parseAmount(stock['買入均價']);
+            if (!isNaN(cost)) {
+                totalCost += cost;
+            }
+
+            const profit = parseSigned(stock['未實現損益'] || '');
+            if (!isNaN(profit)) {
+                totalUnrealizedProfit += profit;
             }
         }
     });
 
     return {
         totalMarketValue,
+        totalCost,
+        totalUnrealizedProfit,
     };
 }
 
@@ -144,7 +166,13 @@ export function formatRemainingFunds(remainingFunds) {
     return remainingFunds;
 }
 
-// 單一持股的表格列：每格 { text, className? }（漲紅跌綠由 .positive / .negative 決定）
+// 漲紅跌綠：>= 0 為 positive（紅）、< 0 或無法解析為 negative（綠）
+const profitClassOf = (value) => (value >= 0 ? 'positive' : 'negative');
+
+// 排序用的值：無法解析的數字為 null（排序時永遠放最後）
+const sortableNumber = (value) => (Number.isFinite(value) ? value : null);
+
+// 單一持股的表格列：每格 { text, sortValue, className? }（漲紅跌綠由 .positive / .negative 決定）
 export function buildStockRow(stock) {
     const code = stock['股票'] || '--';
     const shares = parseFloat((stock['持有股數'] || '0').replace(/,/g, ''));
@@ -157,19 +185,56 @@ export function buildStockRow(stock) {
     const cleanUnrealizedProfit = unrealizedProfit.replace(/[,%]/g, '').trim();
     const profitNum = parseFloat(cleanUnrealizedProfit);
 
-    const profitClass = profitNum >= 0 ? 'positive' : 'negative';
+    const profitClass = profitClassOf(profitNum);
     const profitSign = profitNum >= 0 && unrealizedProfit !== '--' ? '+' : '';
     const profitText = unrealizedProfit !== '--' ? formatCurrency(profitNum) : '--';
 
     return [
-        { text: code },
-        { text: shares.toFixed(0) },
-        { text: formatPrice(costPerShare) },
-        { text: formatPrice(currentPrice) },
-        { text: formatCurrency(cost) },
-        { text: profitSign + profitText, className: profitClass },
-        { text: unrealizedProfitRate, className: profitClass },
+        { text: code, sortValue: code },
+        { text: shares.toFixed(0), sortValue: sortableNumber(shares) },
+        { text: formatPrice(costPerShare), sortValue: sortableNumber(costPerShare) },
+        { text: formatPrice(currentPrice), sortValue: sortableNumber(currentPrice) },
+        { text: formatCurrency(cost), sortValue: sortableNumber(cost) },
+        { text: profitSign + profitText, sortValue: sortableNumber(profitNum), className: profitClass },
+        {
+            text: unrealizedProfitRate,
+            sortValue: sortableNumber(parseSigned(unrealizedProfitRate)),
+            className: profitClass,
+        },
     ];
+}
+
+// 依某一欄排序（不改動原陣列）；direction 為 'none' 時維持 Sheet 原本順序
+export function sortRows(rows, columnIndex, direction) {
+    if (direction !== 'ascending' && direction !== 'descending') return rows;
+
+    const factor = direction === 'ascending' ? 1 : -1;
+    return [...rows].sort((a, b) => {
+        const x = a[columnIndex]?.sortValue ?? null;
+        const y = b[columnIndex]?.sortValue ?? null;
+        if (x === null || y === null) return (x === null) - (y === null);
+        if (typeof x === 'string' || typeof y === 'string') {
+            return factor * String(x).localeCompare(String(y), 'zh-TW');
+        }
+        return factor * (x - y);
+    });
+}
+
+// 摘要卡：總資產、總成本、總未實現損益（金額與 %，分母為總成本）
+function buildSummaryView(summary, remainingFunds) {
+    const funds = parseSigned(remainingFunds);
+    const hasFunds = !isNaN(funds) && remainingFunds !== '--';
+    const profit = summary.totalUnrealizedProfit;
+    const sign = profit >= 0 ? '+' : '';
+
+    return {
+        totalAssetsText: hasFunds ? formatCurrency(funds + summary.totalMarketValue) : '--',
+        totalCostText: formatCurrency(summary.totalCost),
+        totalProfitText: sign + formatCurrency(profit),
+        totalProfitRateText:
+            summary.totalCost > 0 ? `${sign}${((profit / summary.totalCost) * 100).toFixed(2)}%` : '--',
+        totalProfitClass: profitClassOf(profit),
+    };
 }
 
 // 將解析後的持股與剩餘資金轉成畫面要顯示的內容
@@ -185,6 +250,7 @@ export function buildPortfolioView(stocks, remainingFunds) {
     return {
         remainingFundsText: formatRemainingFunds(remainingFunds),
         stockMarketValueText: formatCurrency(summary.totalMarketValue),
+        ...buildSummaryView(summary, remainingFunds),
         rows: validStocks.map(buildStockRow),
     };
 }

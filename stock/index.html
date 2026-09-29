@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>股票投資組合</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=1c">
 </head>
 <body>
     <div class="container">
@@ -21,10 +21,19 @@
         <div id="loadingSpinner" class="spinner"></div>
 
         <div id="content" style="display: none;">
-            <!-- 剩餘資金部分 -->
+            <div class="error-row">
+                <div class="error-message" id="errorMessage" role="alert" style="display: none;"></div>
+                <button id="retryBtn" class="btn-retry" type="button" hidden>重試</button>
+            </div>
+
+            <!-- 資產概況 -->
             <div class="balance-card">
                 <h2>資產概況</h2>
                 <div class="balance-grid">
+                    <div class="balance-item balance-item--primary">
+                        <span class="label">總資產</span>
+                        <span id="totalAssets" class="amount">--</span>
+                    </div>
                     <div class="balance-item">
                         <span class="label">可用資金</span>
                         <span id="remainingFunds" class="amount">--</span>
@@ -33,23 +42,43 @@
                         <span class="label">股票現值</span>
                         <span id="stockMarketValue" class="amount">--</span>
                     </div>
+                    <div class="balance-item">
+                        <span class="label">持股成本</span>
+                        <span id="totalCost" class="amount">--</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">未實現損益</span>
+                        <span id="totalProfit" class="amount">--</span>
+                        <span id="totalProfitRate" class="sub-amount">--</span>
+                    </div>
                 </div>
             </div>
 
             <!-- 股票明細部分 -->
             <div class="stocks-card">
-                <h2>持股詳情</h2>
+                <div class="stocks-card-header">
+                    <h2>持股詳情</h2>
+                    <select id="sortSelect" class="sort-select" aria-label="排序方式">
+                        <option value="">原始順序</option>
+                        <option value="5:descending">未實現損益 高→低</option>
+                        <option value="5:ascending">未實現損益 低→高</option>
+                        <option value="6:descending">未實現損益率 高→低</option>
+                        <option value="6:ascending">未實現損益率 低→高</option>
+                        <option value="4:descending">成本 高→低</option>
+                        <option value="0:ascending">股票名稱</option>
+                    </select>
+                </div>
                 <div class="table-wrapper">
                     <table id="stocksTable" class="stocks-table">
                         <thead>
                             <tr>
-                                <th>股票</th>
-                                <th>持有股數</th>
-                                <th>買入均價</th>
-                                <th>現價</th>
-                                <th>成本</th>
-                                <th>未實現損益</th>
-                                <th>未實現損益率</th>
+                                <th data-sort-index="0" aria-sort="none"><button type="button" class="sort-btn">股票</button></th>
+                                <th data-sort-index="1" aria-sort="none"><button type="button" class="sort-btn">持有股數</button></th>
+                                <th data-sort-index="2" aria-sort="none"><button type="button" class="sort-btn">買入均價</button></th>
+                                <th data-sort-index="3" aria-sort="none"><button type="button" class="sort-btn">現價</button></th>
+                                <th data-sort-index="4" aria-sort="none"><button type="button" class="sort-btn">成本</button></th>
+                                <th data-sort-index="5" aria-sort="none"><button type="button" class="sort-btn">未實現損益</button></th>
+                                <th data-sort-index="6" aria-sort="none"><button type="button" class="sort-btn">未實現損益率</button></th>
                             </tr>
                         </thead>
                         <tbody id="stocksTableBody">
@@ -58,8 +87,6 @@
                     </table>
                 </div>
             </div>
-
-            <div class="error-message" id="errorMessage" style="display: none;"></div>
         </div>
 
         <footer>
@@ -67,6 +94,6 @@
         </footer>
     </div>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=1c"></script>
 </body>
 </html>
