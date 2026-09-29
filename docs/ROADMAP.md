@@ -14,7 +14,7 @@
 | 3 共用設計系統 | ✅ 完成 |
 | 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
 | 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 5 款（見 Phase 5 狀態表） |
-| 6 收尾 | 🔄 `AI_GUIDE.md` 已改寫為 `CLAUDE.md`，其餘未開始 |
+| 6 收尾 | 🔄 `CLAUDE.md`、`README.md` 已更新，其餘未開始 |
 
 下一步：5a 剩下的 tank_battle、breakout，接著 5b 益智類。
 
@@ -173,7 +173,7 @@
 ## Phase 6 — 收尾
 
 - [x] `AI_GUIDE.md` 改寫為 `CLAUDE.md`（引用 `shared/`、記錄翻新後的遊戲結構與工作方式）
-- [ ] 更新 `README.md`（專案結構加入 `shared/`、`docs/`、`scripts/`，移除過時的色碼段落）
+- [x] `README.md` 精簡為簡介、本機執行與目錄概覽，細節改由 `CLAUDE.md` 與 `docs/` 說明
 - [ ] 最後一次 Lighthouse，與 Phase 0 基準對照
 - [ ] （選配）GitHub Actions：`prettier --check` + `node --test`
 

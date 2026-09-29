@@ -1,77 +1,37 @@
-# 🎮 JavaScript Game Collection
+# JavaScript Game Collection
 
-This project is a collection of AI-written JavaScript games, prompted and tested by a human.
+A collection of browser games written with AI assistance, prompted and play-tested by a human.
 
-🌐 Demo Website: https://flyingdog1310.github.io/
+**Play:** https://flyingdog1310.github.io/
 
-## 📋 Project Overview
+Everything is plain HTML, CSS and JavaScript served as a static GitHub Pages site. There is no build step and no runtime dependency.
 
-This repository contains a collection of browser-based games developed using modern web technologies. Each game is designed to be lightweight, interactive, and fun to play.
+## Run locally
 
-## 🛠️ Technology Stack
-
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- No external dependencies required
-
-## 🎨 Color Theme
-
-The project uses a consistent dark theme across all games:
-
-- Background: `#121213` (Dark background)
-- Secondary Background: `#2d2d2d` (Game board background)
-- Accent Color: `#538d4e` (Green for buttons and highlights)
-- Text Color: `#ffffff` (White text)
-- Border Color: `#3d3d3d` (Dark gray for borders)
-
-## 📁 Project Structure
-
-```
-├── index.html          # Main entry point
-├── styles.css         # Main stylesheet
-├── main.js           # Main JavaScript file
-├── games/            # Game implementations
-├── assets/           # Images, sounds, and other resources
-├── games.json        # Game configuration and metadata
-├── .prettierrc       # Prettier configuration
-└── LICENSE           # Project license
+```bash
+python3 -m http.server   # then open http://localhost:8000
+npm test                 # node --test, no install needed
 ```
 
-## 📝 Development Guidelines
+Games use ES modules, so open them through a local server rather than `file://`.
 
-1. Each game should be self-contained in its own directory under `games/`
-2. Games should implement with HTML, CSS, and JavaScript
-3. Games should be responsive and work on both desktop and mobile devices
-4. Include clear comments and documentation for AI assistance
-5. Follow consistent coding style and naming conventions
-6. Adhere to the project's color theme for visual consistency
+## Layout
 
-## ➕ Adding New Games
+```
+index.html, main.js, styles.css   Home page (game list from games.json)
+games/<name>/                      One folder per game
+shared/                            Design tokens, shared game UI and utilities
+stock/                             Personal stock portfolio page
+scripts/                           Dev tools (thumbnails, style snapshots) using local Chrome
+docs/                              Renovation plan and progress
+```
 
-To add a new game:
+## More
 
-1. Create a new directory under `games/`
-2. Implement the game logic in a Html, Css, and JavaScript file
-3. Add necessary assets to the `assets/` directory
-4. Add the game to `games.json` (including `"thumbnail": "games/<name>/thumb.webp"`)
-5. Generate its thumbnail with `node scripts/capture-thumbs.js <game-id>` (uses your local Chrome; set `CHROME_PATH` if it is not in the default macOS location)
-6. Follow the project's color theme guidelines
+- [CLAUDE.md](./CLAUDE.md): how the project is built and the conventions for adding or changing a game
+- [docs/ROADMAP.md](./docs/ROADMAP.md): renovation progress
+- [docs/IMPLEMENTATION.md](./docs/IMPLEMENTATION.md): technical details behind the roadmap
 
-## 🧪 Testing
+## License
 
-- Test games across different browsers (Chrome, Firefox, Safari)
-- Ensure mobile responsiveness
-- Verify game mechanics and user interactions
-
-## 🤝 Contributing
-
-Feel free to contribute by:
-- Adding new games
-- Improving existing games
-- Fixing bugs
-- Enhancing documentation
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+MIT
