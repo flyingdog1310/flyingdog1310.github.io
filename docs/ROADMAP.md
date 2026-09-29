@@ -36,11 +36,13 @@
 
 ### 1b. 效能與穩定性
 
-- [ ] 兩個 Sheet 請求並行（`Promise.allSettled`）（S1）
-- [ ] CSV parser 支援 `\r\n` 與引號內換行（S3），補對應測試
-- [ ] 刷新按鈕 loading / disabled、`AbortController` 取消舊請求（S6）
-- [ ] localStorage 快取上次結果，開頁先顯示快取再背景更新
-- [ ] 表格改用 `textContent` 建立（S7）
+- [x] 兩個 Sheet 請求並行（S1）— 剩餘資金的請求本來就不會拋錯，所以用 `Promise.all` 即可，語意與 `allSettled` 相同
+- [x] CSV parser 支援 `\r\n` 與引號內換行（S3），補對應測試
+- [x] 刷新按鈕 loading / disabled、`AbortController` 取消舊請求（S6）
+- [x] localStorage 快取上次結果，開頁先顯示快取再背景更新
+- [x] 表格改用 `textContent` 建立（S7）
+
+> golden 仍由 `64a88b7` 產生：測試工具把新舊版的表格都轉成「每格文字 + class」再比對，所以改用 `textContent` 後，比對基準仍是重構前的原始版本。
 
 **完成條件**：首次載入時間約為原本的一半（兩個請求並行）；連點刷新不會出現錯亂資料；快取不可用（無痕模式）時行為與舊版相同。
 

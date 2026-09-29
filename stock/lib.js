@@ -12,15 +12,16 @@ export function sheetCsvUrl(sheetName) {
     )}`;
 }
 
-// CSV行解析函數（處理帶引號的字段）
-export function parseCSVLine(line) {
-    const result = [];
+// 將整份 CSV 解析成二維陣列（處理帶引號的字段、引號內換行與 \r\n），每格前後空白會被去掉
+export function parseCSVRows(csvText) {
+    const rows = [];
+    let row = [];
     let current = '';
     let insideQuotes = false;
 
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        const nextChar = line[i + 1];
+    for (let i = 0; i < csvText.length; i++) {
+        const char = csvText[i];
+        const nextChar = csvText[i + 1];
 
         if (char === '"') {
             if (insideQuotes && nextChar === '"') {
@@ -30,30 +31,36 @@ export function parseCSVLine(line) {
                 insideQuotes = !insideQuotes;
             }
         } else if (char === ',' && !insideQuotes) {
-            result.push(current.trim());
+            row.push(current.trim());
+            current = '';
+        } else if ((char === '\n' || (char === '\r' && nextChar === '\n')) && !insideQuotes) {
+            if (char === '\r') i++;
+            row.push(current.trim());
+            rows.push(row);
+            row = [];
             current = '';
         } else {
             current += char;
         }
     }
 
-    result.push(current.trim());
-    return result;
+    row.push(current.trim());
+    rows.push(row);
+    return rows;
 }
 
 // 解析CSV數據，第一行為欄位名稱
 export function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
+    const lines = parseCSVRows(csvText.trim());
     if (lines.length < 2) {
         throw new Error('表單數據格式不正確');
     }
 
-    const headerLine = lines[0];
-    const headers = parseCSVLine(headerLine);
+    const headers = lines[0];
     const data = [];
 
     for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
+        const values = lines[i];
         if (values.length === 0 || values.every((v) => v === '')) continue;
 
         const row = {};
@@ -69,15 +76,11 @@ export function parseCSV(csvText) {
 // 從"使用前請注意" sheet 的第一行找出「剩餘資金」右邊那格的值
 // 格式: "手續費折數","1","剩餘資金","160168"
 export function extractRemainingFunds(csvText) {
-    const lines = csvText.trim().split('\n');
+    const firstLineValues = parseCSVRows(csvText.trim())[0];
 
-    if (lines.length > 0) {
-        const firstLineValues = parseCSVLine(lines[0]);
-
-        for (let i = 0; i < firstLineValues.length; i++) {
-            if (firstLineValues[i] === '剩餘資金' && i + 1 < firstLineValues.length) {
-                return firstLineValues[i + 1];
-            }
+    for (let i = 0; i < firstLineValues.length; i++) {
+        if (firstLineValues[i] === '剩餘資金' && i + 1 < firstLineValues.length) {
+            return firstLineValues[i + 1];
         }
     }
 
@@ -141,8 +144,8 @@ export function formatRemainingFunds(remainingFunds) {
     return remainingFunds;
 }
 
-// 單一持股的表格列 HTML（漲紅跌綠由 .positive / .negative 決定）
-export function buildStockRowHTML(stock) {
+// 單一持股的表格列：每格 { text, className? }（漲紅跌綠由 .positive / .negative 決定）
+export function buildStockRow(stock) {
     const code = stock['股票'] || '--';
     const shares = parseFloat((stock['持有股數'] || '0').replace(/,/g, ''));
     const costPerShare = parseFloat((stock['買入均價'] || '0').replace(/,/g, ''));
@@ -154,21 +157,19 @@ export function buildStockRowHTML(stock) {
     const cleanUnrealizedProfit = unrealizedProfit.replace(/[,%]/g, '').trim();
     const profitNum = parseFloat(cleanUnrealizedProfit);
 
-    return `
-                <td>${code}</td>
-                <td>${shares.toFixed(0)}</td>
-                <td>${formatPrice(costPerShare)}</td>
-                <td>${formatPrice(currentPrice)}</td>
-                <td>${formatCurrency(cost)}</td>
-                <td class="${profitNum >= 0 ? 'positive' : 'negative'}">
-                    ${profitNum >= 0 && unrealizedProfit !== '--' ? '+' : ''}${
-                unrealizedProfit !== '--' ? formatCurrency(profitNum) : '--'
-            }
-                </td>
-                <td class="${profitNum >= 0 ? 'positive' : 'negative'}">
-                    ${unrealizedProfitRate}
-                </td>
-            `;
+    const profitClass = profitNum >= 0 ? 'positive' : 'negative';
+    const profitSign = profitNum >= 0 && unrealizedProfit !== '--' ? '+' : '';
+    const profitText = unrealizedProfit !== '--' ? formatCurrency(profitNum) : '--';
+
+    return [
+        { text: code },
+        { text: shares.toFixed(0) },
+        { text: formatPrice(costPerShare) },
+        { text: formatPrice(currentPrice) },
+        { text: formatCurrency(cost) },
+        { text: profitSign + profitText, className: profitClass },
+        { text: unrealizedProfitRate, className: profitClass },
+    ];
 }
 
 // 將解析後的持股與剩餘資金轉成畫面要顯示的內容
@@ -184,6 +185,6 @@ export function buildPortfolioView(stocks, remainingFunds) {
     return {
         remainingFundsText: formatRemainingFunds(remainingFunds),
         stockMarketValueText: formatCurrency(summary.totalMarketValue),
-        rowsHTML: validStocks.map(buildStockRowHTML),
+        rows: validStocks.map(buildStockRow),
     };
 }

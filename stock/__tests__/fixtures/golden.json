@@ -3,21 +3,456 @@
     "remainingFunds": "$1,796,878",
     "stockMarketValue": "$6,243,800",
     "rows": [
-      "\n                <td>元大台灣50</td>\n                <td>14000</td>\n                <td>$65.78</td>\n                <td>$111.30</td>\n                <td>$920,920</td>\n                <td class=\"positive\">\n                    +$629,043\n                </td>\n                <td class=\"positive\">\n                    68.21%\n                </td>\n            ",
-      "\n                <td>台積電</td>\n                <td>300</td>\n                <td>$1,966.88</td>\n                <td>$2,475.00</td>\n                <td>$590,064</td>\n                <td class=\"positive\">\n                    +$332,530\n                </td>\n                <td class=\"positive\">\n                    10.55%\n                </td>\n            ",
-      "\n                <td>麗正</td>\n                <td>7000</td>\n                <td>$41.68</td>\n                <td>$45.30</td>\n                <td>$291,760</td>\n                <td class=\"positive\">\n                    +$23,531\n                </td>\n                <td class=\"positive\">\n                    8.05%\n                </td>\n            ",
-      "\n                <td>長興</td>\n                <td>10000</td>\n                <td>$70.08</td>\n                <td>$72.50</td>\n                <td>$700,800</td>\n                <td class=\"positive\">\n                    +$19,993\n                </td>\n                <td class=\"positive\">\n                    2.85%\n                </td>\n            ",
-      "\n                <td>鴻海</td>\n                <td>1000</td>\n                <td>$247.25</td>\n                <td>$250.50</td>\n                <td>$247,250</td>\n                <td class=\"positive\">\n                    +$14,032\n                </td>\n                <td class=\"positive\">\n                    2.83%\n                </td>\n            ",
-      "\n                <td>勝一</td>\n                <td>1000</td>\n                <td>$164.00</td>\n                <td>$167.50</td>\n                <td>$164,000</td>\n                <td class=\"positive\">\n                    +$2,525\n                </td>\n                <td class=\"positive\">\n                    1.54%\n                </td>\n            ",
-      "\n                <td>欣銓</td>\n                <td>1000</td>\n                <td>$238.50</td>\n                <td>$241.50</td>\n                <td>$238,500</td>\n                <td class=\"positive\">\n                    +$1,592\n                </td>\n                <td class=\"positive\">\n                    0.67%\n                </td>\n            ",
-      "\n                <td>聯電</td>\n                <td>1000</td>\n                <td>$153.00</td>\n                <td>$153.50</td>\n                <td>$153,000</td>\n                <td class=\"negative\">\n                    -$397\n                </td>\n                <td class=\"negative\">\n                    -0.26%\n                </td>\n            ",
-      "\n                <td>廣達</td>\n                <td>400</td>\n                <td>$335.75</td>\n                <td>$336.50</td>\n                <td>$134,300</td>\n                <td class=\"negative\">\n                    -$487\n                </td>\n                <td class=\"negative\">\n                    -0.36%\n                </td>\n            ",
-      "\n                <td>鈺創</td>\n                <td>2000</td>\n                <td>$109.50</td>\n                <td>$109.50</td>\n                <td>$219,000</td>\n                <td class=\"negative\">\n                    -$1,281\n                </td>\n                <td class=\"negative\">\n                    -0.58%\n                </td>\n            ",
-      "\n                <td>德淵</td>\n                <td>8000</td>\n                <td>$23.75</td>\n                <td>$19.15</td>\n                <td>$190,000</td>\n                <td class=\"negative\">\n                    -$20,573\n                </td>\n                <td class=\"negative\">\n                    -6.65%\n                </td>\n            ",
-      "\n                <td>華通</td>\n                <td>3000</td>\n                <td>$237.08</td>\n                <td>$226.00</td>\n                <td>$711,240</td>\n                <td class=\"negative\">\n                    -$20,766\n                </td>\n                <td class=\"negative\">\n                    -1.46%\n                </td>\n            ",
-      "\n                <td>華宏</td>\n                <td>4000</td>\n                <td>$64.93</td>\n                <td>$54.50</td>\n                <td>$259,720</td>\n                <td class=\"negative\">\n                    -$43,035\n                </td>\n                <td class=\"negative\">\n                    -16.55%\n                </td>\n            ",
-      "\n                <td>奇鈦科</td>\n                <td>4000</td>\n                <td>$129.90</td>\n                <td>$112.50</td>\n                <td>$519,600</td>\n                <td class=\"negative\">\n                    -$60,050\n                </td>\n                <td class=\"negative\">\n                    -9.23%\n                </td>\n            ",
-      "\n                <td>久元</td>\n                <td>3000</td>\n                <td>$108.30</td>\n                <td>$78.40</td>\n                <td>$324,900</td>\n                <td class=\"negative\">\n                    -$91,204\n                </td>\n                <td class=\"negative\">\n                    -28.03%\n                </td>\n            "
+      [
+        {
+          "text": "元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "14000",
+          "className": ""
+        },
+        {
+          "text": "$65.78",
+          "className": ""
+        },
+        {
+          "text": "$111.30",
+          "className": ""
+        },
+        {
+          "text": "$920,920",
+          "className": ""
+        },
+        {
+          "text": "+$629,043",
+          "className": "positive"
+        },
+        {
+          "text": "68.21%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "台積電",
+          "className": ""
+        },
+        {
+          "text": "300",
+          "className": ""
+        },
+        {
+          "text": "$1,966.88",
+          "className": ""
+        },
+        {
+          "text": "$2,475.00",
+          "className": ""
+        },
+        {
+          "text": "$590,064",
+          "className": ""
+        },
+        {
+          "text": "+$332,530",
+          "className": "positive"
+        },
+        {
+          "text": "10.55%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "麗正",
+          "className": ""
+        },
+        {
+          "text": "7000",
+          "className": ""
+        },
+        {
+          "text": "$41.68",
+          "className": ""
+        },
+        {
+          "text": "$45.30",
+          "className": ""
+        },
+        {
+          "text": "$291,760",
+          "className": ""
+        },
+        {
+          "text": "+$23,531",
+          "className": "positive"
+        },
+        {
+          "text": "8.05%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "長興",
+          "className": ""
+        },
+        {
+          "text": "10000",
+          "className": ""
+        },
+        {
+          "text": "$70.08",
+          "className": ""
+        },
+        {
+          "text": "$72.50",
+          "className": ""
+        },
+        {
+          "text": "$700,800",
+          "className": ""
+        },
+        {
+          "text": "+$19,993",
+          "className": "positive"
+        },
+        {
+          "text": "2.85%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "鴻海",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$247.25",
+          "className": ""
+        },
+        {
+          "text": "$250.50",
+          "className": ""
+        },
+        {
+          "text": "$247,250",
+          "className": ""
+        },
+        {
+          "text": "+$14,032",
+          "className": "positive"
+        },
+        {
+          "text": "2.83%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "勝一",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$164.00",
+          "className": ""
+        },
+        {
+          "text": "$167.50",
+          "className": ""
+        },
+        {
+          "text": "$164,000",
+          "className": ""
+        },
+        {
+          "text": "+$2,525",
+          "className": "positive"
+        },
+        {
+          "text": "1.54%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "欣銓",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$238.50",
+          "className": ""
+        },
+        {
+          "text": "$241.50",
+          "className": ""
+        },
+        {
+          "text": "$238,500",
+          "className": ""
+        },
+        {
+          "text": "+$1,592",
+          "className": "positive"
+        },
+        {
+          "text": "0.67%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "聯電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$153.00",
+          "className": ""
+        },
+        {
+          "text": "$153.50",
+          "className": ""
+        },
+        {
+          "text": "$153,000",
+          "className": ""
+        },
+        {
+          "text": "-$397",
+          "className": "negative"
+        },
+        {
+          "text": "-0.26%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "廣達",
+          "className": ""
+        },
+        {
+          "text": "400",
+          "className": ""
+        },
+        {
+          "text": "$335.75",
+          "className": ""
+        },
+        {
+          "text": "$336.50",
+          "className": ""
+        },
+        {
+          "text": "$134,300",
+          "className": ""
+        },
+        {
+          "text": "-$487",
+          "className": "negative"
+        },
+        {
+          "text": "-0.36%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "鈺創",
+          "className": ""
+        },
+        {
+          "text": "2000",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$219,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,281",
+          "className": "negative"
+        },
+        {
+          "text": "-0.58%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "德淵",
+          "className": ""
+        },
+        {
+          "text": "8000",
+          "className": ""
+        },
+        {
+          "text": "$23.75",
+          "className": ""
+        },
+        {
+          "text": "$19.15",
+          "className": ""
+        },
+        {
+          "text": "$190,000",
+          "className": ""
+        },
+        {
+          "text": "-$20,573",
+          "className": "negative"
+        },
+        {
+          "text": "-6.65%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華通",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$237.08",
+          "className": ""
+        },
+        {
+          "text": "$226.00",
+          "className": ""
+        },
+        {
+          "text": "$711,240",
+          "className": ""
+        },
+        {
+          "text": "-$20,766",
+          "className": "negative"
+        },
+        {
+          "text": "-1.46%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華宏",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$64.93",
+          "className": ""
+        },
+        {
+          "text": "$54.50",
+          "className": ""
+        },
+        {
+          "text": "$259,720",
+          "className": ""
+        },
+        {
+          "text": "-$43,035",
+          "className": "negative"
+        },
+        {
+          "text": "-16.55%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "奇鈦科",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$129.90",
+          "className": ""
+        },
+        {
+          "text": "$112.50",
+          "className": ""
+        },
+        {
+          "text": "$519,600",
+          "className": ""
+        },
+        {
+          "text": "-$60,050",
+          "className": "negative"
+        },
+        {
+          "text": "-9.23%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "久元",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$108.30",
+          "className": ""
+        },
+        {
+          "text": "$78.40",
+          "className": ""
+        },
+        {
+          "text": "$324,900",
+          "className": ""
+        },
+        {
+          "text": "-$91,204",
+          "className": "negative"
+        },
+        {
+          "text": "-28.03%",
+          "className": "negative"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",
@@ -29,21 +464,456 @@
     "remainingFunds": "$1,796,878",
     "stockMarketValue": "$6,243,800",
     "rows": [
-      "\n                <td>元大台灣50</td>\n                <td>14000</td>\n                <td>$65.78</td>\n                <td>$111.30</td>\n                <td>$920,920</td>\n                <td class=\"positive\">\n                    +$629,043\n                </td>\n                <td class=\"positive\">\n                    68.21%\n                </td>\n            ",
-      "\n                <td>台積電</td>\n                <td>300</td>\n                <td>$1,966.88</td>\n                <td>$2,475.00</td>\n                <td>$590,064</td>\n                <td class=\"positive\">\n                    +$332,530\n                </td>\n                <td class=\"positive\">\n                    10.55%\n                </td>\n            ",
-      "\n                <td>麗正</td>\n                <td>7000</td>\n                <td>$41.68</td>\n                <td>$45.30</td>\n                <td>$291,760</td>\n                <td class=\"positive\">\n                    +$23,531\n                </td>\n                <td class=\"positive\">\n                    8.05%\n                </td>\n            ",
-      "\n                <td>長興</td>\n                <td>10000</td>\n                <td>$70.08</td>\n                <td>$72.50</td>\n                <td>$700,800</td>\n                <td class=\"positive\">\n                    +$19,993\n                </td>\n                <td class=\"positive\">\n                    2.85%\n                </td>\n            ",
-      "\n                <td>鴻海</td>\n                <td>1000</td>\n                <td>$247.25</td>\n                <td>$250.50</td>\n                <td>$247,250</td>\n                <td class=\"positive\">\n                    +$14,032\n                </td>\n                <td class=\"positive\">\n                    2.83%\n                </td>\n            ",
-      "\n                <td>勝一</td>\n                <td>1000</td>\n                <td>$164.00</td>\n                <td>$167.50</td>\n                <td>$164,000</td>\n                <td class=\"positive\">\n                    +$2,525\n                </td>\n                <td class=\"positive\">\n                    1.54%\n                </td>\n            ",
-      "\n                <td>欣銓</td>\n                <td>1000</td>\n                <td>$238.50</td>\n                <td>$241.50</td>\n                <td>$238,500</td>\n                <td class=\"positive\">\n                    +$1,592\n                </td>\n                <td class=\"positive\">\n                    0.67%\n                </td>\n            ",
-      "\n                <td>聯電</td>\n                <td>1000</td>\n                <td>$153.00</td>\n                <td>$153.50</td>\n                <td>$153,000</td>\n                <td class=\"negative\">\n                    -$397\n                </td>\n                <td class=\"negative\">\n                    -0.26%\n                </td>\n            ",
-      "\n                <td>廣達</td>\n                <td>400</td>\n                <td>$335.75</td>\n                <td>$336.50</td>\n                <td>$134,300</td>\n                <td class=\"negative\">\n                    -$487\n                </td>\n                <td class=\"negative\">\n                    -0.36%\n                </td>\n            ",
-      "\n                <td>鈺創</td>\n                <td>2000</td>\n                <td>$109.50</td>\n                <td>$109.50</td>\n                <td>$219,000</td>\n                <td class=\"negative\">\n                    -$1,281\n                </td>\n                <td class=\"negative\">\n                    -0.58%\n                </td>\n            ",
-      "\n                <td>德淵</td>\n                <td>8000</td>\n                <td>$23.75</td>\n                <td>$19.15</td>\n                <td>$190,000</td>\n                <td class=\"negative\">\n                    -$20,573\n                </td>\n                <td class=\"negative\">\n                    -6.65%\n                </td>\n            ",
-      "\n                <td>華通</td>\n                <td>3000</td>\n                <td>$237.08</td>\n                <td>$226.00</td>\n                <td>$711,240</td>\n                <td class=\"negative\">\n                    -$20,766\n                </td>\n                <td class=\"negative\">\n                    -1.46%\n                </td>\n            ",
-      "\n                <td>華宏</td>\n                <td>4000</td>\n                <td>$64.93</td>\n                <td>$54.50</td>\n                <td>$259,720</td>\n                <td class=\"negative\">\n                    -$43,035\n                </td>\n                <td class=\"negative\">\n                    -16.55%\n                </td>\n            ",
-      "\n                <td>奇鈦科</td>\n                <td>4000</td>\n                <td>$129.90</td>\n                <td>$112.50</td>\n                <td>$519,600</td>\n                <td class=\"negative\">\n                    -$60,050\n                </td>\n                <td class=\"negative\">\n                    -9.23%\n                </td>\n            ",
-      "\n                <td>久元</td>\n                <td>3000</td>\n                <td>$108.30</td>\n                <td>$78.40</td>\n                <td>$324,900</td>\n                <td class=\"negative\">\n                    -$91,204\n                </td>\n                <td class=\"negative\">\n                    -28.03%\n                </td>\n            "
+      [
+        {
+          "text": "元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "14000",
+          "className": ""
+        },
+        {
+          "text": "$65.78",
+          "className": ""
+        },
+        {
+          "text": "$111.30",
+          "className": ""
+        },
+        {
+          "text": "$920,920",
+          "className": ""
+        },
+        {
+          "text": "+$629,043",
+          "className": "positive"
+        },
+        {
+          "text": "68.21%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "台積電",
+          "className": ""
+        },
+        {
+          "text": "300",
+          "className": ""
+        },
+        {
+          "text": "$1,966.88",
+          "className": ""
+        },
+        {
+          "text": "$2,475.00",
+          "className": ""
+        },
+        {
+          "text": "$590,064",
+          "className": ""
+        },
+        {
+          "text": "+$332,530",
+          "className": "positive"
+        },
+        {
+          "text": "10.55%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "麗正",
+          "className": ""
+        },
+        {
+          "text": "7000",
+          "className": ""
+        },
+        {
+          "text": "$41.68",
+          "className": ""
+        },
+        {
+          "text": "$45.30",
+          "className": ""
+        },
+        {
+          "text": "$291,760",
+          "className": ""
+        },
+        {
+          "text": "+$23,531",
+          "className": "positive"
+        },
+        {
+          "text": "8.05%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "長興",
+          "className": ""
+        },
+        {
+          "text": "10000",
+          "className": ""
+        },
+        {
+          "text": "$70.08",
+          "className": ""
+        },
+        {
+          "text": "$72.50",
+          "className": ""
+        },
+        {
+          "text": "$700,800",
+          "className": ""
+        },
+        {
+          "text": "+$19,993",
+          "className": "positive"
+        },
+        {
+          "text": "2.85%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "鴻海",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$247.25",
+          "className": ""
+        },
+        {
+          "text": "$250.50",
+          "className": ""
+        },
+        {
+          "text": "$247,250",
+          "className": ""
+        },
+        {
+          "text": "+$14,032",
+          "className": "positive"
+        },
+        {
+          "text": "2.83%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "勝一",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$164.00",
+          "className": ""
+        },
+        {
+          "text": "$167.50",
+          "className": ""
+        },
+        {
+          "text": "$164,000",
+          "className": ""
+        },
+        {
+          "text": "+$2,525",
+          "className": "positive"
+        },
+        {
+          "text": "1.54%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "欣銓",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$238.50",
+          "className": ""
+        },
+        {
+          "text": "$241.50",
+          "className": ""
+        },
+        {
+          "text": "$238,500",
+          "className": ""
+        },
+        {
+          "text": "+$1,592",
+          "className": "positive"
+        },
+        {
+          "text": "0.67%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "聯電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$153.00",
+          "className": ""
+        },
+        {
+          "text": "$153.50",
+          "className": ""
+        },
+        {
+          "text": "$153,000",
+          "className": ""
+        },
+        {
+          "text": "-$397",
+          "className": "negative"
+        },
+        {
+          "text": "-0.26%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "廣達",
+          "className": ""
+        },
+        {
+          "text": "400",
+          "className": ""
+        },
+        {
+          "text": "$335.75",
+          "className": ""
+        },
+        {
+          "text": "$336.50",
+          "className": ""
+        },
+        {
+          "text": "$134,300",
+          "className": ""
+        },
+        {
+          "text": "-$487",
+          "className": "negative"
+        },
+        {
+          "text": "-0.36%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "鈺創",
+          "className": ""
+        },
+        {
+          "text": "2000",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$219,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,281",
+          "className": "negative"
+        },
+        {
+          "text": "-0.58%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "德淵",
+          "className": ""
+        },
+        {
+          "text": "8000",
+          "className": ""
+        },
+        {
+          "text": "$23.75",
+          "className": ""
+        },
+        {
+          "text": "$19.15",
+          "className": ""
+        },
+        {
+          "text": "$190,000",
+          "className": ""
+        },
+        {
+          "text": "-$20,573",
+          "className": "negative"
+        },
+        {
+          "text": "-6.65%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華通",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$237.08",
+          "className": ""
+        },
+        {
+          "text": "$226.00",
+          "className": ""
+        },
+        {
+          "text": "$711,240",
+          "className": ""
+        },
+        {
+          "text": "-$20,766",
+          "className": "negative"
+        },
+        {
+          "text": "-1.46%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華宏",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$64.93",
+          "className": ""
+        },
+        {
+          "text": "$54.50",
+          "className": ""
+        },
+        {
+          "text": "$259,720",
+          "className": ""
+        },
+        {
+          "text": "-$43,035",
+          "className": "negative"
+        },
+        {
+          "text": "-16.55%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "奇鈦科",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$129.90",
+          "className": ""
+        },
+        {
+          "text": "$112.50",
+          "className": ""
+        },
+        {
+          "text": "$519,600",
+          "className": ""
+        },
+        {
+          "text": "-$60,050",
+          "className": "negative"
+        },
+        {
+          "text": "-9.23%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "久元",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$108.30",
+          "className": ""
+        },
+        {
+          "text": "$78.40",
+          "className": ""
+        },
+        {
+          "text": "$324,900",
+          "className": ""
+        },
+        {
+          "text": "-$91,204",
+          "className": "negative"
+        },
+        {
+          "text": "-28.03%",
+          "className": "negative"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",
@@ -55,21 +925,456 @@
     "remainingFunds": "--",
     "stockMarketValue": "$6,243,800",
     "rows": [
-      "\n                <td>元大台灣50</td>\n                <td>14000</td>\n                <td>$65.78</td>\n                <td>$111.30</td>\n                <td>$920,920</td>\n                <td class=\"positive\">\n                    +$629,043\n                </td>\n                <td class=\"positive\">\n                    68.21%\n                </td>\n            ",
-      "\n                <td>台積電</td>\n                <td>300</td>\n                <td>$1,966.88</td>\n                <td>$2,475.00</td>\n                <td>$590,064</td>\n                <td class=\"positive\">\n                    +$332,530\n                </td>\n                <td class=\"positive\">\n                    10.55%\n                </td>\n            ",
-      "\n                <td>麗正</td>\n                <td>7000</td>\n                <td>$41.68</td>\n                <td>$45.30</td>\n                <td>$291,760</td>\n                <td class=\"positive\">\n                    +$23,531\n                </td>\n                <td class=\"positive\">\n                    8.05%\n                </td>\n            ",
-      "\n                <td>長興</td>\n                <td>10000</td>\n                <td>$70.08</td>\n                <td>$72.50</td>\n                <td>$700,800</td>\n                <td class=\"positive\">\n                    +$19,993\n                </td>\n                <td class=\"positive\">\n                    2.85%\n                </td>\n            ",
-      "\n                <td>鴻海</td>\n                <td>1000</td>\n                <td>$247.25</td>\n                <td>$250.50</td>\n                <td>$247,250</td>\n                <td class=\"positive\">\n                    +$14,032\n                </td>\n                <td class=\"positive\">\n                    2.83%\n                </td>\n            ",
-      "\n                <td>勝一</td>\n                <td>1000</td>\n                <td>$164.00</td>\n                <td>$167.50</td>\n                <td>$164,000</td>\n                <td class=\"positive\">\n                    +$2,525\n                </td>\n                <td class=\"positive\">\n                    1.54%\n                </td>\n            ",
-      "\n                <td>欣銓</td>\n                <td>1000</td>\n                <td>$238.50</td>\n                <td>$241.50</td>\n                <td>$238,500</td>\n                <td class=\"positive\">\n                    +$1,592\n                </td>\n                <td class=\"positive\">\n                    0.67%\n                </td>\n            ",
-      "\n                <td>聯電</td>\n                <td>1000</td>\n                <td>$153.00</td>\n                <td>$153.50</td>\n                <td>$153,000</td>\n                <td class=\"negative\">\n                    -$397\n                </td>\n                <td class=\"negative\">\n                    -0.26%\n                </td>\n            ",
-      "\n                <td>廣達</td>\n                <td>400</td>\n                <td>$335.75</td>\n                <td>$336.50</td>\n                <td>$134,300</td>\n                <td class=\"negative\">\n                    -$487\n                </td>\n                <td class=\"negative\">\n                    -0.36%\n                </td>\n            ",
-      "\n                <td>鈺創</td>\n                <td>2000</td>\n                <td>$109.50</td>\n                <td>$109.50</td>\n                <td>$219,000</td>\n                <td class=\"negative\">\n                    -$1,281\n                </td>\n                <td class=\"negative\">\n                    -0.58%\n                </td>\n            ",
-      "\n                <td>德淵</td>\n                <td>8000</td>\n                <td>$23.75</td>\n                <td>$19.15</td>\n                <td>$190,000</td>\n                <td class=\"negative\">\n                    -$20,573\n                </td>\n                <td class=\"negative\">\n                    -6.65%\n                </td>\n            ",
-      "\n                <td>華通</td>\n                <td>3000</td>\n                <td>$237.08</td>\n                <td>$226.00</td>\n                <td>$711,240</td>\n                <td class=\"negative\">\n                    -$20,766\n                </td>\n                <td class=\"negative\">\n                    -1.46%\n                </td>\n            ",
-      "\n                <td>華宏</td>\n                <td>4000</td>\n                <td>$64.93</td>\n                <td>$54.50</td>\n                <td>$259,720</td>\n                <td class=\"negative\">\n                    -$43,035\n                </td>\n                <td class=\"negative\">\n                    -16.55%\n                </td>\n            ",
-      "\n                <td>奇鈦科</td>\n                <td>4000</td>\n                <td>$129.90</td>\n                <td>$112.50</td>\n                <td>$519,600</td>\n                <td class=\"negative\">\n                    -$60,050\n                </td>\n                <td class=\"negative\">\n                    -9.23%\n                </td>\n            ",
-      "\n                <td>久元</td>\n                <td>3000</td>\n                <td>$108.30</td>\n                <td>$78.40</td>\n                <td>$324,900</td>\n                <td class=\"negative\">\n                    -$91,204\n                </td>\n                <td class=\"negative\">\n                    -28.03%\n                </td>\n            "
+      [
+        {
+          "text": "元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "14000",
+          "className": ""
+        },
+        {
+          "text": "$65.78",
+          "className": ""
+        },
+        {
+          "text": "$111.30",
+          "className": ""
+        },
+        {
+          "text": "$920,920",
+          "className": ""
+        },
+        {
+          "text": "+$629,043",
+          "className": "positive"
+        },
+        {
+          "text": "68.21%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "台積電",
+          "className": ""
+        },
+        {
+          "text": "300",
+          "className": ""
+        },
+        {
+          "text": "$1,966.88",
+          "className": ""
+        },
+        {
+          "text": "$2,475.00",
+          "className": ""
+        },
+        {
+          "text": "$590,064",
+          "className": ""
+        },
+        {
+          "text": "+$332,530",
+          "className": "positive"
+        },
+        {
+          "text": "10.55%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "麗正",
+          "className": ""
+        },
+        {
+          "text": "7000",
+          "className": ""
+        },
+        {
+          "text": "$41.68",
+          "className": ""
+        },
+        {
+          "text": "$45.30",
+          "className": ""
+        },
+        {
+          "text": "$291,760",
+          "className": ""
+        },
+        {
+          "text": "+$23,531",
+          "className": "positive"
+        },
+        {
+          "text": "8.05%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "長興",
+          "className": ""
+        },
+        {
+          "text": "10000",
+          "className": ""
+        },
+        {
+          "text": "$70.08",
+          "className": ""
+        },
+        {
+          "text": "$72.50",
+          "className": ""
+        },
+        {
+          "text": "$700,800",
+          "className": ""
+        },
+        {
+          "text": "+$19,993",
+          "className": "positive"
+        },
+        {
+          "text": "2.85%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "鴻海",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$247.25",
+          "className": ""
+        },
+        {
+          "text": "$250.50",
+          "className": ""
+        },
+        {
+          "text": "$247,250",
+          "className": ""
+        },
+        {
+          "text": "+$14,032",
+          "className": "positive"
+        },
+        {
+          "text": "2.83%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "勝一",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$164.00",
+          "className": ""
+        },
+        {
+          "text": "$167.50",
+          "className": ""
+        },
+        {
+          "text": "$164,000",
+          "className": ""
+        },
+        {
+          "text": "+$2,525",
+          "className": "positive"
+        },
+        {
+          "text": "1.54%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "欣銓",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$238.50",
+          "className": ""
+        },
+        {
+          "text": "$241.50",
+          "className": ""
+        },
+        {
+          "text": "$238,500",
+          "className": ""
+        },
+        {
+          "text": "+$1,592",
+          "className": "positive"
+        },
+        {
+          "text": "0.67%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "聯電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$153.00",
+          "className": ""
+        },
+        {
+          "text": "$153.50",
+          "className": ""
+        },
+        {
+          "text": "$153,000",
+          "className": ""
+        },
+        {
+          "text": "-$397",
+          "className": "negative"
+        },
+        {
+          "text": "-0.26%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "廣達",
+          "className": ""
+        },
+        {
+          "text": "400",
+          "className": ""
+        },
+        {
+          "text": "$335.75",
+          "className": ""
+        },
+        {
+          "text": "$336.50",
+          "className": ""
+        },
+        {
+          "text": "$134,300",
+          "className": ""
+        },
+        {
+          "text": "-$487",
+          "className": "negative"
+        },
+        {
+          "text": "-0.36%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "鈺創",
+          "className": ""
+        },
+        {
+          "text": "2000",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$219,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,281",
+          "className": "negative"
+        },
+        {
+          "text": "-0.58%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "德淵",
+          "className": ""
+        },
+        {
+          "text": "8000",
+          "className": ""
+        },
+        {
+          "text": "$23.75",
+          "className": ""
+        },
+        {
+          "text": "$19.15",
+          "className": ""
+        },
+        {
+          "text": "$190,000",
+          "className": ""
+        },
+        {
+          "text": "-$20,573",
+          "className": "negative"
+        },
+        {
+          "text": "-6.65%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華通",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$237.08",
+          "className": ""
+        },
+        {
+          "text": "$226.00",
+          "className": ""
+        },
+        {
+          "text": "$711,240",
+          "className": ""
+        },
+        {
+          "text": "-$20,766",
+          "className": "negative"
+        },
+        {
+          "text": "-1.46%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華宏",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$64.93",
+          "className": ""
+        },
+        {
+          "text": "$54.50",
+          "className": ""
+        },
+        {
+          "text": "$259,720",
+          "className": ""
+        },
+        {
+          "text": "-$43,035",
+          "className": "negative"
+        },
+        {
+          "text": "-16.55%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "奇鈦科",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$129.90",
+          "className": ""
+        },
+        {
+          "text": "$112.50",
+          "className": ""
+        },
+        {
+          "text": "$519,600",
+          "className": ""
+        },
+        {
+          "text": "-$60,050",
+          "className": "negative"
+        },
+        {
+          "text": "-9.23%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "久元",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$108.30",
+          "className": ""
+        },
+        {
+          "text": "$78.40",
+          "className": ""
+        },
+        {
+          "text": "$324,900",
+          "className": ""
+        },
+        {
+          "text": "-$91,204",
+          "className": "negative"
+        },
+        {
+          "text": "-28.03%",
+          "className": "negative"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",
@@ -81,21 +1386,456 @@
     "remainingFunds": "--",
     "stockMarketValue": "$6,243,800",
     "rows": [
-      "\n                <td>元大台灣50</td>\n                <td>14000</td>\n                <td>$65.78</td>\n                <td>$111.30</td>\n                <td>$920,920</td>\n                <td class=\"positive\">\n                    +$629,043\n                </td>\n                <td class=\"positive\">\n                    68.21%\n                </td>\n            ",
-      "\n                <td>台積電</td>\n                <td>300</td>\n                <td>$1,966.88</td>\n                <td>$2,475.00</td>\n                <td>$590,064</td>\n                <td class=\"positive\">\n                    +$332,530\n                </td>\n                <td class=\"positive\">\n                    10.55%\n                </td>\n            ",
-      "\n                <td>麗正</td>\n                <td>7000</td>\n                <td>$41.68</td>\n                <td>$45.30</td>\n                <td>$291,760</td>\n                <td class=\"positive\">\n                    +$23,531\n                </td>\n                <td class=\"positive\">\n                    8.05%\n                </td>\n            ",
-      "\n                <td>長興</td>\n                <td>10000</td>\n                <td>$70.08</td>\n                <td>$72.50</td>\n                <td>$700,800</td>\n                <td class=\"positive\">\n                    +$19,993\n                </td>\n                <td class=\"positive\">\n                    2.85%\n                </td>\n            ",
-      "\n                <td>鴻海</td>\n                <td>1000</td>\n                <td>$247.25</td>\n                <td>$250.50</td>\n                <td>$247,250</td>\n                <td class=\"positive\">\n                    +$14,032\n                </td>\n                <td class=\"positive\">\n                    2.83%\n                </td>\n            ",
-      "\n                <td>勝一</td>\n                <td>1000</td>\n                <td>$164.00</td>\n                <td>$167.50</td>\n                <td>$164,000</td>\n                <td class=\"positive\">\n                    +$2,525\n                </td>\n                <td class=\"positive\">\n                    1.54%\n                </td>\n            ",
-      "\n                <td>欣銓</td>\n                <td>1000</td>\n                <td>$238.50</td>\n                <td>$241.50</td>\n                <td>$238,500</td>\n                <td class=\"positive\">\n                    +$1,592\n                </td>\n                <td class=\"positive\">\n                    0.67%\n                </td>\n            ",
-      "\n                <td>聯電</td>\n                <td>1000</td>\n                <td>$153.00</td>\n                <td>$153.50</td>\n                <td>$153,000</td>\n                <td class=\"negative\">\n                    -$397\n                </td>\n                <td class=\"negative\">\n                    -0.26%\n                </td>\n            ",
-      "\n                <td>廣達</td>\n                <td>400</td>\n                <td>$335.75</td>\n                <td>$336.50</td>\n                <td>$134,300</td>\n                <td class=\"negative\">\n                    -$487\n                </td>\n                <td class=\"negative\">\n                    -0.36%\n                </td>\n            ",
-      "\n                <td>鈺創</td>\n                <td>2000</td>\n                <td>$109.50</td>\n                <td>$109.50</td>\n                <td>$219,000</td>\n                <td class=\"negative\">\n                    -$1,281\n                </td>\n                <td class=\"negative\">\n                    -0.58%\n                </td>\n            ",
-      "\n                <td>德淵</td>\n                <td>8000</td>\n                <td>$23.75</td>\n                <td>$19.15</td>\n                <td>$190,000</td>\n                <td class=\"negative\">\n                    -$20,573\n                </td>\n                <td class=\"negative\">\n                    -6.65%\n                </td>\n            ",
-      "\n                <td>華通</td>\n                <td>3000</td>\n                <td>$237.08</td>\n                <td>$226.00</td>\n                <td>$711,240</td>\n                <td class=\"negative\">\n                    -$20,766\n                </td>\n                <td class=\"negative\">\n                    -1.46%\n                </td>\n            ",
-      "\n                <td>華宏</td>\n                <td>4000</td>\n                <td>$64.93</td>\n                <td>$54.50</td>\n                <td>$259,720</td>\n                <td class=\"negative\">\n                    -$43,035\n                </td>\n                <td class=\"negative\">\n                    -16.55%\n                </td>\n            ",
-      "\n                <td>奇鈦科</td>\n                <td>4000</td>\n                <td>$129.90</td>\n                <td>$112.50</td>\n                <td>$519,600</td>\n                <td class=\"negative\">\n                    -$60,050\n                </td>\n                <td class=\"negative\">\n                    -9.23%\n                </td>\n            ",
-      "\n                <td>久元</td>\n                <td>3000</td>\n                <td>$108.30</td>\n                <td>$78.40</td>\n                <td>$324,900</td>\n                <td class=\"negative\">\n                    -$91,204\n                </td>\n                <td class=\"negative\">\n                    -28.03%\n                </td>\n            "
+      [
+        {
+          "text": "元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "14000",
+          "className": ""
+        },
+        {
+          "text": "$65.78",
+          "className": ""
+        },
+        {
+          "text": "$111.30",
+          "className": ""
+        },
+        {
+          "text": "$920,920",
+          "className": ""
+        },
+        {
+          "text": "+$629,043",
+          "className": "positive"
+        },
+        {
+          "text": "68.21%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "台積電",
+          "className": ""
+        },
+        {
+          "text": "300",
+          "className": ""
+        },
+        {
+          "text": "$1,966.88",
+          "className": ""
+        },
+        {
+          "text": "$2,475.00",
+          "className": ""
+        },
+        {
+          "text": "$590,064",
+          "className": ""
+        },
+        {
+          "text": "+$332,530",
+          "className": "positive"
+        },
+        {
+          "text": "10.55%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "麗正",
+          "className": ""
+        },
+        {
+          "text": "7000",
+          "className": ""
+        },
+        {
+          "text": "$41.68",
+          "className": ""
+        },
+        {
+          "text": "$45.30",
+          "className": ""
+        },
+        {
+          "text": "$291,760",
+          "className": ""
+        },
+        {
+          "text": "+$23,531",
+          "className": "positive"
+        },
+        {
+          "text": "8.05%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "長興",
+          "className": ""
+        },
+        {
+          "text": "10000",
+          "className": ""
+        },
+        {
+          "text": "$70.08",
+          "className": ""
+        },
+        {
+          "text": "$72.50",
+          "className": ""
+        },
+        {
+          "text": "$700,800",
+          "className": ""
+        },
+        {
+          "text": "+$19,993",
+          "className": "positive"
+        },
+        {
+          "text": "2.85%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "鴻海",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$247.25",
+          "className": ""
+        },
+        {
+          "text": "$250.50",
+          "className": ""
+        },
+        {
+          "text": "$247,250",
+          "className": ""
+        },
+        {
+          "text": "+$14,032",
+          "className": "positive"
+        },
+        {
+          "text": "2.83%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "勝一",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$164.00",
+          "className": ""
+        },
+        {
+          "text": "$167.50",
+          "className": ""
+        },
+        {
+          "text": "$164,000",
+          "className": ""
+        },
+        {
+          "text": "+$2,525",
+          "className": "positive"
+        },
+        {
+          "text": "1.54%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "欣銓",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$238.50",
+          "className": ""
+        },
+        {
+          "text": "$241.50",
+          "className": ""
+        },
+        {
+          "text": "$238,500",
+          "className": ""
+        },
+        {
+          "text": "+$1,592",
+          "className": "positive"
+        },
+        {
+          "text": "0.67%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "聯電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$153.00",
+          "className": ""
+        },
+        {
+          "text": "$153.50",
+          "className": ""
+        },
+        {
+          "text": "$153,000",
+          "className": ""
+        },
+        {
+          "text": "-$397",
+          "className": "negative"
+        },
+        {
+          "text": "-0.26%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "廣達",
+          "className": ""
+        },
+        {
+          "text": "400",
+          "className": ""
+        },
+        {
+          "text": "$335.75",
+          "className": ""
+        },
+        {
+          "text": "$336.50",
+          "className": ""
+        },
+        {
+          "text": "$134,300",
+          "className": ""
+        },
+        {
+          "text": "-$487",
+          "className": "negative"
+        },
+        {
+          "text": "-0.36%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "鈺創",
+          "className": ""
+        },
+        {
+          "text": "2000",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$219,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,281",
+          "className": "negative"
+        },
+        {
+          "text": "-0.58%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "德淵",
+          "className": ""
+        },
+        {
+          "text": "8000",
+          "className": ""
+        },
+        {
+          "text": "$23.75",
+          "className": ""
+        },
+        {
+          "text": "$19.15",
+          "className": ""
+        },
+        {
+          "text": "$190,000",
+          "className": ""
+        },
+        {
+          "text": "-$20,573",
+          "className": "negative"
+        },
+        {
+          "text": "-6.65%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華通",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$237.08",
+          "className": ""
+        },
+        {
+          "text": "$226.00",
+          "className": ""
+        },
+        {
+          "text": "$711,240",
+          "className": ""
+        },
+        {
+          "text": "-$20,766",
+          "className": "negative"
+        },
+        {
+          "text": "-1.46%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華宏",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$64.93",
+          "className": ""
+        },
+        {
+          "text": "$54.50",
+          "className": ""
+        },
+        {
+          "text": "$259,720",
+          "className": ""
+        },
+        {
+          "text": "-$43,035",
+          "className": "negative"
+        },
+        {
+          "text": "-16.55%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "奇鈦科",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$129.90",
+          "className": ""
+        },
+        {
+          "text": "$112.50",
+          "className": ""
+        },
+        {
+          "text": "$519,600",
+          "className": ""
+        },
+        {
+          "text": "-$60,050",
+          "className": "negative"
+        },
+        {
+          "text": "-9.23%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "久元",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$108.30",
+          "className": ""
+        },
+        {
+          "text": "$78.40",
+          "className": ""
+        },
+        {
+          "text": "$324,900",
+          "className": ""
+        },
+        {
+          "text": "-$91,204",
+          "className": "negative"
+        },
+        {
+          "text": "-28.03%",
+          "className": "negative"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",
@@ -107,21 +1847,456 @@
     "remainingFunds": "--",
     "stockMarketValue": "$6,243,800",
     "rows": [
-      "\n                <td>元大台灣50</td>\n                <td>14000</td>\n                <td>$65.78</td>\n                <td>$111.30</td>\n                <td>$920,920</td>\n                <td class=\"positive\">\n                    +$629,043\n                </td>\n                <td class=\"positive\">\n                    68.21%\n                </td>\n            ",
-      "\n                <td>台積電</td>\n                <td>300</td>\n                <td>$1,966.88</td>\n                <td>$2,475.00</td>\n                <td>$590,064</td>\n                <td class=\"positive\">\n                    +$332,530\n                </td>\n                <td class=\"positive\">\n                    10.55%\n                </td>\n            ",
-      "\n                <td>麗正</td>\n                <td>7000</td>\n                <td>$41.68</td>\n                <td>$45.30</td>\n                <td>$291,760</td>\n                <td class=\"positive\">\n                    +$23,531\n                </td>\n                <td class=\"positive\">\n                    8.05%\n                </td>\n            ",
-      "\n                <td>長興</td>\n                <td>10000</td>\n                <td>$70.08</td>\n                <td>$72.50</td>\n                <td>$700,800</td>\n                <td class=\"positive\">\n                    +$19,993\n                </td>\n                <td class=\"positive\">\n                    2.85%\n                </td>\n            ",
-      "\n                <td>鴻海</td>\n                <td>1000</td>\n                <td>$247.25</td>\n                <td>$250.50</td>\n                <td>$247,250</td>\n                <td class=\"positive\">\n                    +$14,032\n                </td>\n                <td class=\"positive\">\n                    2.83%\n                </td>\n            ",
-      "\n                <td>勝一</td>\n                <td>1000</td>\n                <td>$164.00</td>\n                <td>$167.50</td>\n                <td>$164,000</td>\n                <td class=\"positive\">\n                    +$2,525\n                </td>\n                <td class=\"positive\">\n                    1.54%\n                </td>\n            ",
-      "\n                <td>欣銓</td>\n                <td>1000</td>\n                <td>$238.50</td>\n                <td>$241.50</td>\n                <td>$238,500</td>\n                <td class=\"positive\">\n                    +$1,592\n                </td>\n                <td class=\"positive\">\n                    0.67%\n                </td>\n            ",
-      "\n                <td>聯電</td>\n                <td>1000</td>\n                <td>$153.00</td>\n                <td>$153.50</td>\n                <td>$153,000</td>\n                <td class=\"negative\">\n                    -$397\n                </td>\n                <td class=\"negative\">\n                    -0.26%\n                </td>\n            ",
-      "\n                <td>廣達</td>\n                <td>400</td>\n                <td>$335.75</td>\n                <td>$336.50</td>\n                <td>$134,300</td>\n                <td class=\"negative\">\n                    -$487\n                </td>\n                <td class=\"negative\">\n                    -0.36%\n                </td>\n            ",
-      "\n                <td>鈺創</td>\n                <td>2000</td>\n                <td>$109.50</td>\n                <td>$109.50</td>\n                <td>$219,000</td>\n                <td class=\"negative\">\n                    -$1,281\n                </td>\n                <td class=\"negative\">\n                    -0.58%\n                </td>\n            ",
-      "\n                <td>德淵</td>\n                <td>8000</td>\n                <td>$23.75</td>\n                <td>$19.15</td>\n                <td>$190,000</td>\n                <td class=\"negative\">\n                    -$20,573\n                </td>\n                <td class=\"negative\">\n                    -6.65%\n                </td>\n            ",
-      "\n                <td>華通</td>\n                <td>3000</td>\n                <td>$237.08</td>\n                <td>$226.00</td>\n                <td>$711,240</td>\n                <td class=\"negative\">\n                    -$20,766\n                </td>\n                <td class=\"negative\">\n                    -1.46%\n                </td>\n            ",
-      "\n                <td>華宏</td>\n                <td>4000</td>\n                <td>$64.93</td>\n                <td>$54.50</td>\n                <td>$259,720</td>\n                <td class=\"negative\">\n                    -$43,035\n                </td>\n                <td class=\"negative\">\n                    -16.55%\n                </td>\n            ",
-      "\n                <td>奇鈦科</td>\n                <td>4000</td>\n                <td>$129.90</td>\n                <td>$112.50</td>\n                <td>$519,600</td>\n                <td class=\"negative\">\n                    -$60,050\n                </td>\n                <td class=\"negative\">\n                    -9.23%\n                </td>\n            ",
-      "\n                <td>久元</td>\n                <td>3000</td>\n                <td>$108.30</td>\n                <td>$78.40</td>\n                <td>$324,900</td>\n                <td class=\"negative\">\n                    -$91,204\n                </td>\n                <td class=\"negative\">\n                    -28.03%\n                </td>\n            "
+      [
+        {
+          "text": "元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "14000",
+          "className": ""
+        },
+        {
+          "text": "$65.78",
+          "className": ""
+        },
+        {
+          "text": "$111.30",
+          "className": ""
+        },
+        {
+          "text": "$920,920",
+          "className": ""
+        },
+        {
+          "text": "+$629,043",
+          "className": "positive"
+        },
+        {
+          "text": "68.21%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "台積電",
+          "className": ""
+        },
+        {
+          "text": "300",
+          "className": ""
+        },
+        {
+          "text": "$1,966.88",
+          "className": ""
+        },
+        {
+          "text": "$2,475.00",
+          "className": ""
+        },
+        {
+          "text": "$590,064",
+          "className": ""
+        },
+        {
+          "text": "+$332,530",
+          "className": "positive"
+        },
+        {
+          "text": "10.55%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "麗正",
+          "className": ""
+        },
+        {
+          "text": "7000",
+          "className": ""
+        },
+        {
+          "text": "$41.68",
+          "className": ""
+        },
+        {
+          "text": "$45.30",
+          "className": ""
+        },
+        {
+          "text": "$291,760",
+          "className": ""
+        },
+        {
+          "text": "+$23,531",
+          "className": "positive"
+        },
+        {
+          "text": "8.05%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "長興",
+          "className": ""
+        },
+        {
+          "text": "10000",
+          "className": ""
+        },
+        {
+          "text": "$70.08",
+          "className": ""
+        },
+        {
+          "text": "$72.50",
+          "className": ""
+        },
+        {
+          "text": "$700,800",
+          "className": ""
+        },
+        {
+          "text": "+$19,993",
+          "className": "positive"
+        },
+        {
+          "text": "2.85%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "鴻海",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$247.25",
+          "className": ""
+        },
+        {
+          "text": "$250.50",
+          "className": ""
+        },
+        {
+          "text": "$247,250",
+          "className": ""
+        },
+        {
+          "text": "+$14,032",
+          "className": "positive"
+        },
+        {
+          "text": "2.83%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "勝一",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$164.00",
+          "className": ""
+        },
+        {
+          "text": "$167.50",
+          "className": ""
+        },
+        {
+          "text": "$164,000",
+          "className": ""
+        },
+        {
+          "text": "+$2,525",
+          "className": "positive"
+        },
+        {
+          "text": "1.54%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "欣銓",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$238.50",
+          "className": ""
+        },
+        {
+          "text": "$241.50",
+          "className": ""
+        },
+        {
+          "text": "$238,500",
+          "className": ""
+        },
+        {
+          "text": "+$1,592",
+          "className": "positive"
+        },
+        {
+          "text": "0.67%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "聯電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$153.00",
+          "className": ""
+        },
+        {
+          "text": "$153.50",
+          "className": ""
+        },
+        {
+          "text": "$153,000",
+          "className": ""
+        },
+        {
+          "text": "-$397",
+          "className": "negative"
+        },
+        {
+          "text": "-0.26%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "廣達",
+          "className": ""
+        },
+        {
+          "text": "400",
+          "className": ""
+        },
+        {
+          "text": "$335.75",
+          "className": ""
+        },
+        {
+          "text": "$336.50",
+          "className": ""
+        },
+        {
+          "text": "$134,300",
+          "className": ""
+        },
+        {
+          "text": "-$487",
+          "className": "negative"
+        },
+        {
+          "text": "-0.36%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "鈺創",
+          "className": ""
+        },
+        {
+          "text": "2000",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$109.50",
+          "className": ""
+        },
+        {
+          "text": "$219,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,281",
+          "className": "negative"
+        },
+        {
+          "text": "-0.58%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "德淵",
+          "className": ""
+        },
+        {
+          "text": "8000",
+          "className": ""
+        },
+        {
+          "text": "$23.75",
+          "className": ""
+        },
+        {
+          "text": "$19.15",
+          "className": ""
+        },
+        {
+          "text": "$190,000",
+          "className": ""
+        },
+        {
+          "text": "-$20,573",
+          "className": "negative"
+        },
+        {
+          "text": "-6.65%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華通",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$237.08",
+          "className": ""
+        },
+        {
+          "text": "$226.00",
+          "className": ""
+        },
+        {
+          "text": "$711,240",
+          "className": ""
+        },
+        {
+          "text": "-$20,766",
+          "className": "negative"
+        },
+        {
+          "text": "-1.46%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "華宏",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$64.93",
+          "className": ""
+        },
+        {
+          "text": "$54.50",
+          "className": ""
+        },
+        {
+          "text": "$259,720",
+          "className": ""
+        },
+        {
+          "text": "-$43,035",
+          "className": "negative"
+        },
+        {
+          "text": "-16.55%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "奇鈦科",
+          "className": ""
+        },
+        {
+          "text": "4000",
+          "className": ""
+        },
+        {
+          "text": "$129.90",
+          "className": ""
+        },
+        {
+          "text": "$112.50",
+          "className": ""
+        },
+        {
+          "text": "$519,600",
+          "className": ""
+        },
+        {
+          "text": "-$60,050",
+          "className": "negative"
+        },
+        {
+          "text": "-9.23%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "久元",
+          "className": ""
+        },
+        {
+          "text": "3000",
+          "className": ""
+        },
+        {
+          "text": "$108.30",
+          "className": ""
+        },
+        {
+          "text": "$78.40",
+          "className": ""
+        },
+        {
+          "text": "$324,900",
+          "className": ""
+        },
+        {
+          "text": "-$91,204",
+          "className": "negative"
+        },
+        {
+          "text": "-28.03%",
+          "className": "negative"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",
@@ -163,11 +2338,156 @@
     "remainingFunds": "$1,234,567",
     "stockMarketValue": "$1,078,150",
     "rows": [
-      "\n                <td>2330 台積電</td>\n                <td>1000</td>\n                <td>$500.50</td>\n                <td>$1,050.00</td>\n                <td>$500,500</td>\n                <td class=\"positive\">\n                    +$549,500\n                </td>\n                <td class=\"positive\">\n                    109.79%\n                </td>\n            ",
-      "\n                <td>0050 元大台灣50</td>\n                <td>200</td>\n                <td>$150.00</td>\n                <td>$140.25</td>\n                <td>$30,000</td>\n                <td class=\"negative\">\n                    -$1,950\n                </td>\n                <td class=\"negative\">\n                    -6.50%\n                </td>\n            ",
-      "\n                <td>1234 無損益</td>\n                <td>10</td>\n                <td>$10.00</td>\n                <td>$10.00</td>\n                <td>$100</td>\n                <td class=\"negative\">\n                    --\n                </td>\n                <td class=\"negative\">\n                    --\n                </td>\n            ",
-      "\n                <td>5678 引號\"測試</td>\n                <td>5</td>\n                <td>$20.00</td>\n                <td>$0.00</td>\n                <td>$100</td>\n                <td class=\"positive\">\n                    +$0\n                </td>\n                <td class=\"positive\">\n                    0.00%\n                </td>\n            ",
-      "\n                <td>總和</td>\n                <td>1215</td>\n                <td>$0.00</td>\n                <td>$0.00</td>\n                <td>$0</td>\n                <td class=\"positive\">\n                    +$547,550\n                </td>\n                <td class=\"positive\">\n                    50.78%\n                </td>\n            "
+      [
+        {
+          "text": "2330 台積電",
+          "className": ""
+        },
+        {
+          "text": "1000",
+          "className": ""
+        },
+        {
+          "text": "$500.50",
+          "className": ""
+        },
+        {
+          "text": "$1,050.00",
+          "className": ""
+        },
+        {
+          "text": "$500,500",
+          "className": ""
+        },
+        {
+          "text": "+$549,500",
+          "className": "positive"
+        },
+        {
+          "text": "109.79%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "0050 元大台灣50",
+          "className": ""
+        },
+        {
+          "text": "200",
+          "className": ""
+        },
+        {
+          "text": "$150.00",
+          "className": ""
+        },
+        {
+          "text": "$140.25",
+          "className": ""
+        },
+        {
+          "text": "$30,000",
+          "className": ""
+        },
+        {
+          "text": "-$1,950",
+          "className": "negative"
+        },
+        {
+          "text": "-6.50%",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "1234 無損益",
+          "className": ""
+        },
+        {
+          "text": "10",
+          "className": ""
+        },
+        {
+          "text": "$10.00",
+          "className": ""
+        },
+        {
+          "text": "$10.00",
+          "className": ""
+        },
+        {
+          "text": "$100",
+          "className": ""
+        },
+        {
+          "text": "--",
+          "className": "negative"
+        },
+        {
+          "text": "--",
+          "className": "negative"
+        }
+      ],
+      [
+        {
+          "text": "5678 引號\"測試",
+          "className": ""
+        },
+        {
+          "text": "5",
+          "className": ""
+        },
+        {
+          "text": "$20.00",
+          "className": ""
+        },
+        {
+          "text": "$0.00",
+          "className": ""
+        },
+        {
+          "text": "$100",
+          "className": ""
+        },
+        {
+          "text": "+$0",
+          "className": "positive"
+        },
+        {
+          "text": "0.00%",
+          "className": "positive"
+        }
+      ],
+      [
+        {
+          "text": "總和",
+          "className": ""
+        },
+        {
+          "text": "1215",
+          "className": ""
+        },
+        {
+          "text": "$0.00",
+          "className": ""
+        },
+        {
+          "text": "$0.00",
+          "className": ""
+        },
+        {
+          "text": "$0",
+          "className": ""
+        },
+        {
+          "text": "+$547,550",
+          "className": "positive"
+        },
+        {
+          "text": "50.78%",
+          "className": "positive"
+        }
+      ]
     ],
     "errorMessage": "",
     "errorDisplay": "none",

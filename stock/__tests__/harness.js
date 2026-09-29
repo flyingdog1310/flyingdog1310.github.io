@@ -6,6 +6,8 @@ import { SHEET_NAME, NOTE_SHEET_NAME } from '../lib.js';
 class FakeElement {
     constructor() {
         this.textContent = '';
+        this.className = '';
+        this.disabled = false;
         this._innerHTML = '';
         this.style = { display: '' };
         this.children = [];
@@ -40,9 +42,52 @@ function settle() {
     return new Promise((resolve) => setImmediate(() => setImmediate(resolve)));
 }
 
-function createEnv({ sheets, failures = {} }) {
+// 模擬瀏覽器把 td 內的空白收合後看到的文字
+const normalizeText = (text) =>
+    text
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&amp;/g, '&')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+// 表格列統一成 [{ text, className }]：新版用 td 子元素，重構前版本用 innerHTML 字串
+function rowCells(row) {
+    if (row.children.length > 0) {
+        return row.children.map((td) => ({ text: normalizeText(td.textContent), className: td.className }));
+    }
+    return [...row.innerHTML.matchAll(/<td(?:\s+class="([^"]*)")?>([\s\S]*?)<\/td>/g)].map((m) => ({
+        text: normalizeText(m[2]),
+        className: m[1] || '',
+    }));
+}
+
+function createLocalStorage(initial = {}, { throws = false } = {}) {
+    const data = new Map(Object.entries(initial));
+    const guard = () => {
+        if (throws) throw new Error('SecurityError: localStorage is not available');
+    };
+    return {
+        data,
+        getItem(key) {
+            guard();
+            return data.has(key) ? data.get(key) : null;
+        },
+        setItem(key, value) {
+            guard();
+            data.set(key, String(value));
+        },
+    };
+}
+
+function createEnv({ sheets, failures = {}, storage, storageThrows = false, deferred = false }) {
     const elements = new Map();
     const docListeners = {};
+    const fetchCalls = [];
+    const pending = [];
+    const localStorage = createLocalStorage(storage, { throws: storageThrows });
 
     const document = {
         getElementById(id) {
@@ -59,6 +104,8 @@ function createEnv({ sheets, failures = {} }) {
 
     async function fetch(url) {
         const sheet = new URL(url).searchParams.get('sheet');
+        fetchCalls.push(sheet);
+        if (deferred) await new Promise((resolve) => pending.push(resolve));
         if (failures[sheet]) {
             return { ok: false, status: failures[sheet], text: async () => '' };
         }
@@ -75,7 +122,7 @@ function createEnv({ sheets, failures = {} }) {
         return {
             remainingFunds: el('remainingFunds').textContent,
             stockMarketValue: el('stockMarketValue').textContent,
-            rows: el('stocksTableBody').children.map((row) => row.innerHTML),
+            rows: el('stocksTableBody').children.map(rowCells),
             errorMessage: el('errorMessage').textContent,
             errorDisplay: el('errorMessage').style.display,
             contentDisplay: el('content').style.display,
@@ -88,7 +135,15 @@ function createEnv({ sheets, failures = {} }) {
         document,
         fetch,
         console,
+        localStorage,
+        fetchCalls,
         snapshot,
+        settle,
+        // deferred 模式下讓卡住的 fetch 全部回應
+        async releaseFetches() {
+            pending.splice(0).forEach((resolve) => resolve());
+            await settle();
+        },
         async fireDOMContentLoaded() {
             (docListeners.DOMContentLoaded || []).forEach((fn) => fn());
             await settle();
@@ -100,23 +155,34 @@ function createEnv({ sheets, failures = {} }) {
     };
 }
 
-// 執行一個情境；load(env) 負責把 script 載入到 env，可回傳 cleanup 函式
-export async function runScenario(scenario, load) {
+// 建立環境並載入 script；回傳 env 與 cleanup，給需要逐步操作的測試使用
+export async function startScenario(scenario, load) {
     const env = createEnv(scenario);
-    const cleanup = await load(env);
+    const cleanup = (await load(env)) ?? (() => {});
+    return { env, cleanup };
+}
+
+// 執行一個情境到結束並回傳畫面快照
+export async function runScenario(scenario, load) {
+    const { env, cleanup } = await startScenario(scenario, load);
     try {
         await env.fireDOMContentLoaded();
         if (scenario.refresh) await env.clickRefresh();
         return env.snapshot();
     } finally {
-        cleanup?.();
+        cleanup();
     }
 }
 
 // 重構前的 script.js 是一般 <script>，放進獨立的 vm context 執行
 export function classicLoader(source) {
     return async (env) => {
-        const context = vm.createContext({ document: env.document, fetch: env.fetch, console: env.console });
+        const context = vm.createContext({
+            document: env.document,
+            fetch: env.fetch,
+            console: env.console,
+            localStorage: env.localStorage,
+        });
         vm.runInContext(source, context);
     };
 }
@@ -125,10 +191,24 @@ export function classicLoader(source) {
 let moduleRun = 0;
 export function moduleLoader(scriptUrl) {
     return async (env) => {
-        const saved = { document: globalThis.document, fetch: globalThis.fetch, console: globalThis.console };
-        Object.assign(globalThis, { document: env.document, fetch: env.fetch, console: env.console });
+        const globals = {
+            document: env.document,
+            fetch: env.fetch,
+            console: env.console,
+            localStorage: env.localStorage,
+        };
+        // Node 內建的 localStorage 是 getter，所以用 defineProperty 替換並在結束後還原
+        const saved = Object.keys(globals).map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]);
+        for (const [key, value] of Object.entries(globals)) {
+            Object.defineProperty(globalThis, key, { value, writable: true, configurable: true });
+        }
         await import(`${scriptUrl}?run=${++moduleRun}`);
-        return () => Object.assign(globalThis, saved);
+        return () => {
+            for (const [key, descriptor] of saved) {
+                if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+                else delete globalThis[key];
+            }
+        };
     };
 }
 
