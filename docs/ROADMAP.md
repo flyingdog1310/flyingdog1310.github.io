@@ -14,7 +14,7 @@
 | 3 共用設計系統 | ✅ 完成 |
 | 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
 | 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 9 款（5a 動作類全部完成，5b 完成 2048、minesweeper）（見 Phase 5 狀態表） |
-| 6 收尾 | 🔄 `CLAUDE.md`、`README.md` 已更新，其餘未開始 |
+| 6 收尾 | 🔄 `CLAUDE.md`（含回合制 DOM 遊戲的做法）、`README.md` 已更新，其餘未開始 |
 
 下一步：5b 益智類剩下的 sudoku、wordle、memory_match、bulls_and_cows。
 

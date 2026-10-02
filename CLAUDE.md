@@ -46,7 +46,7 @@ npm run stock:fixtures && npm run stock:golden   # 從真實 Google Sheet 更新
 
 每款遊戲在 `games/<name>/`，並登記在 `games.json`（`id`、`src`、`thumbnail`）。首頁以 iframe modal 開啟遊戲，關閉時清空 `src`。
 
-### 翻新後的結構（新寫或翻新遊戲都照這個做；已完成的可參考 `games/tetris/`、`games/snake/`）
+### 翻新後的結構（新寫或翻新遊戲都照這個做；即時 canvas 遊戲參考 `games/tetris/`、`games/snake/`，回合制 DOM 遊戲參考 `games/2048/`、`games/minesweeper/`）
 
 ```
 games/<name>/
@@ -61,9 +61,11 @@ games/<name>/
 **core.js**
 
 - 匯出 `createXxx({ random = Math.random })` 回傳遊戲物件；亂數一律從參數注入，測試用固定種子。
-- `update(dt, input)` 以秒為單位推進時間；input 是「目前按住的狀態」，不是事件。
+- 即時遊戲：`update(dt, input)` 以秒為單位推進時間；input 是「目前按住的狀態」，不是事件。
+- 回合制遊戲：每個動作是一個方法（如 `move(dir)`、`reveal(i)`），直接回傳這一步的結果（給畫面做動畫），沒有變化時回傳 `null`。
 - 畫面需要知道的事（得分、爆炸、過關、死亡…）用事件佇列傳出：`emit({ type, … })`，`script.js` 每步呼叫 `takeEvents()`。
 - 測試涵蓋主要規則與邊界情況（計分、碰撞、升級、Game over）。先寫 core 與測試再寫畫面。
+- 測試需要特定盤面時，讓 `createXxx` 接受選項（地圖、關卡、存檔 `state`、關掉出怪的 `spawnEnemies: false` 等），不要在測試裡改 core 的內部變數。
 
 **script.js**
 
@@ -72,9 +74,19 @@ games/<name>/
 - 用 `createLoop` 固定步長；canvas 用 `setupCanvas` 處理 DPR；場地尺寸由 `ResizeObserver` 依可用空間計算，遊戲邏輯使用固定的邏輯座標再縮放。
 - `autoPause` + `window` 的 `blur` 都要暫停；回來後由玩家自己按繼續。
 - Game over 後約 0.8 秒內不接受鍵盤重開，避免連按時直接跳過結算。
-- 最高分用 `highScore('<games.json 的 id>')`；舊版若另有 localStorage key，第一次載入時搬過來。
+- 最高分用 `highScore('<games.json 的 id>')`；有難度之分時每個難度分開記錄：`highScore('<id>:<難度>')`；比時間的用 `{ order: 'asc' }`。舊版若另有 localStorage key，第一次載入時搬過來。
+- 其他 localStorage 也用 `jsgames:<id>:` 開頭（例如 2048 的進行中局面 `jsgames:2048:game`、踩地雷記住的難度 `jsgames:minesweeper:level`），讀寫都包 `try/catch`。
 - 顏色：遊戲專屬顏色寫成 `style.css` 的 CSS 變數，`script.js` 用 `getComputedStyle` 讀取；UI 部分用 tokens。
 - 圖示用 inline SVG `<symbol>`；角色 / 物件優先用 SVG path（`Path2D`）繪製而不是色塊。
 - 特效要尊重 `prefers-reduced-motion`（粒子、震動、閃爍）。
+
+**回合制 DOM 遊戲的差異**（2048、踩地雷，以及之後的益智 / 棋盤類）
+
+- 不用 canvas 與 `createLoop`：盤面是 DOM，格子用 `<button>`（可聚焦、有 `aria-label`），動畫用 CSS transition / animation。盤面大小用 container query 或 `ResizeObserver` 算格子大小。
+- 鍵盤：方向鍵移動游標（roving `tabindex`），Space / Enter 交給按鈕本身的 click；另有一個 `aria-live` 區域朗讀每一步的結果。
+- 觸控：滑動用 `onSwipe`；需要第二種操作（插旗等）時提供長按，並在 `pointer: coarse` 時顯示模式切換。
+- 沒有計時就不需要暫停與 `autoPause`；有計時（如踩地雷）時暫停要停止計時並完全蓋住盤面。
+- 會玩很久的遊戲把進行中的局面存起來，關掉 modal 再開可以接著玩；開新局前若已有進度要先確認。
+- 結果畫面若需要看到盤面（踩地雷看地雷位置），文字放在不透明的卡片上，背景保持半透明。
 
 **每款的驗收**：鍵盤與觸控都能完整遊玩、手機直向版面不溢出、Retina 清晰、有暫停 / 結束 / 再玩一次、有最高分；完整清單見 `docs/ROADMAP.md` Phase 5。完成後重新產生縮圖並在 ROADMAP 記錄。
