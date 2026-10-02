@@ -3,43 +3,81 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breakout Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
+    <title>Breakout</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="game-container" role="application" aria-label="Breakout Game">
-        <div class="game-header">
-            <h1 class="title">Breakout</h1>
-        </div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+    </svg>
 
-        <div class="game-info" role="status" aria-live="polite">
-            <div class="info-box">
-                <h3>Score</h3>
-                <div id="score" class="score-value" aria-label="Current Score">0</div>
+    <main class="breakout" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd id="score">0</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+                <div class="stat">
+                    <dt>Level</dt>
+                    <dd id="level">1</dd>
+                </div>
+                <div class="stat">
+                    <dt>Lives</dt>
+                    <dd class="lives" id="lives" aria-label="3 lives"></dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+        </header>
+
+        <div class="field-area" id="field-area">
+            <div class="field" id="field">
+                <canvas id="board" role="img" aria-label="Breakout playfield"></canvas>
+                <p class="callout" id="callout" aria-live="polite"></p>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Breakout</h1>
+                    <ul class="legend" aria-label="Capsules">
+                        <li><span class="capsule capsule--E">E</span>Wider paddle</li>
+                        <li><span class="capsule capsule--S">S</span>Slower ball</li>
+                        <li><span class="capsule capsule--C">C</span>Catch the ball</li>
+                        <li><span class="capsule capsule--L">L</span>Laser cannons</li>
+                        <li><span class="capsule capsule--D">D</span>Split into three balls</li>
+                        <li><span class="capsule capsule--P">P</span>Extra life</li>
+                    </ul>
+                    <p class="overlay__text only-fine">Move with the mouse or <kbd>←</kbd> <kbd>→</kbd>. Click or press <kbd>Space</kbd> to launch and fire.</p>
+                    <p class="overlay__text only-coarse">Drag anywhere to move the paddle. Lift your finger to launch, hold to fire lasers.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                    <button class="btn btn--quiet" type="button" data-action="restart">Restart</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title">Game over</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="restart">Play again</button>
+                </div>
             </div>
-            <div class="info-box">
-                <h3>Lives</h3>
-                <div id="lives" class="score-value" aria-label="Remaining Lives">3</div>
-            </div>
         </div>
+    </main>
 
-        <div class="game-board" role="region" aria-label="Game Board">
-            <canvas id="gameCanvas" width="800" height="600" aria-label="Breakout Game Canvas"></canvas>
-        </div>
-
-        <button class="restart-btn" id="restart-btn" aria-label="Restart Game">Restart Game</button>
-
-        <div class="game-over" id="game-over" role="dialog" aria-labelledby="game-over-title" aria-hidden="true">
-            <div class="modal-content">
-                <h2 id="game-over-title">Game Over!</h2>
-                <p>Final Score: <span id="final-score" aria-label="Final Score">0</span></p>
-                <button id="play-again-btn" aria-label="Play Again">Play Again</button>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

@@ -13,10 +13,10 @@
 | 2 首頁效能 | ✅ 完成，Lighthouse Mobile 79 → 100 |
 | 3 共用設計系統 | ✅ 完成 |
 | 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
-| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 6 款（見 Phase 5 狀態表） |
+| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 7 款（5a 動作類全部完成）（見 Phase 5 狀態表） |
 | 6 收尾 | 🔄 `CLAUDE.md`、`README.md` 已更新，其餘未開始 |
 
-下一步：5a 最後一款 breakout，接著 5b 益智類。
+下一步：5b 益智類（2048、minesweeper、sudoku、wordle、memory_match、bulls_and_cows）。
 
 ---
 
@@ -140,12 +140,12 @@
 | 5a | raiden_fighters | ✅ 已上線；難度數值（頭目血量、敵彈速度）待實玩回饋 |
 | 5a | dino_runner | ✅ 已 commit（`7d835f1`），尚未 push |
 | 5a | tank_battle | ✅ 已 commit，尚未 push |
-| 5a | breakout | ⬜ 下一款 |
-| 5b | 2048、minesweeper、sudoku、wordle、memory_match、bulls_and_cows | ⬜ |
+| 5a | breakout | ✅ 已 commit，尚未 push |
+| 5b | 2048、minesweeper、sudoku、wordle、memory_match、bulls_and_cows | ⬜ 下一批 |
 | 5c | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | ⬜ |
 | 5d | solitaire | ⬜ |
 
-目前 `npm test` 共 122 項（股票頁、shared、6 款遊戲的 core.js）全部通過。已完成的 6 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
+目前 `npm test` 共 138 項（股票頁、shared、7 款遊戲的 core.js）全部通過。已完成的 7 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
 
 ### 各款內容
 
@@ -155,6 +155,7 @@
 - [x] raiden_fighters — 重新設計：雷電式紅藍 P 道具（Vulcan 散射 / Laser 集中，4 級）、M 追蹤飛彈、B 炸彈（清除全畫面子彈）；三種敵機隊形出場、每關第 55 秒頭目（兩階段彈幕）、過關難度上升；小判定點、被擊中降一級並無敵重生；規則在 `core.js` 並有測試；機體以 SVG path 繪製、捲動地圖與雲、白芯敵彈、爆炸與震動、頭目血條；自動射擊，鍵盤 Shift 慢速、X 炸彈，手機整個畫面拖曳 + 炸彈按鈕
 - [x] dino_runner — 重新設計：按住跳更高 / 點一下小跳、空中按下加速下墜、蹲下；三種高度的翼龍（350 分起）、仙人掌單株與群組、間距隨速度調整、多個碰撞框；規則在 `core.js` 並有測試；沙漠日夜循環（白天 → 黃昏 → 星空與月亮 → 黎明）、兩層平頂山視差、恐龍 / 仙人掌 / 翼龍以 SVG path 繪製、落地揚塵、每 100 分閃爍；直向手機把天空往上延伸讓場地變高；手機點場地跳 + 跳 / 蹲按鈕；沿用舊版 `dinoHighScore` 最高分
 - [x] tank_battle — 重新設計為坦克大戰（Battle City）規則：13 × 13 地圖（磚以 4 單位小塊逐步打穿、鋼板、水、樹叢），4 張地圖輪替；守護基地老鷹，被打中即結束；每關 20 輛、場上最多 4 輛，四種敵人（一般 / 快速 / 火力 / 4 發才打得掉的重裝甲），越後面的關卡越多重裝甲、越快越常開火；第 4、11、18 輛閃紅光，打中掉道具（頭盔、星星 3 級、手榴彈、時鐘、鏟子、坦克）；轉彎對齊半格方便鑽通道；子彈互撞抵銷；規則在 `core.js` 並有測試；移除舊版 `setInterval` loop；坦克、老鷹、道具以向量繪製，磚紋 / 鋼板 / 水波 / 樹叢分層（地形變動時才重畫），爆炸碎片、分數、出生閃光、護盾；手機為拖曳搖桿 + 按住連發的開火鈕
+- [x] breakout — 重新設計為 Arkanoid 式規則：5 個關卡輪替（銀磚要打多下且隨關卡變硬、金磚打不破）、反彈角度依擊中擋板的位置決定、每打一塊加速且撞牆時保證最小垂直速度；膠囊道具 E 加長、S 減速、C 接球、L 雷射、D 分裂三顆、P 加命（同時只掉一顆、多球時不掉）；開局球黏在擋板上由玩家發射；規則在 `core.js` 並有測試；漸層磚塊與金屬反光、銀磚裂痕、球的光暈與拖尾、碎片、擋板加長動畫；滑鼠跟隨 / 鍵盤 / 手機整個畫面相對拖曳，放開發射、按住開火
 - [x] 共用：開始 / 暫停 / 結束畫面、`kbd`、觸控按鈕、圖示按鈕從 tetris 抽到 `shared/game-shell.css`（`<body class="stage">`），新增 `--color-highlight`、`--color-stage-overlay` tokens
 
 ### 遊戲驗收清單（每款都要過）
