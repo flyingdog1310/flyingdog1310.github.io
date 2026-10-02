@@ -1,124 +1,832 @@
-body {
-    background: #222;
-    color: #fff;
-    font-family: Arial, sans-serif;
+/* 猜數字：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    --bull: #538d4e;
+    --cow: #b59f3b;
+    --zero: #2a2b2f;
+    --tile-bg: #1d1e22;
+    --tile-border: #3a3a3c;
+    --tile-border-filled: #626366;
+    --cursor: #8d8f94;
+    /* 提示：一定在答案裡的數字 */
+    --hint-in: #74c0fc;
+    --key-bg: #3a3b40;
+    --key-hover: #4a4b51;
+    --toast-bg: #f2f2f2;
+    --toast-text: #121213;
+
+    --column-max: 26rem;
+    --gap: 0.75rem;
+    --page-pad: 1rem;
+    --key-height: 3.25rem;
+    --len: 4;
+}
+
+.bulls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    box-sizing: border-box;
+}
+
+/* ---- 分數列 ---- */
+.hud {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: min(100%, var(--column-max));
+}
+
+.stats {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin: 0;
+}
+
+.stat dt {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    margin: 0.125rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.stat--best dd {
+    color: var(--color-text-subtle);
+}
+
+.stat--left dd {
+    color: var(--hint-in);
+}
+
+.bulls[data-helper='off'] .stat--left,
+.bulls[data-state='ready'] #new-btn {
+    visibility: hidden;
+}
+
+#helper-btn[aria-pressed='true'] {
+    border-color: color-mix(in srgb, var(--color-highlight) 45%, transparent);
+    background: color-mix(in srgb, var(--color-highlight) 14%, var(--color-surface));
+    color: var(--color-highlight);
+}
+
+/* ---- 位數選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.level:hover {
+    color: var(--color-text);
+}
+
+.level[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
+}
+
+.level:focus-visible,
+.key:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+/* ---- 盤面與數字鍵：覆蓋畫面蓋住兩者 ---- */
+.play {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: var(--gap);
+    width: min(100%, var(--column-max));
+    min-height: 0;
+    border-radius: 14px;
+}
+
+/* 一列：編號 | 數字 | 結果；格子大小依盤面寬度與位數決定 */
+.board {
+    --gap-t: 0.375rem;
+    --tile: clamp(2.25rem, calc((100cqw - 9rem) / var(--len) - var(--gap-t)), 3.25rem);
+    --num-w: 1.5rem;
+    --res-w: 5.25rem;
+    --tiles-w: calc(var(--len) * var(--tile) + (var(--len) - 1) * var(--gap-t));
+    --row-w: calc(var(--num-w) + var(--tiles-w) + var(--res-w) + 1.5rem);
+    container-type: inline-size;
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 16px;
-}
-
-.container {
-    margin-top: 20px;
-    background: #333;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px #0008;
-    width: 100%;
-    max-width: 500px;
-    box-sizing: border-box;
-}
-
-.input-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-input[type='text'] {
-    flex: 1;
-    min-width: 200px;
-    padding: 12px;
-    font-size: 1.1rem;
-    border-radius: 4px;
-    border: none;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-button {
-    padding: 12px 20px;
-    font-size: 1rem;
-    border-radius: 4px;
-    border: none;
-    background: #538d4e;
-    color: #fff;
-    cursor: pointer;
-    transition: background 0.2s;
-    -webkit-tap-highlight-color: transparent;
-}
-
-button:hover {
-    background: #3a6d3a;
+    min-height: 0;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
 }
 
 .history {
-    background: #222;
-    border-radius: 6px;
-    padding: 12px;
-    min-height: 80px;
-    margin-bottom: 16px;
-    font-size: 1rem;
-    max-height: 200px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-t);
+    min-height: 0;
+    margin: 0;
+    padding: 0.75rem 0.5rem 0.5rem;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    list-style: none;
+    scrollbar-width: thin;
 }
 
-.message {
+/* 猜測少的時候貼著下方的輸入列 */
+.history > :first-child {
+    margin-top: auto;
+}
+
+.guess {
+    display: grid;
+    flex: none;
+    grid-template-columns: var(--num-w) var(--tiles-w) var(--res-w);
+    align-items: center;
+    gap: 0.75rem;
+    width: var(--row-w);
+}
+
+.guess__n {
+    color: var(--color-text-faint);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.tiles {
+    display: flex;
+    gap: var(--gap-t);
+}
+
+.tile {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--tile);
+    height: var(--tile);
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: var(--tile-bg);
+    box-shadow: inset 0 0 0 2px var(--tile-border);
+    color: var(--color-text);
+    font-size: calc(var(--tile) * 0.48);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transition:
+        color 200ms,
+        opacity 200ms;
+}
+
+.tiles[data-solved] .tile {
+    background: var(--bull);
+    box-shadow: none;
+}
+
+.result {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.chip {
+    display: inline-grid;
+    flex: 1;
+    place-items: center;
+    min-width: 2.25rem;
+    height: 1.875rem;
+    padding: 0 0.375rem;
+    box-sizing: border-box;
+    border-radius: 999px;
+    color: var(--color-text);
+    font-size: 0.9375rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.chip[data-kind='a'] {
+    background: var(--bull);
+}
+
+.chip[data-kind='b'] {
+    background: var(--cow);
+}
+
+.chip.is-zero {
+    background: var(--zero);
+    color: var(--color-text-faint);
+}
+
+.empty {
+    position: absolute;
+    inset: 0 0 calc(var(--tile) + 1.5rem);
+    display: grid;
+    place-content: center;
+    margin: 0;
+    padding: 1rem;
+    color: var(--color-text-faint);
+    font-size: 0.875rem;
+    line-height: 1.6;
     text-align: center;
-    margin-bottom: 12px;
-    font-weight: bold;
-    color: #ffb300;
-    font-size: 1.1rem;
+    pointer-events: none;
 }
 
-.restart-btn {
-    display: block;
-    margin: 0 auto;
-    background: #b59f3b;
+.empty[hidden] {
+    display: none;
+}
+
+/* 輸入列：與上面每一列的數字對齊 */
+.entry {
+    display: flex;
+    flex: none;
+    justify-content: center;
+    gap: var(--gap-t);
+    padding: 0.75rem calc(var(--res-w) - var(--num-w)) 0.875rem 0;
+    border-top: 1px solid var(--color-divider);
+}
+
+.entry .tile {
+    background: transparent;
+}
+
+.entry .tile.is-filled {
+    background: var(--tile-bg);
+    box-shadow: inset 0 0 0 2px var(--tile-border-filled);
+}
+
+.entry .tile.is-cursor::after {
+    content: '';
+    position: absolute;
+    bottom: 22%;
+    width: 36%;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--cursor);
+    animation: blink 1.1s steps(1) infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+.bulls:not([data-state='playing']) .entry .tile.is-cursor::after {
+    display: none;
+}
+
+/* 結束後輸入列顯示答案 */
+.entry[data-status='won'] .tile {
+    background: var(--bull);
+    box-shadow: none;
+}
+
+.entry[data-status='gaveup'] .tile {
+    background: var(--color-control-hover);
+    box-shadow: none;
+}
+
+/* ---- 提示 ---- */
+.tile[data-hint='out'] {
+    color: var(--color-text-faint);
+}
+
+.tiles:not([data-solved]) .tile[data-hint='out'] {
+    opacity: 0.55;
+}
+
+.tile[data-hint='in']::after,
+.key[data-hint='in']::after {
+    content: '';
+    position: absolute;
+    bottom: 12%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--hint-in);
+}
+
+.tiles[data-solved] .tile::after {
+    display: none;
+}
+
+/* ---- 數字鍵 ---- */
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.key {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    height: var(--key-height);
+    padding: 0;
+    border: none;
+    border-radius: 10px;
+    background: var(--key-bg);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1.375rem;
+    font-weight: 700;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+        background-color 150ms,
+        color 150ms,
+        opacity 150ms;
+}
+
+.key:hover {
+    background: var(--key-hover);
+}
+
+.key:active {
+    filter: brightness(0.85);
+}
+
+.key svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.key--action {
+    background: var(--color-control);
+    color: var(--color-text-muted);
+}
+
+.key--enter {
+    background: var(--color-accent);
+}
+
+.key--enter:hover {
+    background: var(--color-accent);
+    filter: brightness(1.1);
+}
+
+/* 這一次已經輸入的數字 */
+.key.is-used {
+    opacity: 0.4;
+}
+
+.key[data-hint='out'] {
+    background: var(--color-surface);
+    color: var(--color-text-faint);
+}
+
+.key[data-hint='out']::before {
+    content: '';
+    position: absolute;
+    width: 1.5rem;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: rotate(-35deg);
+}
+
+/* ---- 動畫 ---- */
+.tile.is-pop {
+    animation: pop 110ms ease-out;
+}
+
+@keyframes pop {
+    50% {
+        transform: scale(1.12);
+    }
+}
+
+.tile.is-nudge {
+    animation: nudge 300ms ease-in-out;
+}
+
+@keyframes nudge {
+    25%,
+    75% {
+        transform: translateY(-4px);
+        box-shadow: inset 0 0 0 2px var(--color-text);
+    }
+    50% {
+        transform: translateY(2px);
+        box-shadow: inset 0 0 0 2px var(--color-text);
+    }
+}
+
+.entry.is-shake {
+    animation: shake 400ms ease-in-out;
+}
+
+@keyframes shake {
+    10%,
+    90% {
+        transform: translateX(-2px);
+    }
+    20%,
+    80% {
+        transform: translateX(4px);
+    }
+    30%,
+    50%,
+    70% {
+        transform: translateX(-6px);
+    }
+    40%,
+    60% {
+        transform: translateX(6px);
+    }
+}
+
+/* 新的一列從輸入列的位置滑上來，結果接著彈出 */
+.guess.is-new .tiles {
+    animation: rise 260ms ease-out;
+}
+
+.guess.is-new .chip {
+    animation: chip 320ms cubic-bezier(0.3, 0.7, 0.4, 1.4) backwards;
+}
+
+.guess.is-new .chip:nth-child(1) {
+    animation-delay: 200ms;
+}
+
+.guess.is-new .chip:nth-child(2) {
+    animation-delay: 300ms;
+}
+
+@keyframes rise {
+    from {
+        transform: translateY(calc(var(--tile) * 0.8));
+        opacity: 0.4;
+    }
+}
+
+@keyframes chip {
+    from {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+}
+
+.tile.is-bounce {
+    animation: bounce 600ms ease-out var(--delay, 0ms);
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    100% {
+        transform: none;
+    }
+    40% {
+        transform: translateY(-30%);
+    }
+    55% {
+        transform: translateY(4%);
+    }
+    70% {
+        transform: translateY(-12%);
+    }
+    85% {
+        transform: translateY(2%);
+    }
+}
+
+.entry.is-reveal .tile {
+    animation: flip 500ms ease-in-out backwards;
+}
+
+.entry.is-reveal .tile:nth-child(2) {
+    animation-delay: 90ms;
+}
+
+.entry.is-reveal .tile:nth-child(3) {
+    animation-delay: 180ms;
+}
+
+.entry.is-reveal .tile:nth-child(4) {
+    animation-delay: 270ms;
+}
+
+.entry.is-reveal .tile:nth-child(5) {
+    animation-delay: 360ms;
+}
+
+@keyframes flip {
+    0% {
+        transform: rotateX(90deg);
+    }
+    100% {
+        transform: rotateX(0);
+    }
+}
+
+/* ---- 提示訊息 ---- */
+.toasts {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+.toast {
+    padding: 0.7rem 1rem;
+    border-radius: 6px;
+    background: var(--toast-bg);
+    color: var(--toast-text);
+    font-size: 0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: var(--shadow-lg);
+    transition: opacity 300ms;
+}
+
+.toast.is-leaving {
+    opacity: 0;
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 3;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.72);
+    backdrop-filter: blur(2px);
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.overlay__text {
+    max-width: 22rem;
+    margin: 0;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay__text--small {
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+}
+
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+.legend li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.legend .chip {
+    flex: none;
+}
+
+.keys {
+    margin: 0.25rem 0;
+}
+
+.overlay .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.overlay .btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* 結果：盤面保持可見，文字放在不透明的卡片上 */
+.overlay--result {
+    background: rgba(9, 9, 11, 0.45);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.625rem;
+    width: min(100%, 21rem);
+    max-height: 100%;
+    padding: 1.25rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+    animation: card-rise 300ms ease-out;
+}
+
+@keyframes card-rise {
+    from {
+        transform: translateY(12px);
+    }
+}
+
+.result-card .overlay__title {
+    margin: 0;
+}
+
+.answer {
+    --tile: 2.75rem;
+    display: flex;
+    gap: 0.375rem;
+    margin: 0.25rem 0;
+}
+
+.answer[data-won='true'] .tile {
+    background: var(--bull);
+    box-shadow: none;
+}
+
+.answer[data-won='false'] .tile {
+    background: var(--color-control-hover);
+    box-shadow: none;
+}
+
+.result-card .final-score {
+    font-size: 1.5rem;
+}
+
+.result-card .final-score:empty {
+    display: none;
+}
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
     width: 100%;
-    max-width: 200px;
+    margin: 0.25rem 0 0;
+    text-align: center;
 }
 
-.restart-btn:hover {
-    background: #a08a2a;
+.summary div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
 }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 16px;
-        margin-top: 10px;
-        width: 100%;
-        box-sizing: border-box;
+.summary dd {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.summary dt {
+    order: 1;
+    color: var(--color-text-subtle);
+    font-size: 0.6875rem;
+}
+
+.result-card .final-note {
+    margin: 0 0 0.25rem;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 矮的畫面（小螢幕、手機橫拿）：數字鍵縮小、說明精簡 */
+@media (max-height: 680px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
+        --key-height: 2.75rem;
     }
 
-    .input-row {
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        margin: 0 0 16px 0;
+    .keys {
+        display: none;
+    }
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
     }
 
-    input[type='text'] {
-        width: 100%;
-        min-width: unset;
-        box-sizing: border-box;
+    .stats {
+        gap: 1.125rem;
     }
 
-    button {
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+
+    .keys {
+        display: none;
+    }
+}
+
+/* 橫拿的手機：數字鍵放在盤面右邊 */
+@media (max-height: 500px) and (min-aspect-ratio: 4/3) {
+    :root {
+        --key-height: 2.5rem;
+    }
+
+    .bulls {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto minmax(0, 1fr);
+        column-gap: 1rem;
+        padding-left: max(var(--page-pad), env(safe-area-inset-left));
+        padding-right: max(var(--page-pad), env(safe-area-inset-right));
+    }
+
+    .hud {
         width: 100%;
     }
 
-    .history {
-        font-size: 0.95rem;
-        padding: 10px;
+    .play {
+        grid-column: 1 / -1;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+        grid-template-rows: minmax(0, 1fr);
+        align-items: end;
+        width: min(100%, 44rem);
+    }
+
+    .board {
+        height: 100%;
+    }
+
+    .legend {
+        display: none;
     }
 }
