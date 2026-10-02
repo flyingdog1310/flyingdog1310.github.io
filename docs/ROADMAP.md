@@ -142,11 +142,11 @@
 | 5a | tank_battle | ✅ 已上線；難度數值待實玩回饋 |
 | 5a | breakout | ✅ 已上線；球速、膠囊機率、觸控拖曳倍率待實玩回饋 |
 | 5b | 2048 | ✅ 已上線 |
-| 5b | minesweeper | ✅ 已 commit，尚未 push |
-| 5b | sudoku | ✅ 已 commit，尚未 push |
-| 5b | wordle | ✅ 已 commit，尚未 push |
-| 5b | memory_match | ✅ 已 commit，尚未 push |
-| 5b | bulls_and_cows | ✅ 已 commit，尚未 push |
+| 5b | minesweeper | ✅ 已上線 |
+| 5b | sudoku | ✅ 已上線 |
+| 5b | wordle | ✅ 已上線 |
+| 5b | memory_match | ✅ 已上線 |
+| 5b | bulls_and_cows | ✅ 已上線 |
 | 5c | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | ⬜ 下一批 |
 | 5d | solitaire | ⬜ |
 
