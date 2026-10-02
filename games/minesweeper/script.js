@@ -450,7 +450,10 @@ addEventListener('keydown', (event) => {
     const onButton = event.target instanceof HTMLButtonElement;
     if (key === 'Enter' && !onButton && !event.repeat) {
         if ((state === 'won' || state === 'lost') && performance.now() - overAt < RESTART_GRACE_MS) return;
-        if (state === 'ready' || state === 'won' || state === 'lost') newGame();
+        if (state !== 'ready' && state !== 'won' && state !== 'lost') return;
+        // newGame 會把焦點移到格子上；不擋掉的話這次 Enter 會接著翻開那一格
+        event.preventDefault();
+        newGame();
     }
 });
 
