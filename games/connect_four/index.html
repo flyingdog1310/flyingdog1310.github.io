@@ -3,20 +3,104 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Connect Four</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header">
-        <h1 class="title">Connect Four</h1>
-    </div>
-    <div id="status">Player 1's turn (Red)</div>
-    <div id="game-board"></div>
-    <button id="reset-button">Reset Game</button>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+    </svg>
 
-    <script src="script.js"></script>
+    <main class="c4" data-state="ready" data-mode="cpu">
+        <header class="hud">
+            <div class="score" id="score">
+                <div class="side" data-mark="R" id="side-r">
+                    <span class="side__disc" aria-hidden="true"></span>
+                    <span class="side__name" id="name-r">You</span>
+                    <span class="side__wins" id="wins-r">0</span>
+                </div>
+                <div class="side side--draw">
+                    <span class="side__name">Draws</span>
+                    <span class="side__wins" id="draws">0</span>
+                </div>
+                <div class="side" data-mark="Y" id="side-y">
+                    <span class="side__disc" aria-hidden="true"></span>
+                    <span class="side__name" id="name-y">Computer</span>
+                    <span class="side__wins" id="wins-y">0</span>
+                </div>
+            </div>
+            <div class="hud__buttons">
+                <button class="icon-btn" id="undo-btn" type="button" aria-label="Undo" title="Undo (U)">
+                    <svg><use href="#i-undo" /></svg>
+                </button>
+                <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game (N)">
+                    <svg><use href="#i-new" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="levels" role="group" aria-label="Opponent">
+            <button class="level" type="button" data-opponent="easy">Easy</button>
+            <button class="level" type="button" data-opponent="normal">Normal</button>
+            <button class="level" type="button" data-opponent="hard">Hard</button>
+            <button class="level" type="button" data-opponent="duo">2 players</button>
+        </div>
+
+        <div class="board-area">
+            <div class="board-wrap">
+                <div class="board">
+                    <div class="discs" id="discs" aria-hidden="true"></div>
+                    <div class="frame" aria-hidden="true"></div>
+                    <div class="columns" id="columns" role="group" aria-label="Board columns"
+                        aria-describedby="status"></div>
+                </div>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Connect Four</h1>
+                    <p class="overlay__text">Drop discs and get four in a row — across, up or diagonally. Play the
+                        computer, or pass the device to a friend.</p>
+                    <table class="keys only-fine">
+                        <tr><td><kbd>←</kbd><kbd>→</kbd> <kbd>Space</kbd></td><td>Pick a column and drop</td></tr>
+                        <tr><td><kbd>1</kbd>–<kbd>7</kbd></td><td>Drop directly</td></tr>
+                        <tr><td><kbd>U</kbd></td><td>Undo</td></tr>
+                    </table>
+                    <p class="overlay__text only-coarse">Tap a column to drop a disc.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-over" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title" id="over-title">You win</h2>
+                        <p class="final-detail" id="over-detail"></p>
+                        <p class="final-note" id="over-note"></p>
+                        <button class="btn" type="button" data-action="restart">Play again</button>
+                    </div>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">The current game will be lost.</p>
+                    <button class="btn" type="button" data-action="confirm">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
+            </div>
+
+            <div class="info">
+                <p class="turn" id="turn"></p>
+                <p class="note" id="note"></p>
+            </div>
+        </div>
+
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
