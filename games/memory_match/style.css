@@ -1,97 +1,494 @@
-body {
-    background-color: #121213;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
+/* 翻牌配對：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    --back: #2f3a8f;
+    --back-light: #4453b8;
+    --back-dark: #1f275f;
+    --back-pattern: rgba(255, 255, 255, 0.07);
+    --face: #23252d;
+    --face-edge: #34363f;
+    --table: #17181c;
+    --miss: #ef6a6a;
+
+    /* 牌面圖案的顏色，編號對應 index.html 的 #s0 … #s17 */
+    --s0: #ffd43b;
+    --s1: #f783ac;
+    --s2: #fff0c2;
+    --s3: #ff922b;
+    --s4: #a9e34b;
+    --s5: #4dabf7;
+    --s6: #40c057;
+    --s7: #3bc9db;
+    --s8: #fab005;
+    --s9: #748ffc;
+    --s10: #ffc078;
+    --s11: #63e6be;
+    --s12: #dee2e6;
+    --s13: #ff6b3d;
+    --s14: #fa5252;
+    --s15: #d4a373;
+    --s16: #e599f7;
+    --s17: #b197fc;
+
+    /* 牌的大小，由 script.js 依可用空間設定 */
+    --card-w: 80px;
+    --gap-card: 10px;
+    --board-width: 450px;
+    --gap: 0.75rem;
+    --page-pad: 1rem;
 }
 
-.game-container {
-    background-color: #2d2d2d;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #3d3d3d;
-    max-width: 800px;
-    width: 100%;
-}
-
-.game-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.game-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 1.2em;
-    color: #538d4e;
-}
-
-.game-board {
+.memory {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    perspective: 1000px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom));
+    box-sizing: border-box;
+}
+
+/* ---- 分數列：至少和難度選單一樣寬 ---- */
+.hud {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: max(var(--board-width), 22rem);
+    max-width: 100%;
+}
+
+.stats {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin: 0;
+}
+
+.stat dt {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    margin: 0.125rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.stat__of {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-subtle);
+}
+
+.stat--best dd {
+    color: var(--color-text-subtle);
+}
+
+.memory:not([data-state='playing']) #pause-btn {
+    visibility: hidden;
+}
+
+/* ---- 難度選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.level:hover {
+    color: var(--color-text);
+}
+
+.level[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
+}
+
+.level:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+/* ---- 盤面 ---- */
+.board-area {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 0;
+}
+
+.board-wrap {
+    position: relative;
+    padding: var(--gap-card);
+    border-radius: 16px;
+    background: var(--table);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--card-w));
+    grid-auto-rows: calc(var(--card-w) * 1.25);
+    gap: var(--gap-card);
+    touch-action: manipulation;
 }
 
 .card {
-    aspect-ratio: 1;
     position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.5s;
-    cursor: pointer;
-}
-
-.card.flipped {
-    transform: rotateY(180deg);
-}
-
-.card-front,
-.card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2em;
-}
-
-.card-front {
-    background-color: #538d4e;
-    transform: rotateY(180deg);
-}
-
-.card-back {
-    background-color: #3d3d3d;
-    border: 1px solid #4d4d4d;
-}
-
-.restart-btn {
-    background-color: #538d4e;
-    color: white;
+    padding: 0;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    border-radius: calc(var(--card-w) * 0.12);
+    background: none;
+    color: var(--ink);
+    font: inherit;
     cursor: pointer;
-    font-size: 1.1em;
-    margin-top: 20px;
-    transition: background-color 0.2s;
+    perspective: 600px;
+    -webkit-touch-callout: none;
 }
 
-.restart-btn:hover {
-    background-color: #4a7d45;
+.card:focus-visible {
+    z-index: 1;
+    outline: 2px solid var(--color-text);
+    outline-offset: 3px;
 }
 
-@media (max-width: 600px) {
-    .game-board {
-        grid-template-columns: repeat(3, 1fr);
+.card__inner {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-style: preserve-3d;
+    transition: transform 320ms cubic-bezier(0.3, 0.7, 0.4, 1.1);
+}
+
+.card[data-state='down']:hover .card__inner {
+    transform: translateY(-3px);
+}
+
+.card[data-state='up'] .card__inner,
+.card[data-state='matched'] .card__inner {
+    transform: rotateY(180deg);
+}
+
+.card__back,
+.card__face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border-radius: inherit;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* 牌背：菱格紋 + 內框 */
+.card__back {
+    background:
+        repeating-linear-gradient(45deg, var(--back-pattern) 0 2px, transparent 2px 10px),
+        repeating-linear-gradient(-45deg, var(--back-pattern) 0 2px, transparent 2px 10px),
+        linear-gradient(160deg, var(--back-light), var(--back) 45%, var(--back-dark));
+    box-shadow:
+        inset 0 0 0 calc(var(--card-w) * 0.06) var(--back-dark),
+        inset 0 0 0 calc(var(--card-w) * 0.06 + 1.5px) rgba(255, 255, 255, 0.18),
+        0 3px 0 var(--back-dark),
+        0 6px 14px rgba(0, 0, 0, 0.35);
+}
+
+.card__face {
+    background: linear-gradient(170deg, var(--face-edge), var(--face) 55%);
+    box-shadow:
+        inset 0 0 0 1px var(--face-edge),
+        0 6px 14px rgba(0, 0, 0, 0.35);
+    transform: rotateY(180deg);
+}
+
+/* 蓋過 body.stage svg 的 24px */
+.card .card__face svg {
+    width: 62%;
+    height: 62%;
+    filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--ink) 35%, transparent));
+}
+
+/* 圖案裡的元素在 <use> 的 shadow tree 中，選擇器不能帶外層的 .card */
+.fill {
+    fill: currentColor;
+}
+
+.detail {
+    stroke: var(--face);
+    stroke-width: 1.5;
+}
+
+.detail-fill {
+    fill: var(--face);
+    stroke: none;
+}
+
+/* 已配對：保留圖案但淡化，讓還沒翻的牌更顯眼 */
+.card[data-state='matched'] {
+    cursor: default;
+}
+
+.card[data-state='matched'] .card__face {
+    background: color-mix(in srgb, var(--ink) 12%, var(--face));
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 55%, transparent);
+    opacity: 0.6;
+    transition: opacity 400ms ease 700ms;
+}
+
+/* 配對成功：彈一下並亮框 */
+.card.is-match {
+    animation: match 420ms ease-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+.card.is-match .card__face {
+    animation: glow 900ms ease-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+@keyframes match {
+    40% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes glow {
+    0% {
+        opacity: 1;
+        box-shadow:
+            inset 0 0 0 2px var(--ink),
+            0 0 0 0 color-mix(in srgb, var(--ink) 60%, transparent);
+    }
+    60% {
+        opacity: 1;
+        box-shadow:
+            inset 0 0 0 2px var(--ink),
+            0 0 0 10px transparent;
+    }
+}
+
+/* 配錯：左右搖晃、紅框 */
+.card.is-miss {
+    animation: miss 380ms ease-in-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+.card[data-state='up'].is-miss .card__face {
+    box-shadow:
+        inset 0 0 0 2px var(--miss),
+        0 6px 14px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 150ms ease var(--delay, 0ms);
+}
+
+@keyframes miss {
+    20%,
+    60% {
+        transform: translateX(-5px);
+    }
+    40%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+/* 過關：全部的牌由最後一張往外跳動 */
+.card.is-wave {
+    animation: wave 420ms ease-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+.card.is-wave .card__face {
+    opacity: 1;
+    transition: none;
+}
+
+@keyframes wave {
+    35% {
+        transform: translateY(-12%) scale(1.06);
+    }
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 3;
+    border-radius: inherit;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.62);
+    backdrop-filter: none;
+}
+
+#overlay-paused {
+    /* 暫停時完全蓋住盤面，避免停下來慢慢記 */
+    background: var(--color-bg);
+}
+
+/* 結果：盤面保持可見，文字放在不透明的卡片上 */
+.overlay--result {
+    background: rgba(9, 9, 11, 0.4);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.75rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.overlay__text {
+    max-width: 22rem;
+    margin: 0;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay__text--small {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text-subtle);
+}
+
+#overlay-ready .overlay__text:not(.overlay__text--small) {
+    margin-bottom: 0.75rem;
+}
+
+.final-unit {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.final-detail {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
+    }
+
+    .stats {
+        gap: 1.125rem;
+    }
+
+    .board-wrap {
+        border-radius: 12px;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+}
+
+/* 開始畫面後的示意盤面已經被半透明遮住，不再淡化已配對的牌 */
+.memory[data-state='ready'] .card[data-state='matched'] .card__face {
+    opacity: 1;
+}
+
+/* 橫拿手機：分數與難度放左邊一欄，盤面用滿高度 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .memory {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        align-items: start;
+        column-gap: 1rem;
+    }
+
+    .hud {
+        flex-wrap: wrap;
+        width: 11rem;
+    }
+
+    .stats {
+        display: grid;
+        flex-basis: 100%;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem 1rem;
+    }
+
+    .levels {
+        flex-direction: column;
+        justify-self: start;
+    }
+
+    .board-area {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        height: 100%;
+    }
+
+    .overlay__title {
+        margin-bottom: 0;
+        font-size: 1.375rem;
+    }
+
+    .result-card {
+        gap: 0.25rem;
+        padding: 0.75rem 1.25rem;
+    }
+
+    .final-score {
+        font-size: 2rem;
     }
 }

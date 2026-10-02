@@ -3,25 +3,112 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Memory Match</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <h1>Memory Match</h1>
-        </div>
-        <div class="game-stats">
-            <div>Moves: <span id="moves">0</span></div>
-            <div>Pairs Found: <span id="pairs">0</span></div>
-        </div>
-        <div class="game-board" id="gameBoard"></div>
-        <button class="restart-btn" onclick="restartGame()">Restart Game</button>
-    </div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <!-- 牌面圖案：編號對應 core.js 的 symbol，顏色在 style.css 的 --s0 … --s17 -->
+        <symbol id="s0" viewBox="0 0 24 24"><path class="fill" d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 16.8l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z" /></symbol>
+        <symbol id="s1" viewBox="0 0 24 24"><path class="fill" d="M12 20s-7.5-4.6-8.6-9.6C2.7 7.3 4.6 4.5 7.6 4.5c2 0 3.5 1.1 4.4 2.6.9-1.5 2.4-2.6 4.4-2.6 3 0 4.9 2.8 4.2 5.9C19.5 15.4 12 20 12 20z" /></symbol>
+        <symbol id="s2" viewBox="0 0 24 24"><path class="fill" d="M19.5 14.6A8 8 0 1 1 9.4 4.5a6.5 6.5 0 0 0 10.1 10.1z" /><path class="detail" d="M16.5 4.5v3M15 6h3" /></symbol>
+        <symbol id="s3" viewBox="0 0 24 24"><circle class="fill" cx="12" cy="12" r="4.2" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></symbol>
+        <symbol id="s4" viewBox="0 0 24 24"><path class="fill" d="M13.5 2.5L5 13.5h6l-1 8 8.5-11h-6z" /></symbol>
+        <symbol id="s5" viewBox="0 0 24 24"><path class="fill" d="M12 3s6.2 6.8 6.2 11.3a6.2 6.2 0 0 1-12.4 0C5.8 9.8 12 3 12 3z" /><path class="detail" d="M9.3 14.5a2.8 2.8 0 0 0 2.2 2.6" /></symbol>
+        <symbol id="s6" viewBox="0 0 24 24"><path class="fill" d="M5 19.5C4.5 10.5 10 4.5 20 4c-.2 9.5-5.5 15.5-15 15.5z" /><path class="detail" d="M5 19.5L14 10" /></symbol>
+        <symbol id="s7" viewBox="0 0 24 24"><path class="fill" d="M7.5 4h9l4 5L12 20.5 3.5 9z" /><path class="detail" d="M3.5 9h17M9.5 4L8 9l4 11.5L16 9l-1.5-5" /></symbol>
+        <symbol id="s8" viewBox="0 0 24 24"><path class="fill" d="M3.5 8l4.5 4.5L12 5.5l4 7 4.5-4.5-1.8 10.5H5.3z" /><circle class="detail-fill" cx="12" cy="15.5" r="1.3" /></symbol>
+        <symbol id="s9" viewBox="0 0 24 24"><path d="M9 17.5V5.5l10-2v12" /><circle class="fill" cx="6.5" cy="17.5" r="2.5" /><circle class="fill" cx="16.5" cy="15.5" r="2.5" /></symbol>
+        <symbol id="s10" viewBox="0 0 24 24"><path class="fill" d="M6 16.5v-5.5a6 6 0 0 1 12 0v5.5l1.5 2h-15z" /><path d="M10 21h4" /><path d="M12 3v2" /></symbol>
+        <symbol id="s11" viewBox="0 0 24 24"><path class="fill" d="M2.5 12c3.2-5 9.5-6.2 13.5-2.6l4.5-3.4v12L16 14.6C12 18.2 5.7 17 2.5 12z" /><circle class="detail-fill" cx="8" cy="11" r="1.1" /></symbol>
+        <symbol id="s12" viewBox="0 0 24 24"><path class="fill" d="M7 18.5a4.3 4.3 0 0 1-.6-8.6 5.8 5.8 0 0 1 11.2 1.4 3.6 3.6 0 0 1-.2 7.2z" /></symbol>
+        <symbol id="s13" viewBox="0 0 24 24"><path class="fill" d="M12 2.5c.8 3.8 5.8 6 5.8 11.3a5.8 5.8 0 0 1-11.6 0c0-3 1.6-4.8 2.8-6.3.4 2 1.4 3.3 2.6 3.5-.9-3-.2-6 .4-8.5z" /><path class="detail" d="M12 20a2.5 2.5 0 0 1-2.5-2.5c0-1.8 1.4-2.8 2.5-4.5 1.1 1.7 2.5 2.7 2.5 4.5A2.5 2.5 0 0 1 12 20z" /></symbol>
+        <symbol id="s14" viewBox="0 0 24 24"><path class="fill" d="M12 8c-2-1.6-7-1.4-7 4.4 0 4.6 2.8 8.6 4.8 8.6 1 0 1.4-.6 2.2-.6s1.2.6 2.2.6c2 0 4.8-4 4.8-8.6C19 6.6 14 6.4 12 8z" /><path d="M12 8c0-2.2.8-3.8 2.8-5" /></symbol>
+        <symbol id="s15" viewBox="0 0 24 24"><circle class="fill" cx="7.5" cy="12" r="4.3" /><circle class="detail-fill" cx="7.5" cy="12" r="1.4" /><path d="M11.8 12H21v3.5M17.5 12v2.5" /></symbol>
+        <symbol id="s16" viewBox="0 0 24 24"><circle class="fill" cx="12" cy="7" r="3.4" /><circle class="fill" cx="17" cy="12" r="3.4" /><circle class="fill" cx="12" cy="17" r="3.4" /><circle class="fill" cx="7" cy="12" r="3.4" /><circle class="detail-fill" cx="12" cy="12" r="2.2" /></symbol>
+        <symbol id="s17" viewBox="0 0 24 24"><circle class="fill" cx="12" cy="12" r="5.3" /><ellipse cx="12" cy="12" rx="10" ry="3.4" transform="rotate(-20 12 12)" /></symbol>
+    </svg>
 
-    <script src="script.js"></script>
+    <main class="memory" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat">
+                    <dt>Moves</dt>
+                    <dd id="moves">0</dd>
+                </div>
+                <div class="stat">
+                    <dt>Pairs</dt>
+                    <dd><span id="pairs">0</span><span class="stat__of">/<span id="pairs-total">10</span></span></dd>
+                </div>
+                <div class="stat">
+                    <dt>Time</dt>
+                    <dd id="time">0:00</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+            <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game">
+                <svg><use href="#i-new" /></svg>
+            </button>
+        </header>
+
+        <div class="levels" role="group" aria-label="Difficulty">
+            <button class="level" type="button" data-level="easy">Easy</button>
+            <button class="level" type="button" data-level="normal">Normal</button>
+            <button class="level" type="button" data-level="hard">Hard</button>
+        </div>
+
+        <div class="board-area" id="board-area">
+            <div class="board-wrap">
+                <div class="board" id="board" role="group" aria-label="Cards" aria-describedby="status"></div>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Memory Match</h1>
+                    <p class="overlay__text">Flip two cards at a time and find every matching pair in as few moves as you can.</p>
+                    <p class="overlay__text overlay__text--small only-fine">Arrow keys and <kbd>Space</kbd> work too.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-won" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title">All matched</h2>
+                        <p class="final-score"><span id="won-moves">0</span> <span class="final-unit">moves</span></p>
+                        <p class="final-detail" id="won-detail"></p>
+                        <p class="final-note" id="won-note"></p>
+                        <button class="btn" type="button" data-action="restart">Play again</button>
+                    </div>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">Your current game will be lost.</p>
+                    <button class="btn" type="button" data-action="confirm">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

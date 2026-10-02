@@ -13,10 +13,10 @@
 | 2 首頁效能 | ✅ 完成，Lighthouse Mobile 79 → 100 |
 | 3 共用設計系統 | ✅ 完成 |
 | 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
-| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 11 款（5a 動作類全部完成，5b 完成 2048、minesweeper、sudoku、wordle）（見 Phase 5 狀態表） |
+| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 12 款（5a 動作類全部完成，5b 完成 2048、minesweeper、sudoku、wordle、memory_match）（見 Phase 5 狀態表） |
 | 6 收尾 | 🔄 `CLAUDE.md`（含回合制 DOM 遊戲的做法）、`README.md` 已更新，其餘未開始 |
 
-下一步：5b 益智類剩下的 memory_match、bulls_and_cows。
+下一步：5b 益智類剩下的 bulls_and_cows。
 
 ---
 
@@ -145,11 +145,12 @@
 | 5b | minesweeper | ✅ 已 commit，尚未 push |
 | 5b | sudoku | ✅ 已 commit，尚未 push |
 | 5b | wordle | ✅ 已 commit，尚未 push |
-| 5b | memory_match、bulls_and_cows | ⬜ 下一批 |
+| 5b | memory_match | ✅ 已 commit，尚未 push |
+| 5b | bulls_and_cows | ⬜ 下一個 |
 | 5c | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | ⬜ |
 | 5d | solitaire | ⬜ |
 
-目前 `npm test` 共 189 項（股票頁、shared、11 款遊戲的 core.js）全部通過。已完成的 11 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
+目前 `npm test` 共 198 項（股票頁、shared、12 款遊戲的 core.js）全部通過。已完成的 12 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
 
 ### 各款內容
 
@@ -164,6 +165,7 @@
 - [x] minesweeper — 重新設計：三種標準難度（初級 9×9/10、中級 16×16/40、專家 16×30/99，直向手機上專家盤面轉成 30×16），記住上次選的難度；第一下保證安全且一定打開一片；點數字連鎖翻開（chord），旗子插錯會踩雷；贏了自動插上剩下的旗；規則在 `core.js` 並有測試；格子是 `<button>`，方向鍵移動、Space / Enter 翻開、F 插旗，每格有 aria-label；滑鼠右鍵插旗、手機長按插旗並有「挖 / 插旗」切換；展開由點擊處往外的動畫、輸了地雷依距離連鎖爆開、插錯的旗打叉；各難度分開記錄最佳時間（`highScore('minesweeper:<難度>', { order: 'asc' })`）；暫停 / 切分頁 / 失焦時停止計時並蓋住盤面；移除 `alert()`
 - [x] sudoku — 重新設計：四種難度（Easy / Medium / Hard / Expert），出題保證唯一解、提示數字對中心點對稱，並以解題技巧評等（Easy / Medium 只需唯一候選數與唯一位置，Hard 需要區塊排除或數對，Expert 需要更進階的技巧），每題產生不到 15 ms；筆記（填數字時自動移除同列 / 行 / 宮的筆記）、復原、提示（優先修正填錯的格子，否則選最容易推出的空格）；即時標示重複數字、選取格的同列 / 行 / 宮與相同數字（含筆記）；完成一列 / 行 / 宮的光波、整盤完成的擴散動畫；數字鍵顯示每個數字還剩幾個；移除舊版的 `alert()` 與「Solve」按鈕；規則在 `core.js` 並有測試；格子是 `<button>`，方向鍵移動、數字填入、Shift + 數字或 N 寫筆記、Backspace 清除、U / H 復原與提示；直向手機數字鍵排成一列、橫向螢幕放在盤面右邊排成 3 × 3；進行中的局面與時間存在 `jsgames:sudoku:game`，再開時停在暫停畫面接著玩；各難度分開記錄最佳時間（用了提示不記錄）；暫停 / 切分頁 / 失焦時停止計時並蓋住盤面
 - [x] wordle — 重新設計：每日題目（依當地日期，所有人同一天同一個字，答案清單以固定種子洗牌）與無限練習兩種模式，各自存檔與統計；可猜的字從 2,316 個擴充到約 14,800 個（複數、動詞變化也能猜），答案仍只從常見字出題；困難模式（猜中的位置要沿用、出現過的字母要用上，不符合時說明原因，只能在第一次猜之前切換）；重複字母依答案裡的數量上色；統計（遊玩次數、勝率、連勝、最長連勝、猜幾次的分布，每日題目漏掉一天連勝就斷），最長連勝用 `highScore('wordle:<模式>')`；結果可分享為 emoji 方格（複製到剪貼簿）；每日題目完成後倒數下一題；練習中途換字算輸並先確認；規則在 `core.js` 並有測試；翻牌、輸入彈跳、不合法時整列搖晃、猜中時跳動、上方提示訊息；螢幕鍵盤依結果上色；每列有 aria-label、aria-live 朗讀每次猜測的結果；橫拿手機時鍵盤放在盤面右邊；移除舊版的 inline `onclick`
+- [x] memory_match — 重新設計：三種難度（Easy 3×4、Normal 4×5、Hard 6×6，直向手機上橫的盤面轉成直的），記住上次選的難度；18 種 SVG 圖案（形狀與顏色都不同），取代舊版 emoji；配錯的兩張停留約 0.9 秒後蓋回，期間直接翻下一張會立刻蓋回、點其中一張則保留那張當作新一步的第一張；規則在 `core.js` 並有測試；3D 翻牌、配對成功彈跳與亮框、配錯搖晃與紅框、已配對的牌淡化、過關時全部的牌由最後一張往外跳動；計步數、配對數、時間、最長連續配對；各難度分開記錄最少步數與最短時間（`highScore('memory-match:<難度>')` 與 `memory-match:<難度>:time`）；牌是 `<button>`，方向鍵移動、Space / Enter 翻牌，aria-live 朗讀每次翻牌結果；暫停 / 切分頁 / 失焦時停止計時並蓋住盤面；進行中換難度或開新局先確認；橫拿手機時分數與難度放在盤面左邊；移除 `alert()` 與 inline `onclick`
 - [x] 共用：開始 / 暫停 / 結束畫面、`kbd`、觸控按鈕、圖示按鈕從 tetris 抽到 `shared/game-shell.css`（`<body class="stage">`），新增 `--color-highlight`、`--color-stage-overlay` tokens
 
 ### 遊戲驗收清單（每款都要過）
