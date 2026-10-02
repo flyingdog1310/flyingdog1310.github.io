@@ -1,154 +1,360 @@
-* {
-    margin: 0;
-    padding: 0;
+/* 坦克大戰：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    /* 場地與角色顏色（script.js 讀取這些變數來畫 canvas） */
+    --ground: #17191a;
+    --ground-line: rgba(255, 255, 255, 0.025);
+    --brick: #b4573a;
+    --brick-light: #d27a55;
+    --mortar: #5b2a1c;
+    --steel: #8d97a3;
+    --steel-light: #d5dbe2;
+    --steel-dark: #4e5661;
+    --water: #1f5e9c;
+    --water-light: #6fb2ec;
+    --trees: #2f6b34;
+    --trees-light: #4f9a46;
+    --trees-dark: #1d4422;
+    --tread: #2a2c30;
+    --player: #e8c142;
+    --player-dark: #8a6a14;
+    --basic: #b9c0ca;
+    --fast: #9fc3d9;
+    --power: #c4a3d8;
+    --armor-4: #7fb069;
+    --armor-3: #d9b44a;
+    --armor-2: #d58a5a;
+    --armor-1: #b9c0ca;
+    --enemy-dark: #4c525c;
+    --carrier: #e5484d;
+    --player-bullet: #fff3c4;
+    --enemy-bullet: #ff8a4c;
+    --shield: #7fe3ff;
+    --eagle: #e8c142;
+    --eagle-dark: #6b5315;
+    --powerup: #f3f4f6;
+    --explosion: #ffb347;
+    --explosion-core: #fff1c2;
+
+    /* 場地大小，由 script.js 依可用空間設定 */
+    --board-width: 416px;
+    --gap: 0.75rem;
+    --page-pad: 1rem;
+}
+
+.tanks {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
     box-sizing: border-box;
 }
 
-body {
-    background-color: #121213;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+/* ---- 分數列：與場地同寬 ---- */
+.hud {
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    gap: 0.75rem;
+    width: var(--board-width);
+    max-width: 100%;
 }
 
-.game-container {
-    background-color: #2d2d2d;
-    padding: 20px;
-    border-radius: 10px;
-    border: 2px solid #3d3d3d;
-    max-width: 800px;
-    width: 100%;
-}
-
-.game-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.score-board {
+.stats {
     display: flex;
-    justify-content: space-around;
-    margin: 10px 0;
-    font-size: 1.2em;
+    flex: 1;
+    align-items: baseline;
+    gap: 1.25rem;
+    margin: 0;
 }
 
-#gameCanvas {
-    background-color: #121213;
-    border: 2px solid #3d3d3d;
+.stat dt {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    margin: 0.125rem 0 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+}
+
+.stat--score dd {
+    font-size: 1.5rem;
+}
+
+.stat--best dd {
+    color: var(--color-text-subtle);
+}
+
+.icons {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 1.35rem;
+}
+
+.icons svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+    stroke: none;
+}
+
+.icons--lives {
+    color: var(--player);
+}
+
+.icons--lives span {
+    color: var(--color-text);
+}
+
+.icons--enemies svg {
+    color: var(--basic);
+}
+
+.tanks:not([data-state='playing']) #pause-btn {
+    visibility: hidden;
+}
+
+/* ---- 場地 ---- */
+.field-area {
+    display: grid;
+    place-items: center;
     width: 100%;
-    max-width: 600px;
-    height: 400px;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.field {
+    position: relative;
+    border-radius: 6px;
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+    touch-action: none;
+}
+
+.field.is-shake {
+    animation: shake 450ms ease-out;
+}
+
+@keyframes shake {
+    15% {
+        transform: translate(-4px, 3px);
+    }
+    35% {
+        transform: translate(4px, -2px);
+    }
+    55% {
+        transform: translate(-3px, 1px);
+    }
+    75% {
+        transform: translate(2px, -1px);
+    }
+}
+
+#board {
     display: block;
-    margin: 0 auto;
+    border-radius: inherit;
 }
 
-.controls {
-    margin-top: 20px;
+.callout {
+    position: absolute;
+    inset: 38% 0 auto;
+    margin: 0;
     text-align: center;
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.85);
+    pointer-events: none;
+    opacity: 0;
 }
 
-button {
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s;
+.callout small {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
 }
 
-button:hover {
-    background-color: #4a7d45;
+.callout.is-showing {
+    animation: callout 2s ease-out forwards;
 }
 
-.mobile-controls {
-    display: none;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 20px;
+.callout.is-pickup {
+    color: var(--color-highlight);
 }
 
-.mobile-controls button {
-    width: 100%;
-    height: 50px;
-    font-size: 1.5em;
-}
-
-#fireButton {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.game-over {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.95);
-    padding: 30px 40px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(8px);
-    animation: fadeIn 0.3s ease;
-    z-index: 1000;
-}
-
-@keyframes fadeIn {
-    from {
+@keyframes callout {
+    0% {
         opacity: 0;
-        transform: translate(-50%, -48%);
+        transform: scale(0.85);
     }
-    to {
+    10% {
         opacity: 1;
-        transform: translate(-50%, -50%);
+        transform: scale(1.04);
+    }
+    18% {
+        transform: scale(1);
+    }
+    82% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
     }
 }
 
-.game-over h2 {
-    color: #538d4e;
-    margin-bottom: 15px;
-    font-size: 2em;
+.overlay {
+    border-radius: inherit;
 }
 
-.game-over p {
-    font-size: 1.2em;
-    margin-bottom: 20px;
+/* 開始畫面：讓示意盤面透出來 */
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.66);
+    backdrop-filter: none;
 }
 
-.game-over button {
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s ease;
+.overlay__title {
+    font-size: 1.75rem;
 }
 
-.game-over button:hover {
-    background-color: #4a7d45;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(83, 141, 78, 0.3);
+.overlay__text {
+    max-width: 22rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
 }
 
-@media (max-width: 768px) {
-    .mobile-controls {
-        display: grid;
+.nowrap {
+    white-space: nowrap;
+}
+
+/* ---- 觸控：左邊搖桿、右邊開火 ---- */
+.pad {
+    align-items: center;
+    justify-content: space-between;
+    width: var(--board-width);
+    max-width: 100%;
+}
+
+.stick {
+    position: relative;
+    width: 8.5rem;
+    height: 8.5rem;
+    flex: none;
+    border: 1px solid var(--color-divider);
+    border-radius: 50%;
+    background: var(--color-surface);
+    touch-action: none;
+}
+
+.stick__arrow {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    justify-items: center;
+    align-items: start;
+    padding-top: 0.375rem;
+    z-index: 1;
+    color: var(--color-text-faint);
+    pointer-events: none;
+}
+
+.stick__arrow[data-dir='right'] {
+    transform: rotate(90deg);
+}
+
+.stick__arrow[data-dir='down'] {
+    transform: rotate(180deg);
+}
+
+.stick__arrow[data-dir='left'] {
+    transform: rotate(270deg);
+}
+
+.stick__arrow.is-active {
+    color: var(--color-text);
+}
+
+.stick__knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: -1.625rem 0 0 -1.625rem;
+    border-radius: 50%;
+    background: var(--color-control);
+    box-shadow: inset 0 0 0 1px var(--color-border-strong);
+    pointer-events: none;
+}
+
+.fire-btn {
+    width: 5.5rem;
+    height: 5.5rem;
+}
+
+.fire-btn svg {
+    width: 32px;
+    height: 32px;
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
     }
 
-    .game-container {
-        padding: 10px;
+    .stats {
+        gap: 0.875rem;
     }
 
-    #gameCanvas {
-        height: 300px;
+    .stat--score dd {
+        font-size: 1.25rem;
+    }
+
+    .stat dd {
+        font-size: 1rem;
+    }
+
+    .field-area {
+        place-items: start center;
+    }
+
+    .overlay {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+
+    .callout {
+        font-size: 1.375rem;
+    }
+}
+
+/* 很窄時省略最高分（結算畫面會顯示） */
+@media (max-width: 379px) {
+    .stat--best {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .field.is-shake {
+        animation: none;
     }
 }
