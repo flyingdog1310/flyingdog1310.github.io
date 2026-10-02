@@ -3,33 +3,109 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Sudoku</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header">
-        <h1 class="title">Sudoku</h1>
-    </div>
-    <div class="container">
-        <div class="difficulty">
-            <select id="difficulty" onchange="newGame()">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
-            </select>
-        </div>
-        <div class="sudoku-board" id="board"></div>
-        <div class="number-pad" id="numberPad"></div>
-        <div class="controls">
-            <button onclick="newGame()">New Game</button>
-            <button onclick="checkSolution()">Check Solution</button>
-            <button onclick="solvePuzzle()">Solve</button>
-        </div>
-    </div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+        <symbol id="i-erase" viewBox="0 0 24 24"><path d="M7.5 20l-3.8-3.8a1.5 1.5 0 0 1 0-2.1L13.6 4.2a1.5 1.5 0 0 1 2.1 0l4.1 4.1a1.5 1.5 0 0 1 0 2.1L11 19.4" /><path d="M8.6 9.2l6.2 6.2" /><path d="M7.5 20H20" /></symbol>
+        <symbol id="i-notes" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z" /><path d="M13.5 6.5l4 4" /></symbol>
+        <symbol id="i-hint" viewBox="0 0 24 24"><path d="M9.5 18h5" /><path d="M10.5 21h3" /><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.1h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z" /></symbol>
+    </svg>
 
-    <script src="script.js"></script>
+    <main class="sudoku" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat">
+                    <dt>Time</dt>
+                    <dd id="time">0:00</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+            <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game">
+                <svg><use href="#i-new" /></svg>
+            </button>
+        </header>
+
+        <div class="levels" role="group" aria-label="Difficulty">
+            <button class="level" type="button" data-level="easy">Easy</button>
+            <button class="level" type="button" data-level="medium">Medium</button>
+            <button class="level" type="button" data-level="hard">Hard</button>
+            <button class="level" type="button" data-level="expert">Expert</button>
+        </div>
+
+        <div class="play">
+            <div class="board-area">
+                <div class="board-wrap">
+                    <div class="board" id="board" role="group" aria-label="Sudoku grid" aria-describedby="status"></div>
+
+                    <div class="overlay" id="overlay-ready">
+                        <h1 class="overlay__title">Sudoku</h1>
+                        <p class="overlay__text">Fill every row, column and 3×3 box with the digits 1 to 9.</p>
+                        <table class="keys only-fine">
+                            <tr><td><kbd>1</kbd>–<kbd>9</kbd></td><td>Fill a square</td></tr>
+                            <tr><td><kbd>Shift</kbd> + digit</td><td>Pencil mark</td></tr>
+                            <tr><td><kbd>N</kbd></td><td>Notes mode</td></tr>
+                            <tr><td><kbd>⌫</kbd></td><td>Erase</td></tr>
+                            <tr><td><kbd>U</kbd> <kbd>H</kbd></td><td>Undo, hint</td></tr>
+                        </table>
+                        <p class="overlay__text overlay__text--small only-coarse">Tap a square, then a number. Turn on Notes for pencil marks.</p>
+                        <button class="btn" type="button" data-action="start">Start game</button>
+                    </div>
+
+                    <div class="overlay" id="overlay-paused" hidden>
+                        <h2 class="overlay__title">Paused</h2>
+                        <p class="overlay__text" id="paused-note"></p>
+                        <button class="btn" type="button" data-action="resume">Resume</button>
+                        <button class="btn btn--quiet" type="button" data-action="new">New game</button>
+                    </div>
+
+                    <div class="overlay overlay--result" id="overlay-won" hidden>
+                        <div class="result-card">
+                            <h2 class="overlay__title">Solved</h2>
+                            <p class="final-score" id="won-time">0:00</p>
+                            <p class="final-note" id="won-note"></p>
+                            <button class="btn" type="button" data-action="restart">New puzzle</button>
+                        </div>
+                    </div>
+
+                    <div class="overlay" id="overlay-confirm" hidden>
+                        <h2 class="overlay__title">Start over?</h2>
+                        <p class="overlay__text">Your current puzzle will be lost.</p>
+                        <button class="btn" type="button" data-action="confirm">New game</button>
+                        <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="tools">
+                    <button class="tool" type="button" id="undo-btn" data-tool="undo"><svg><use href="#i-undo" /></svg><span>Undo</span></button>
+                    <button class="tool" type="button" data-tool="erase"><svg><use href="#i-erase" /></svg><span>Erase</span></button>
+                    <button class="tool" type="button" id="notes-btn" data-tool="notes" aria-pressed="false"><svg><use href="#i-notes" /></svg><span>Notes</span></button>
+                    <button class="tool" type="button" data-tool="hint"><svg><use href="#i-hint" /></svg><span>Hint</span></button>
+                </div>
+                <div class="numpad" id="numpad" role="group" aria-label="Numbers"></div>
+            </div>
+        </div>
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
