@@ -3,19 +3,102 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header">
-        <h1 class="title">Tic Tac Toe</h1>
-    </div>
-    <div class="status" id="status"></div>
-    <div class="board" id="board"></div>
-    <button class="restart-btn" onclick="restartGame()">Restart</button>
-    <script src="script.js"></script>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+        <symbol id="m-x" viewBox="0 0 100 100"><path d="M28 28l44 44M72 28L28 72" /></symbol>
+        <symbol id="m-o" viewBox="0 0 100 100"><circle cx="50" cy="50" r="24" /></symbol>
+    </svg>
+
+    <main class="ttt" data-state="ready" data-mode="cpu">
+        <header class="hud">
+            <div class="score" id="score">
+                <div class="side" data-mark="X" id="side-x">
+                    <svg class="side__mark" aria-hidden="true"><use href="#m-x" /></svg>
+                    <span class="side__name" id="name-x">You</span>
+                    <span class="side__wins" id="wins-x">0</span>
+                </div>
+                <div class="side side--draw">
+                    <span class="side__name">Draws</span>
+                    <span class="side__wins" id="draws">0</span>
+                </div>
+                <div class="side" data-mark="O" id="side-o">
+                    <svg class="side__mark" aria-hidden="true"><use href="#m-o" /></svg>
+                    <span class="side__name" id="name-o">Computer</span>
+                    <span class="side__wins" id="wins-o">0</span>
+                </div>
+            </div>
+            <div class="hud__buttons">
+                <button class="icon-btn" id="undo-btn" type="button" aria-label="Undo" title="Undo (U)">
+                    <svg><use href="#i-undo" /></svg>
+                </button>
+                <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game (N)">
+                    <svg><use href="#i-new" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="levels" role="group" aria-label="Opponent">
+            <button class="level" type="button" data-opponent="easy">Easy</button>
+            <button class="level" type="button" data-opponent="normal">Normal</button>
+            <button class="level" type="button" data-opponent="hard">Hard</button>
+            <button class="level" type="button" data-opponent="duo">2 players</button>
+        </div>
+
+        <div class="board-area">
+            <div class="board-wrap">
+                <div class="board" id="board" role="group" aria-label="Board" aria-describedby="status"></div>
+                <svg class="strike" id="strike" viewBox="0 0 300 300" aria-hidden="true">
+                    <line id="strike-line" pathLength="1" />
+                </svg>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Tic Tac Toe</h1>
+                    <p class="overlay__text">Get three in a row. Play the computer, or pass the device to a friend.</p>
+                    <table class="keys only-fine">
+                        <tr><td><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd> <kbd>Space</kbd></td><td>Move and place</td></tr>
+                        <tr><td><kbd>1</kbd>–<kbd>9</kbd></td><td>Place directly</td></tr>
+                        <tr><td><kbd>U</kbd></td><td>Undo</td></tr>
+                    </table>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-over" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title" id="over-title">You win</h2>
+                        <p class="final-detail" id="over-detail"></p>
+                        <p class="final-note" id="over-note"></p>
+                        <button class="btn" type="button" data-action="restart">Play again</button>
+                    </div>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">The current game will be lost.</p>
+                    <button class="btn" type="button" data-action="confirm">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
+            </div>
+
+            <div class="info">
+                <p class="turn" id="turn"></p>
+                <p class="note" id="note"></p>
+            </div>
+        </div>
+
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

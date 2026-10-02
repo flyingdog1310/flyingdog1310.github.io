@@ -1,65 +1,642 @@
-body {
-    background: #121213;
-    font-family: 'Microsoft JhengHei', Arial, sans-serif;
+/* 井字棋：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面與顏色 */
+
+:root {
+    --mark-x: #4dc3ff;
+    --mark-o: #ffad42;
+    --grid-line: #3a3d4a;
+    --cell: #1b1c22;
+    --cell-hover: #23252d;
+    --cell-last: #262833;
+    --taken: #ef6a6a;
+
+    --gap: 0.75rem;
+    --page-pad: 1rem;
+    /* 盤面最大寬度 */
+    --board-max: 32rem;
+    /* 盤面下方提示文字的高度 */
+    --info-h: 3.75rem;
+}
+
+.ttt {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom));
+    box-sizing: border-box;
+}
+
+/* ---- 分數列：X 的戰績 · 和局 · O 的戰績，輪到的一方加上底線 ---- */
+.hud {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: var(--board-max);
+    max-width: 100%;
+}
+
+.score {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.375rem;
+    min-width: 0;
+}
+
+.side {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.375rem;
+    padding: 0.375rem 0.625rem 0.4rem;
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+    min-width: 0;
+    transition: box-shadow 200ms ease;
+}
+
+.side[data-mark='X'] {
+    --ink: var(--mark-x);
+}
+
+.side[data-mark='O'] {
+    --ink: var(--mark-o);
+    grid-template-columns: 1fr auto;
+    text-align: right;
+}
+
+/* 名稱在上一列，記號與勝場在下一列（O 的一側左右相反） */
+body.stage .side__mark {
+    grid-row: 2;
+    grid-column: 1;
+    width: 1.375rem;
+    height: 1.375rem;
+    stroke: var(--ink);
+    stroke-width: 13;
+}
+
+.side[data-mark='O'] .side__mark {
+    grid-column: 2;
+}
+
+.side__name {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    overflow: hidden;
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side__wins {
+    grid-row: 2;
+    grid-column: 2;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.side[data-mark='O'] .side__wins {
+    grid-column: 1;
+}
+
+.side--draw {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    margin: 0;
-    color: #ffffff;
+    padding-inline: 0.5rem;
+    background: none;
+    box-shadow: none;
 }
 
-.status {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    color: #538d4e;
-    min-height: 1.5em;
+.side--draw .side__wins {
+    color: var(--color-text-muted);
 }
 
+.ttt[data-state='playing'][data-turn='X'] .side[data-mark='X'],
+.ttt[data-state='playing'][data-turn='O'] .side[data-mark='O'] {
+    box-shadow:
+        inset 0 0 0 1px var(--color-divider),
+        inset 0 -3px 0 var(--ink);
+}
+
+.hud__buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.icon-btn:disabled:hover {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+}
+
+/* ---- 對手選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level {
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.level:hover {
+    color: var(--color-text);
+}
+
+.level[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
+}
+
+.level:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+/* ---- 盤面：正方形，依可用空間縮放 ---- */
+.board-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    container-type: size;
+}
+
+.board-wrap {
+    position: relative;
+    --size: min(100cqw, 100cqh - var(--info-h), var(--board-max));
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    padding: 4%;
+    border-radius: 20px;
+    background: var(--cell);
+    box-sizing: border-box;
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* 格子之間的縫就是井字的線（外圍沒有線） */
 .board {
     display: grid;
-    grid-template-columns: repeat(3, 80px);
-    grid-template-rows: repeat(3, 80px);
-    gap: 8px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: 3%;
+    width: 100%;
+    height: 100%;
+    /* 只在格子之間的縫畫線：格子寬 (100% - 2 × 3%) / 3 */
+    --stripes:
+        transparent 31.333%, var(--grid-line) 31.333% 34.333%, transparent 34.333% 65.667%,
+        var(--grid-line) 65.667% 68.667%, transparent 68.667%;
+    background:
+        linear-gradient(to right, var(--stripes)),
+        linear-gradient(to bottom, var(--stripes));
+    touch-action: manipulation;
 }
 
 .cell {
-    width: 80px;
-    height: 80px;
-    background: #2d2d2d;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5em;
-    color: #ffffff;
-    cursor: pointer;
-    transition: background 0.2s;
-    user-select: none;
-}
-
-.cell:hover {
-    background: #3d3d3d;
-}
-
-.cell.winner {
-    background: #b59f3b;
-}
-
-.restart-btn {
-    padding: 10px 30px;
-    font-size: 1em;
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0;
     border: none;
-    border-radius: 5px;
-    background: #538d4e;
-    color: #fff;
+    border-radius: 6px;
+    background: var(--cell);
+    color: inherit;
+    font: inherit;
     cursor: pointer;
-    transition: background-color 0.2s;
+    -webkit-touch-callout: none;
+    transition: background 150ms ease;
 }
 
-.restart-btn:hover {
-    background: #4a7d45;
+.cell:focus-visible {
+    z-index: 1;
+    outline: 2px solid var(--color-text);
+    outline-offset: -4px;
+}
+
+.cell[data-mark],
+.ttt:not([data-input='on']) .cell {
+    cursor: default;
+}
+
+/* 最後一步的格子稍微亮一點 */
+.cell.is-last {
+    background: var(--cell-last);
+}
+
+body.stage .cell svg {
+    width: 82%;
+    height: 82%;
+    stroke-width: 11;
+}
+
+body.stage .mark--x {
+    stroke: var(--mark-x);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--mark-x) 35%, transparent));
+}
+
+body.stage .mark--o {
+    stroke: var(--mark-o);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--mark-o) 35%, transparent));
+}
+
+/* 新下的棋子一筆一筆畫出來 */
+.cell.is-new .mark path,
+.cell.is-new .mark circle {
+    stroke-dasharray: 1;
+    animation: draw 220ms ease-out backwards;
+}
+
+.cell.is-new .mark path:nth-child(2) {
+    animation-delay: 150ms;
+}
+
+.cell.is-new .mark circle {
+    animation-duration: 340ms;
+}
+
+@keyframes draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* 空格的預覽：滑鼠滑過或鍵盤聚焦時顯示輪到的那一方 */
+.ghost {
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+
+body.stage .ghost {
+    stroke: transparent;
+}
+
+.ttt[data-turn='X'] .cell .ghost {
+    stroke: var(--mark-x);
+}
+
+.ttt[data-turn='O'] .cell .ghost {
+    stroke: var(--mark-o);
+}
+
+.ttt[data-input='on'] .cell:not([data-mark]):focus-visible .ghost {
+    opacity: 0.28;
+}
+
+@media (hover: hover) {
+    .ttt[data-input='on'] .cell:not([data-mark]):hover {
+        background: var(--cell-hover);
+    }
+
+    .ttt[data-input='on'] .cell:not([data-mark]):hover .ghost {
+        opacity: 0.28;
+    }
+}
+
+/* 點到已經有棋子的格子：搖一下 */
+.cell.is-taken {
+    animation: taken 300ms ease-in-out;
+}
+
+@keyframes taken {
+    25%,
+    75% {
+        transform: translateX(-4px);
+    }
+    50% {
+        transform: translateX(4px);
+    }
+}
+
+/* 連成一線：線上的棋子跳一下，其他棋子淡化 */
+.ttt[data-result^='win'] .cell[data-mark]:not(.is-win) .mark,
+.ttt[data-result='draw'] .cell .mark {
+    opacity: 0.35;
+    transition: opacity 400ms ease 300ms;
+}
+
+.ttt[data-state='playing'] .cell.is-win .mark,
+.ttt[data-state='over'] .cell.is-win .mark {
+    animation: pop 480ms ease-out 250ms backwards;
+}
+
+@keyframes pop {
+    40% {
+        transform: scale(1.18);
+    }
+}
+
+.strike {
+    position: absolute;
+    inset: 4%;
+    width: 92%;
+    height: 92%;
+    overflow: visible;
+    pointer-events: none;
+}
+
+body.stage .strike {
+    width: 92%;
+    height: 92%;
+}
+
+.strike line {
+    stroke-width: 9;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+}
+
+.strike line:not([x1]) {
+    display: none;
+}
+
+.strike line[x1] {
+    animation: draw 380ms ease-out 120ms forwards;
+}
+
+.strike line[data-mark='X'] {
+    stroke: var(--mark-x);
+    filter: drop-shadow(0 0 8px var(--mark-x));
+}
+
+.strike line[data-mark='O'] {
+    stroke: var(--mark-o);
+    filter: drop-shadow(0 0 8px var(--mark-o));
+}
+
+/* 示意盤面沒有連線 */
+.ttt[data-state='ready'] .strike line {
+    display: none;
+}
+
+/* ---- 盤面下方：輪到誰、連勝紀錄 ---- */
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+    height: var(--info-h);
+    text-align: center;
+}
+
+.turn {
+    margin: 0;
+    min-height: 1.4em;
+    font-size: 1.0625rem;
+    font-weight: 700;
+}
+
+.turn[data-mark='X'] {
+    color: var(--mark-x);
+}
+
+.turn[data-mark='O'] {
+    color: var(--mark-o);
+}
+
+.ttt[data-mode='cpu'] .turn[data-mark='O'] {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.ttt:not([data-state='playing']) .turn {
+    visibility: hidden;
+}
+
+.note {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 3;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.7);
+    backdrop-filter: none;
+}
+
+/* 結果：盤面保持可見，文字放在不透明的卡片上 */
+.overlay--result {
+    background: rgba(9, 9, 11, 0.35);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1.125rem 1.5rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+    animation: rise 320ms cubic-bezier(0.3, 0.7, 0.4, 1.2);
+}
+
+.ttt[data-outcome='win'] .result-card .overlay__title {
+    color: var(--color-highlight);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes rise {
+    from {
+        transform: translateY(12px) scale(0.96);
+        opacity: 0;
+    }
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.result-card .overlay__title {
+    margin-bottom: 0;
+}
+
+.overlay__text {
+    max-width: 22rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay .keys {
+    margin-bottom: 0.5rem;
+}
+
+.final-detail {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.result-card .final-note {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.625rem;
+        --page-pad: 0.75rem;
+    }
+
+    .level {
+        padding: 0.4rem 0.7rem;
+    }
+
+    .board-wrap {
+        border-radius: 16px;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+}
+
+@media (max-width: 359px) {
+    .level {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .side {
+        padding-inline: 0.4rem;
+    }
+}
+
+/* 橫拿手機：分數、對手選單、提示文字放左邊一欄，盤面用滿高度 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .ttt {
+        grid-template-columns: minmax(0, 18rem) auto;
+        grid-template-rows: auto auto 1fr;
+        justify-content: center;
+        align-items: start;
+        column-gap: 1.5rem;
+    }
+
+    .hud {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .score {
+        flex-basis: 100%;
+    }
+
+    .hud {
+        justify-content: center;
+    }
+
+    .levels {
+        justify-self: stretch;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 18px;
+    }
+
+    .board-area {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        width: calc(100dvh - 2 * var(--page-pad));
+        height: 100%;
+    }
+
+    /* 盤面右邊沒有空間，提示文字放到左欄最下方 */
+    :root {
+        --info-h: 0px;
+    }
+
+    .ttt {
+        position: relative;
+    }
+
+    .info {
+        position: absolute;
+        left: var(--page-pad);
+        bottom: var(--page-pad);
+        width: 18rem;
+        height: auto;
+    }
+
+    .overlay__title {
+        margin-bottom: 0;
+        font-size: 1.375rem;
+    }
+
+    .overlay__text {
+        margin-bottom: 0.25rem;
+    }
+
+    .result-card {
+        gap: 0.25rem;
+        padding: 0.75rem 1.25rem;
+    }
 }
