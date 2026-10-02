@@ -3,29 +3,104 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Minesweeper</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header">
-        <h1 class="title">Minesweeper</h1>
-    </div>
-    <div class="game-container">
-        <div class="game-info">
-            <div>Mines: <span id="mines-count">10</span></div>
-            <div>Flags: <span id="flags-count">0</span></div>
-            <div>Time: <span id="timer">0</span></div>
-        </div>
-        <div class="controls">
-            <button onclick="startNewGame()">New Game</button>
-            <button onclick="toggleFlagMode()" id="flag-mode">Flag Mode: Off</button>
-        </div>
-        <div class="game-board" id="game-board"></div>
-    </div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14" /></symbol>
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <symbol id="i-flag" viewBox="0 0 24 24"><path class="flag-pole" d="M7 21V4" /><path class="flag-cloth" d="M7.5 4.5l10 4-10 4z" /><path class="flag-base" d="M4 21h7" /></symbol>
+        <symbol id="i-mine" viewBox="0 0 24 24"><path class="mine-spikes" d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4M5.3 5.3l2.8 2.8M15.9 15.9l2.8 2.8M5.3 18.7l2.8-2.8M15.9 8.1l2.8-2.8" /><circle class="mine-body" cx="12" cy="12" r="5.6" /><circle class="mine-shine" cx="10" cy="10" r="1.5" /></symbol>
+        <symbol id="i-dig" viewBox="0 0 24 24"><path d="M14 4l6 6" /><path d="M17 7L7.5 16.5" /><path d="M8.5 13.5l2 2-4.2 4.2a1.4 1.4 0 0 1-2-2z" /></symbol>
+    </svg>
 
-    <script src="script.js"></script>
+    <main class="mines" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--mines">
+                    <dt>Mines</dt>
+                    <dd><svg aria-hidden="true"><use href="#i-mine" /></svg><span id="mines-left">10</span></dd>
+                </div>
+                <div class="stat stat--time">
+                    <dt>Time</dt>
+                    <dd id="time">0</dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="pause-btn" type="button" aria-label="Pause">
+                <svg><use href="#i-pause" /></svg>
+            </button>
+            <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game">
+                <svg><use href="#i-new" /></svg>
+            </button>
+        </header>
+
+        <div class="levels" role="group" aria-label="Difficulty">
+            <button class="level" type="button" data-level="beginner">Beginner</button>
+            <button class="level" type="button" data-level="intermediate">Intermediate</button>
+            <button class="level" type="button" data-level="expert">Expert</button>
+        </div>
+
+        <div class="board-area" id="board-area">
+            <div class="board-wrap" id="board-wrap">
+                <div class="board" id="board" role="group" aria-label="Minefield" aria-describedby="status"></div>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Minesweeper</h1>
+                    <p class="overlay__text only-fine">Click to open a square, right-click to flag a mine. Click a number with all its mines flagged to open its neighbors. Arrow keys and <kbd>F</kbd> work too.</p>
+                    <p class="overlay__text only-coarse">Tap to open a square, long-press to flag a mine. Tap a number with all its mines flagged to open its neighbors.</p>
+                    <p class="overlay__text overlay__text--small">Your first click is always safe.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-paused" hidden>
+                    <h2 class="overlay__title">Paused</h2>
+                    <button class="btn" type="button" data-action="resume">Resume</button>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-won" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title">Cleared</h2>
+                        <p class="final-score" id="won-time">0</p>
+                        <p class="final-note" id="won-note"></p>
+                        <button class="btn" type="button" data-action="restart">Play again</button>
+                    </div>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-lost" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title">Boom</h2>
+                        <p class="final-note" id="lost-note"></p>
+                        <button class="btn" type="button" data-action="restart">Try again</button>
+                    </div>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">Your current game will be lost.</p>
+                    <button class="btn" type="button" data-action="confirm">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tools" role="group" aria-label="Tap action">
+            <button class="tool" type="button" data-mode="dig" aria-pressed="true"><svg><use href="#i-dig" /></svg>Dig</button>
+            <button class="tool" type="button" data-mode="flag" aria-pressed="false"><svg><use href="#i-flag" /></svg>Flag</button>
+        </div>
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

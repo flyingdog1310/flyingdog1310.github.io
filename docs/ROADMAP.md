@@ -13,10 +13,10 @@
 | 2 首頁效能 | ✅ 完成，Lighthouse Mobile 79 → 100 |
 | 3 共用設計系統 | ✅ 完成 |
 | 4 首頁 UI / 視覺 | ⏸ 尚未開始：先做 Phase 5 的遊戲翻新，之後再回來 |
-| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 8 款（5a 動作類全部完成，5b 完成 2048）（見 Phase 5 狀態表） |
+| 5 遊戲逐款翻新 | 🔄 進行中：21 款完成 9 款（5a 動作類全部完成，5b 完成 2048、minesweeper）（見 Phase 5 狀態表） |
 | 6 收尾 | 🔄 `CLAUDE.md`、`README.md` 已更新，其餘未開始 |
 
-下一步：5b 益智類剩下的 minesweeper、sudoku、wordle、memory_match、bulls_and_cows。
+下一步：5b 益智類剩下的 sudoku、wordle、memory_match、bulls_and_cows。
 
 ---
 
@@ -141,12 +141,13 @@
 | 5a | dino_runner | ✅ 已上線 |
 | 5a | tank_battle | ✅ 已上線；難度數值待實玩回饋 |
 | 5a | breakout | ✅ 已上線；球速、膠囊機率、觸控拖曳倍率待實玩回饋 |
-| 5b | 2048 | ✅ 已 commit，尚未 push |
-| 5b | minesweeper、sudoku、wordle、memory_match、bulls_and_cows | ⬜ 下一批 |
+| 5b | 2048 | ✅ 已上線 |
+| 5b | minesweeper | ✅ 已 commit，尚未 push |
+| 5b | sudoku、wordle、memory_match、bulls_and_cows | ⬜ 下一批 |
 | 5c | chess、chinese_chess、checkers、reversi、gomoku、connect_four、tic_tac_toe | ⬜ |
 | 5d | solitaire | ⬜ |
 
-目前 `npm test` 共 152 項（股票頁、shared、8 款遊戲的 core.js）全部通過。已完成的 8 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
+目前 `npm test` 共 163 項（股票頁、shared、9 款遊戲的 core.js）全部通過。已完成的 9 款都還沒在實體手機上測過觸控手感與 120Hz 螢幕，驗證方式是 headless Chrome 截圖（桌機 / 縮圖 / 手機觸控模擬）加模擬操作。
 
 ### 各款內容
 
@@ -158,6 +159,7 @@
 - [x] tank_battle — 重新設計為坦克大戰（Battle City）規則：13 × 13 地圖（磚以 4 單位小塊逐步打穿、鋼板、水、樹叢），4 張地圖輪替；守護基地老鷹，被打中即結束；每關 20 輛、場上最多 4 輛，四種敵人（一般 / 快速 / 火力 / 4 發才打得掉的重裝甲），越後面的關卡越多重裝甲、越快越常開火；第 4、11、18 輛閃紅光，打中掉道具（頭盔、星星 3 級、手榴彈、時鐘、鏟子、坦克）；轉彎對齊半格方便鑽通道；子彈互撞抵銷；規則在 `core.js` 並有測試；移除舊版 `setInterval` loop；坦克、老鷹、道具以向量繪製，磚紋 / 鋼板 / 水波 / 樹叢分層（地形變動時才重畫），爆炸碎片、分數、出生閃光、護盾；手機為拖曳搖桿 + 按住連發的開火鈕
 - [x] breakout — 重新設計為 Arkanoid 式規則：5 個關卡輪替（銀磚要打多下且隨關卡變硬、金磚打不破）、反彈角度依擊中擋板的位置決定、每打一塊加速且撞牆時保證最小垂直速度；膠囊道具 E 加長、S 減速、C 接球、L 雷射、D 分裂三顆、P 加命（同時只掉一顆、多球時不掉）；開局球黏在擋板上由玩家發射；規則在 `core.js` 並有測試；漸層磚塊與金屬反光、銀磚裂痕、球的光暈與拖尾、碎片、擋板加長動畫；滑鼠跟隨 / 鍵盤 / 手機整個畫面相對拖曳，放開發射、按住開火
 - [x] 2048 — 重新設計：規則抽到 `core.js` 並有測試，修正舊版一步內重複合併的 bug（`4 4 8` 往左原本會變 16）；做出 2048 可選擇繼續、沒有步可走時結束；可復原上一步（結束畫面也能復原）；進行中的局面存在 localStorage（`jsgames:2048:game`），關掉 modal 再開可以接著玩；方塊改用 DOM + CSS transform 滑動、合併彈跳、新方塊淡入，盤面以 container query 自動縮放；方向鍵 / WASD、手機滑動；ARIA live region 朗讀每一步的結果；沿用舊版 `bestScore` 最高分。回合制所以沒有暫停與自動暫停
+- [x] minesweeper — 重新設計：三種標準難度（初級 9×9/10、中級 16×16/40、專家 16×30/99，直向手機上專家盤面轉成 30×16），記住上次選的難度；第一下保證安全且一定打開一片；點數字連鎖翻開（chord），旗子插錯會踩雷；贏了自動插上剩下的旗；規則在 `core.js` 並有測試；格子是 `<button>`，方向鍵移動、Space / Enter 翻開、F 插旗，每格有 aria-label；滑鼠右鍵插旗、手機長按插旗並有「挖 / 插旗」切換；展開由點擊處往外的動畫、輸了地雷依距離連鎖爆開、插錯的旗打叉；各難度分開記錄最佳時間（`highScore('minesweeper:<難度>', { order: 'asc' })`）；暫停 / 切分頁 / 失焦時停止計時並蓋住盤面；移除 `alert()`
 - [x] 共用：開始 / 暫停 / 結束畫面、`kbd`、觸控按鈕、圖示按鈕從 tetris 抽到 `shared/game-shell.css`（`<body class="stage">`），新增 `--color-highlight`、`--color-stage-overlay` tokens
 
 ### 遊戲驗收清單（每款都要過）

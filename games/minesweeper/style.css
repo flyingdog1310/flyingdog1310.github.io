@@ -1,147 +1,470 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #121213;
-    color: white;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 10px;
-    min-height: 100vh;
+/* 踩地雷：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面 */
+
+:root {
+    --cell-hidden: #3a3d45;
+    --cell-hidden-light: #4b4f59;
+    --cell-hidden-dark: #2a2c33;
+    --cell-hidden-hover: #454953;
+    --cell-open: #1d1e22;
+    --cell-line: #2a2b30;
+    --n1: #6ea8fe;
+    --n2: #6ad673;
+    --n3: #ef6a6a;
+    --n4: #b48cf2;
+    --n5: #f0a35a;
+    --n6: #4fd1c5;
+    --n7: #e8e8e8;
+    --n8: #9aa0a6;
+    --flag: #ef5a5a;
+    --mine: #e8e8e8;
+    --boom: #c8323a;
+    --won: #6ad673;
+
+    /* 格子大小，由 script.js 依可用空間設定 */
+    --cell: 36px;
+    --board-width: 324px;
+    --gap: 0.75rem;
+    --page-pad: 1rem;
 }
 
-.game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    max-width: 500px;
-}
-
-.game-info {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 5px;
-    font-size: 1.1em;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.game-board {
+.mines {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(9, 1fr);
-    gap: 2px;
-    background-color: #2d2d2d;
-    padding: 12px;
-    border-radius: 5px;
-    width: 400px;
-    aspect-ratio: 1;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
     box-sizing: border-box;
 }
 
-.cell {
-    aspect-ratio: 1;
-    width: 100%;
-    height: auto;
-    background-color: #3d3d3d;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
+/* ---- 分數列：至少和難度選單一樣寬 ---- */
+.hud {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: clamp(14px, 4vw, 18px);
-    color: white;
-    transition: background-color 0.2s;
+    gap: 0.625rem;
+    width: max(var(--board-width), 22rem);
+    max-width: 100%;
+}
+
+.stats {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 1.5rem;
+    margin: 0;
+}
+
+.stat dt {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+}
+
+.stat dd {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0.125rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.stat--mines dd svg {
+    width: 18px;
+    height: 18px;
+}
+
+.stat--best dd {
+    color: var(--color-text-subtle);
+}
+
+.mines:not([data-state='playing']) #pause-btn {
+    visibility: hidden;
+}
+
+/* ---- 難度選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level,
+.tool {
+    padding: 0.4rem 0.9rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.level:hover,
+.tool:hover {
+    color: var(--color-text);
+}
+
+.level[aria-pressed='true'],
+.tool[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
+}
+
+.level:focus-visible,
+.tool:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+/* ---- 盤面 ---- */
+.board-area {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 0;
+    overflow: auto;
+}
+
+.board-wrap {
+    position: relative;
+    padding: 6px;
+    border-radius: 10px;
+    background: var(--cell-line);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: 1px;
+    touch-action: manipulation;
+}
+
+.cell {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    background: var(--cell-hidden);
+    box-shadow:
+        inset 0 1.5px 0 var(--cell-hidden-light),
+        inset 0 -2px 0 var(--cell-hidden-dark);
+    color: var(--color-text);
+    font: inherit;
+    font-size: calc(var(--cell) * 0.56);
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-touch-callout: none;
 }
 
 .cell:hover {
-    background-color: #4d4d4d;
+    background: var(--cell-hidden-hover);
 }
 
-.cell.revealed {
-    background-color: #2d2d2d;
+.cell:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 2px solid var(--color-text);
+    outline-offset: 0;
 }
 
-.cell.mine {
-    background-color: #ff4444;
+.cell svg {
+    width: 70%;
+    height: 70%;
 }
 
-.cell.flagged {
-    background-color: #ffd700;
+.cell[data-state='revealed'] {
+    border-radius: 1px;
+    background: var(--cell-open);
+    box-shadow: none;
+    cursor: default;
 }
 
-.controls {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
-}
-
-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #538d4e;
-    color: white;
+.cell[data-n] {
     cursor: pointer;
-    font-size: 1em;
-    min-width: 120px;
+}
+
+.cell[data-n='1'] {
+    color: var(--n1);
+}
+
+.cell[data-n='2'] {
+    color: var(--n2);
+}
+
+.cell[data-n='3'] {
+    color: var(--n3);
+}
+
+.cell[data-n='4'] {
+    color: var(--n4);
+}
+
+.cell[data-n='5'] {
+    color: var(--n5);
+}
+
+.cell[data-n='6'] {
+    color: var(--n6);
+}
+
+.cell[data-n='7'] {
+    color: var(--n7);
+}
+
+.cell[data-n='8'] {
+    color: var(--n8);
+}
+
+/* 旗子與地雷 */
+.flag-pole,
+.flag-base {
+    stroke: var(--color-text-secondary);
+}
+
+.flag-cloth {
+    fill: var(--flag);
+    stroke: var(--flag);
+}
+
+.mine-spikes {
+    stroke: var(--mine);
+}
+
+.mine-body {
+    fill: var(--mine);
+    stroke: none;
+}
+
+.mine-shine {
+    fill: var(--cell-open);
+    stroke: none;
+}
+
+.cell.is-boom {
+    background: var(--boom);
+}
+
+.cell.is-boom .mine-shine {
+    fill: var(--boom);
+}
+
+/* 插錯的旗：打叉 */
+.cell.is-wrong {
+    position: relative;
+}
+
+.cell.is-wrong::after {
+    content: '';
+    position: absolute;
+    inset: 18%;
+    background:
+        linear-gradient(45deg, transparent 45%, var(--color-text) 45%, var(--color-text) 55%, transparent 55%),
+        linear-gradient(-45deg, transparent 45%, var(--color-text) 45%, var(--color-text) 55%, transparent 55%);
+}
+
+/* 贏了：自動插上的旗子 */
+.mines[data-state='won'] .flag-cloth {
+    fill: var(--won);
+    stroke: var(--won);
+}
+
+/* 翻開的動畫：由點擊處往外 */
+.cell.is-opening {
+    animation: open 220ms ease-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+@keyframes open {
+    0% {
+        transform: scale(0.6);
+        background: var(--cell-hidden-hover);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cell.is-blast {
+    animation: blast 380ms ease-out backwards;
+    animation-delay: var(--delay, 0ms);
+}
+
+@keyframes blast {
+    0% {
+        transform: scale(0.3);
+        background: #ffb347;
+    }
+    40% {
+        transform: scale(1.15);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.cell.is-planted svg {
+    animation: plant 160ms ease-out;
+}
+
+@keyframes plant {
+    0% {
+        transform: translateY(-30%) scale(0.6);
+        opacity: 0;
+    }
+    100% {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 3;
+    border-radius: inherit;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.6);
+    backdrop-filter: none;
+}
+
+#overlay-paused {
+    /* 暫停時完全蓋住盤面，避免停下來慢慢想 */
+    background: var(--color-bg);
+}
+
+/* 結果：盤面保持可見（看得到地雷在哪），文字放在不透明的卡片上 */
+.overlay--result {
+    background: rgba(9, 9, 11, 0.35);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 1.75rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+#overlay-won .overlay__title {
+    color: var(--won);
+}
+
+#overlay-lost .overlay__title {
+    color: var(--n3);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.overlay__text {
+    max-width: 22rem;
+    margin: 0;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay__text--small {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-text-subtle);
+}
+
+/* ---- 觸控：挖 / 插旗切換 ---- */
+.tools {
+    display: none;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    margin-bottom: env(safe-area-inset-bottom);
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.tool {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+}
+
+.tool svg {
+    width: 20px;
+    height: 20px;
+}
+
+@media (pointer: coarse) {
+    .tools {
+        display: flex;
+    }
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
     white-space: nowrap;
 }
 
-button:hover {
-    background-color: #4a7d45;
-}
-
-@media (max-width: 400px) {
-    .game-info {
-        font-size: 1em;
-        gap: 10px;
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.5rem;
+        --page-pad: 0.625rem;
     }
 
-    .game-board {
-        padding: 5px;
+    .stats {
+        gap: 1.125rem;
     }
 
-    button {
-        padding: 10px 15px;
-        font-size: 0.9em;
-        min-width: 100px;
+    .level {
+        padding: 0.4rem 0.7rem;
     }
-}
 
-.number-1 {
-    color: #2196f3;
-}
+    .board-area {
+        place-items: start center;
+    }
 
-.number-2 {
-    color: #4caf50;
-}
+    .overlay__title {
+        font-size: 1.5rem;
+    }
 
-.number-3 {
-    color: #f44336;
-}
-
-.number-4 {
-    color: #9c27b0;
-}
-
-.number-5 {
-    color: #ff9800;
-}
-
-.number-6 {
-    color: #795548;
-}
-
-.number-7 {
-    color: #607d8b;
-}
-
-.number-8 {
-    color: #e91e63;
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
 }
