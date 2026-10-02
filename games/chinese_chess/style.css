@@ -1,124 +1,984 @@
-body {
+/* 象棋：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面與顏色 */
+
+:root {
+    /* 棋盤：淺色木紋、深褐色的線；外框是胡桃木 */
+    --wood-light: #edcd92;
+    --wood-dark: #d9ab68;
+    --line: #5b3816;
+    --rim-light: #4a2f19;
+    --rim-dark: #24160b;
+    --coord: rgba(246, 226, 190, 0.72);
+    /* 棋子：象牙色圓盤、木頭側邊；紅子朱紅色、黑子墨色 */
+    --disc-hi: #fff7e4;
+    --disc: #f1ddb2;
+    --disc-lo: #dcbc80;
+    --disc-edge: #9a6c37;
+    --red-ink: #b3261e;
+    --black-ink: #1f1c19;
+    /* 選取、上一步、可以走到的點、被將軍 */
+    --select: rgba(255, 216, 40, 0.95);
+    --last-ring: rgba(200, 84, 14, 0.85);
+    --hint: rgba(28, 96, 58, 0.82);
+    --check: #ff3b30;
+    --movable: rgba(255, 196, 0, 0.95);
+    --ink-font: 'Kaiti TC', 'STKaiti', 'BiauKai', 'DFKai-SB', 'KaiTi', 'Noto Serif TC', 'Songti TC',
+        'Noto Serif CJK TC', serif;
+
+    --gap: 0.75rem;
+    --page-pad: 1rem;
+    /* 一格（交叉點間距）的最大寬度 */
+    --u-max: 3.6rem;
+    /* 盤面下方提示文字與棋譜的高度 */
+    --info-h: 5.25rem;
+}
+
+.xiangqi {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom));
+    box-sizing: border-box;
+}
+
+/* ---- 分數列：你（或紅）吃掉的子 · 和局 · 電腦（或黑）吃掉的子，輪到的一方加上底線 ---- */
+.hud {
     display: flex;
-    justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #1a1a1a;
-    font-family: Arial, sans-serif;
+    gap: 0.625rem;
+    width: 36rem;
+    max-width: 100%;
 }
 
-#game-board {
-    position: relative;
-    width: 90vmin;
-    height: 100vmin;
-    max-width: 520px;
-    max-height: 576px;
-    background-color: #2c2c2c;
-    border: 2px solid #3a3a3a;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+.score {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.375rem;
+    min-width: 0;
 }
 
-.grid-line {
-    position: absolute;
-    background-color: #4a4a4a;
+.side {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.4rem;
+    padding: 0.375rem 0.625rem 0.4rem;
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+    min-width: 0;
+    transition: box-shadow 200ms ease;
 }
 
-.horizontal {
+.side--right {
+    grid-template-columns: 1fr auto;
+    text-align: right;
+}
+
+/* 小圓盤棋子（分數列的帥 / 將與吃掉的子） */
+.side__piece,
+.mini {
+    display: grid;
+    place-items: center;
+    flex: none;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, var(--disc-hi), var(--disc) 60%, var(--disc-lo));
+    box-shadow:
+        inset 0 0 0 1px var(--disc-edge),
+        0 1px 0 var(--disc-edge);
+    color: var(--red-ink);
+    font-family: var(--ink-font);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.side__piece {
+    grid-row: 2;
+    grid-column: 1;
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: 1rem;
+}
+
+.side[data-side='b'] .side__piece,
+.mini.is-b {
+    color: var(--black-ink);
+}
+
+.side--right .side__piece {
+    grid-column: 2;
+}
+
+.side__name {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    overflow: hidden;
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side__wins {
+    font-variant-numeric: tabular-nums;
+}
+
+/* 吃掉的子：同種的疊在一起，前面是子力差 */
+.side__taken {
+    grid-row: 2;
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 1.6rem;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.side--right .side__taken {
+    grid-column: 1;
+    flex-direction: row-reverse;
+}
+
+.mini {
+    width: 1.3rem;
+    height: 1.3rem;
+    margin-right: -0.55rem;
+    font-size: 0.8rem;
+}
+
+.mini.is-gap {
+    margin-left: 0.35rem;
+}
+
+.side--right .mini {
+    margin: 0 0 0 -0.55rem;
+}
+
+.side--right .mini.is-gap {
+    margin-right: 0.35rem;
+}
+
+.side__lead {
+    margin-right: 0.8rem;
+}
+
+.side--right .side__lead {
+    margin: 0 0 0 0.8rem;
+}
+
+.side--draw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0.5rem;
+    background: none;
+    box-shadow: none;
+}
+
+.side--draw .side__count {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+}
+
+.xiangqi[data-state='playing'][data-turn='r'] .side[data-side='r'],
+.xiangqi[data-state='playing'][data-turn='b'] .side[data-side='b'] {
+    box-shadow:
+        inset 0 0 0 1px var(--color-divider),
+        inset 0 -3px 0 var(--color-text-soft);
+}
+
+/* 被將軍的一方：底線變紅 */
+.xiangqi[data-state='playing'][data-check='r'] .side[data-side='r'],
+.xiangqi[data-state='playing'][data-check='b'] .side[data-side='b'] {
+    box-shadow:
+        inset 0 0 0 1px var(--color-divider),
+        inset 0 -3px 0 var(--check);
+}
+
+.hud__buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.icon-btn:disabled:hover {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+}
+
+/* ---- 對手選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level {
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.level:hover {
+    color: var(--color-text);
+}
+
+.level[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
+}
+
+.level:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
+}
+
+/* ---- 棋盤：9 × 10 個交叉點，依可用空間縮放；--u 是交叉點的間距，外框（放座標）0.55 格 ---- */
+.board-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    height: 1px;
+    min-height: 0;
+    container-type: size;
 }
 
-.vertical {
-    width: 1px;
+.board-wrap {
+    position: relative;
+    --u: min(100cqw / 10.1, (100cqh - var(--info-h)) / 11.1, var(--u-max));
+    flex: none;
+    width: calc(var(--u) * 10.1);
+    height: calc(var(--u) * 11.1);
+    padding: calc(var(--u) * 0.55);
+    border-radius: calc(var(--u) * 0.25);
+    background: linear-gradient(160deg, var(--rim-light), var(--rim-dark));
+    box-sizing: border-box;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+.board {
+    position: relative;
+    width: 100%;
     height: 100%;
+    border-radius: 3px;
+    background:
+        repeating-linear-gradient(
+            97deg,
+            rgba(120, 70, 20, 0) 0,
+            rgba(120, 70, 20, 0.05) calc(var(--u) * 0.18),
+            rgba(120, 70, 20, 0) calc(var(--u) * 0.42)
+        ),
+        linear-gradient(170deg, var(--wood-light), var(--wood-dark));
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
 }
 
-.vertical.right {
-    left: auto !important;
-    right: 0;
+body.stage .lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: none;
+    pointer-events: none;
 }
 
-.horizontal.bottom {
-    top: auto !important;
+.lines__grid,
+.lines__marks {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 0.45;
+    stroke-linecap: square;
+}
+
+.lines__marks {
+    stroke-width: 0.4;
+}
+
+.lines__frame {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 0.9;
+}
+
+.lines__river {
+    fill: var(--line);
+    opacity: 0.72;
+    font-family: var(--ink-font);
+    font-size: 5.2px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+/* 盤邊的座標：下方 a–i、左邊 0–9（執黑時上下左右反過來） */
+.coords {
+    position: absolute;
+    display: grid;
+    color: var(--coord);
+    font-size: clamp(0.5625rem, calc(var(--u) * 0.24), 0.75rem);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.coords span {
+    display: grid;
+    place-items: center;
+}
+
+.coords--cols {
     bottom: 0;
+    left: calc(var(--u) * 0.55);
+    right: calc(var(--u) * 0.55);
+    height: calc(var(--u) * 0.55);
+    grid-template-columns: repeat(9, 1fr);
 }
 
+.coords--rows {
+    left: 0;
+    top: calc(var(--u) * 0.55);
+    bottom: calc(var(--u) * 0.55);
+    width: calc(var(--u) * 0.55);
+    grid-template-rows: repeat(10, 1fr);
+}
+
+.cells {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    grid-template-rows: repeat(10, minmax(0, 1fr));
+    /* 拖曳棋子時不要捲動或縮放頁面 */
+    touch-action: none;
+}
+
+.point {
+    position: relative;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.xiangqi[data-input='on'] .point:is(.can-move, .is-next, .is-selected) {
+    cursor: pointer;
+}
+
+/* 交叉點下層的標記：上一步、被將軍 */
+.point::before {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+/* 上一步：出發點一個虛線小圈、落點的棋子底下一圈亮光 */
+.point.is-from::before {
+    inset: 30%;
+    border: calc(var(--u) * 0.035) dashed var(--last-ring);
+}
+
+.point.is-to::before {
+    inset: -3%;
+    border: calc(var(--u) * 0.045) solid var(--last-ring);
+}
+
+.point.is-check::before {
+    inset: -22%;
+    background: radial-gradient(circle, var(--check) 30%, rgba(255, 59, 48, 0.7) 45%, rgba(255, 59, 48, 0) 70%);
+}
+
+/* 棋子：象牙色圓盤、內圈細線、字 */
 .piece {
     position: absolute;
-    width: 11vmin;
-    height: 11vmin;
-    max-width: 50px;
-    max-height: 50px;
+    z-index: 1;
+    inset: 5%;
+    display: grid;
+    place-items: center;
     border-radius: 50%;
-    background-color: #2c2c2c;
-    border: 2px solid #4a4a4a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    font-size: min(6vmin, 24px);
+    background: radial-gradient(circle at 40% 32%, var(--disc-hi), var(--disc) 55%, var(--disc-lo));
+    box-shadow:
+        inset 0 0 0 calc(var(--u) * 0.02) var(--disc-edge),
+        0 calc(var(--u) * 0.05) 0 var(--disc-edge),
+        0 calc(var(--u) * 0.08) calc(var(--u) * 0.1) rgba(0, 0, 0, 0.4);
+    color: var(--red-ink);
+    font-family: var(--ink-font);
+    font-size: calc(var(--u) * 0.5);
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0;
+    pointer-events: none;
     user-select: none;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transform: translate(-50%, -50%);
+    transition:
+        scale 140ms ease,
+        translate 140ms ease;
 }
 
-.piece:hover {
-    transform: translate(-50%, -50%) scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.red {
-    color: #ff4444;
-    text-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
-}
-
-.black {
-    color: #cccccc;
-    text-shadow: 0 0 5px rgba(204, 204, 204, 0.5);
-}
-
-.selected {
-    background-color: #3a3a3a;
-    border-color: #666666;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-}
-
-.modal-content {
+/* 內圈 */
+.piece::before {
+    content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #2c2c2c;
-    padding: 20px;
-    border-radius: 8px;
+    inset: 9%;
+    border: calc(var(--u) * 0.028) solid currentColor;
+    border-radius: 50%;
+    opacity: 0.75;
+}
+
+.point[data-piece] > .piece:not(.ghost) {
+    opacity: 1;
+}
+
+.point[data-color='b'] > .piece,
+.piece.ghost.is-b {
+    color: var(--black-ink);
+}
+
+.piece.ghost.is-r {
+    color: var(--red-ink);
+}
+
+/* 被吃掉的子：在走過來的棋子下面淡出 */
+.piece.ghost {
+    z-index: 0;
+    opacity: 1;
+    animation: vanish 240ms ease-in var(--vanish-delay, 0ms) forwards;
+}
+
+@keyframes vanish {
+    to {
+        opacity: 0;
+        scale: 0.6;
+    }
+}
+
+/* 標記上層：可以走到的點（圓點）、可以吃的子（外圈）、被將軍時能解將的子（黃圈） */
+.point::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.point.is-movable::after {
+    inset: 3%;
+    box-shadow: 0 0 0 calc(var(--u) * 0.04) var(--movable);
+}
+
+.point.is-next::after {
+    inset: 37%;
+    background: var(--hint);
+    box-shadow: 0 0 0 calc(var(--u) * 0.03) rgba(255, 248, 230, 0.6);
+}
+
+.point.is-next.is-capture::after {
+    inset: -1%;
+    background: none;
+    box-shadow:
+        0 0 0 calc(var(--u) * 0.06) var(--hint),
+        0 0 0 calc(var(--u) * 0.09) rgba(255, 248, 230, 0.55);
+}
+
+@media (hover: hover) {
+    .xiangqi[data-input='on'] .point.can-move:hover .piece {
+        scale: 1.06;
+    }
+
+    .xiangqi[data-input='on'] .point.is-next:not(.is-capture):hover::after {
+        inset: 22%;
+    }
+}
+
+.point.is-selected .piece {
+    scale: 1.08;
+    translate: 0 calc(var(--u) * -0.04);
+    box-shadow:
+        inset 0 0 0 calc(var(--u) * 0.02) var(--disc-edge),
+        0 calc(var(--u) * 0.05) 0 var(--disc-edge),
+        0 0 0 calc(var(--u) * 0.07) var(--select),
+        0 calc(var(--u) * 0.14) calc(var(--u) * 0.16) rgba(0, 0, 0, 0.45);
+}
+
+/* 被將軍的帥 / 將：紅色外圈 */
+.point.is-check:not(.is-selected) .piece {
+    box-shadow:
+        inset 0 0 0 calc(var(--u) * 0.02) var(--disc-edge),
+        0 0 0 calc(var(--u) * 0.06) var(--check),
+        0 0 calc(var(--u) * 0.25) var(--check);
+}
+
+/* 移動中 / 拖曳中的棋子蓋在其他交叉點上面 */
+.point.is-moving,
+.point.is-drag {
+    z-index: 3;
+}
+
+.point.is-drag .piece {
+    scale: 1.2;
+    transition: scale 120ms ease;
+}
+
+.point:focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: -1px;
+    z-index: 2;
+}
+
+/* 點到不能動的子：搖一下 */
+.point.is-rejected .piece {
+    animation: rejected 300ms ease-in-out;
+}
+
+@keyframes rejected {
+    25%,
+    75% {
+        translate: -3px 0;
+    }
+    50% {
+        translate: 3px 0;
+    }
+}
+
+/* 結束：輸的一方的棋子變暗，帥 / 將倒下 */
+.xiangqi:not([data-state='ready'])[data-result='r'] .point[data-color='b'] .piece,
+.xiangqi:not([data-state='ready'])[data-result='b'] .point[data-color='r'] .piece {
+    filter: brightness(0.6) saturate(0.6);
+    transition: filter 400ms ease 300ms;
+}
+
+.point.is-mated .piece {
+    rotate: 70deg;
+    transition: rotate 500ms cubic-bezier(0.5, 0, 0.6, 1.3) 350ms;
+}
+
+/* ---- 盤面下方：輪到誰、連勝紀錄、棋譜 ---- */
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+    width: min(100%, 36rem);
+    height: var(--info-h);
     text-align: center;
-    color: #ffffff;
 }
 
-.modal-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #4a4a4a;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.2s;
+.turn {
+    margin: 0;
+    min-height: 1.4em;
+    font-size: 1.0625rem;
+    font-weight: 700;
 }
 
-.modal-button:hover {
-    background-color: #666666;
+.turn.is-cpu {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.turn.is-check {
+    color: var(--check);
+}
+
+.xiangqi:not([data-state='playing']) .turn {
+    visibility: hidden;
+}
+
+.note {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+.note.is-warning {
+    color: var(--color-highlight);
+}
+
+/* 棋譜：一行，捲到最新的一步 */
+.moves {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 100%;
+    min-height: 1.75rem;
+    margin: 0.125rem 0 0;
+    padding: 0.25rem 0.625rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    background: var(--color-surface);
+    box-sizing: border-box;
+    list-style: none;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.moves::-webkit-scrollbar {
+    display: none;
+}
+
+.moves.is-scrolled {
+    mask-image: linear-gradient(to right, transparent, #000 2rem);
+}
+
+.moves:empty {
+    visibility: hidden;
+}
+
+.moves li {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.moves__num {
+    color: var(--color-text-faint);
+}
+
+.moves__san {
+    color: var(--color-text-secondary);
+}
+
+.moves__san.is-last {
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 5;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.72);
+    backdrop-filter: none;
+}
+
+/* 結果：盤面保持可見，文字放在不透明的卡片上，放在盤面下方 */
+.overlay--result {
+    justify-content: flex-end;
+    padding-bottom: 5%;
+    background: rgba(9, 9, 11, 0.25);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+/* 結果卡片放在不擋住輸的一方的帥 / 將的一側 */
+.overlay--result.is-top {
+    justify-content: flex-start;
+    padding: 5% 1rem 1rem;
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1rem 1.5rem 1.125rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+    animation: rise 320ms cubic-bezier(0.3, 0.7, 0.4, 1.2);
+}
+
+.xiangqi[data-outcome='win'] .result-card .overlay__title {
+    color: var(--color-highlight);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes rise {
+    from {
+        transform: translateY(12px) scale(0.96);
+        opacity: 0;
+    }
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.result-card .overlay__title {
+    margin-bottom: 0;
+}
+
+.final-reason {
+    margin: 0;
+    color: var(--color-text-soft);
+    font-weight: 600;
+}
+
+.overlay__text {
+    max-width: 24rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay .keys {
+    margin-bottom: 0.5rem;
+}
+
+.final-detail {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.result-card .final-note {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.final-note.is-record {
+    color: var(--color-highlight);
+    font-weight: 600;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 盤面不大時（例如首頁縮圖的畫面）開始畫面的說明縮小；盤面窄，再小就放不下按鍵表 */
+@container (max-height: 560px) {
+    .overlay .keys {
+        font-size: 0.75rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+}
+
+@container (max-height: 480px) {
+    .overlay .keys {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .point.is-rejected .piece {
+        animation: none;
+    }
+
+    .point.is-mated .piece {
+        transition: none;
+    }
+
+    .piece.ghost {
+        animation-duration: 1ms;
+    }
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.625rem;
+        --page-pad: 0.75rem;
+    }
+
+    .level {
+        padding: 0.4rem 0.7rem;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+
+    .overlay .keys {
+        font-size: 0.8125rem;
+    }
+
+    /* 盤面小，卡片也縮小，少擋幾列 */
+    .overlay--result {
+        padding: 0.5rem;
+    }
+
+    .result-card {
+        gap: 0.2rem;
+        padding: 0.625rem 1rem 0.75rem;
+    }
+
+    .result-card .overlay__title {
+        font-size: 1.25rem;
+    }
+
+    .final-reason {
+        font-size: 0.875rem;
+    }
+
+    .result-card .final-note {
+        margin-bottom: 0.375rem;
+    }
+
+    .result-card .btn {
+        min-width: 8rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* 窄螢幕放不下勝場：只留名稱（勝 / 和 / 負在結果卡片上） */
+@media (max-width: 419px) {
+    .side__wins {
+        display: none;
+    }
+
+    /* 放不下吃掉的子：只留子力差 */
+    .side__taken .mini {
+        display: none;
+    }
+}
+
+@media (max-width: 359px) {
+    .level {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .side {
+        padding-inline: 0.4rem;
+    }
+}
+
+/* 橫拿手機：分數、對手選單、提示文字與棋譜放左邊一欄，盤面用滿高度 */
+@media (orientation: landscape) and (max-height: 500px) {
+    :root {
+        --info-h: 0px;
+    }
+
+    .xiangqi {
+        position: relative;
+        grid-template-columns: minmax(0, 17rem) auto;
+        grid-template-rows: auto auto 1fr;
+        justify-content: center;
+        align-items: start;
+        column-gap: 1.5rem;
+    }
+
+    .hud {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .score {
+        flex-basis: 100%;
+    }
+
+    /* 左邊一欄放不下吃掉的子：只留子力差 */
+    .side__taken .mini {
+        display: none;
+    }
+
+    .levels {
+        justify-self: stretch;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 18px;
+    }
+
+    /* 盤面的寬高比是 10.1 : 11.1 */
+    .board-area {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        width: calc((100dvh - 2 * var(--page-pad)) * 10.1 / 11.1);
+        height: 100%;
+    }
+
+    .info {
+        position: absolute;
+        left: var(--page-pad);
+        bottom: var(--page-pad);
+        width: 17rem;
+        height: auto;
+    }
+
+    .overlay__title {
+        margin-bottom: 0;
+        font-size: 1.375rem;
+    }
+
+    .overlay__text {
+        margin-bottom: 0.25rem;
+        font-size: 0.8125rem;
+    }
+
+    .overlay .keys {
+        display: none;
+    }
+
+    .overlay--result {
+        padding: 0.5rem;
+    }
+
+    .result-card {
+        gap: 0.2rem;
+        padding: 0.625rem 1rem 0.75rem;
+    }
+
+    .result-card .overlay__title {
+        font-size: 1.25rem;
+    }
+
+    .result-card .final-note {
+        margin-bottom: 0.375rem;
+    }
+
+    .result-card .btn {
+        min-width: 8rem;
+        padding: 0.5rem 1rem;
+    }
 }

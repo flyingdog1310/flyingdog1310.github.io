@@ -3,20 +3,107 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>Chinese Chess</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div id="game-board"></div>
-    <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="winner-text"></h2>
-            <button class="modal-button" onclick="game.resetGame()">Restart</button>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+    </svg>
+
+    <main class="xiangqi" data-state="ready" data-mode="cpu">
+        <header class="hud">
+            <div class="score">
+                <div class="side" id="side-a" data-side="r">
+                    <span class="side__name"><span id="name-a">You</span> <span class="side__wins" id="wins-a"></span></span>
+                    <span class="side__piece" aria-hidden="true"></span>
+                    <span class="side__taken" id="taken-a"></span>
+                </div>
+                <div class="side side--draw">
+                    <span class="side__name">Draws</span>
+                    <span class="side__count" id="draws">0</span>
+                </div>
+                <div class="side side--right" id="side-b" data-side="b">
+                    <span class="side__name"><span id="name-b">Computer</span> <span class="side__wins" id="wins-b"></span></span>
+                    <span class="side__piece" aria-hidden="true"></span>
+                    <span class="side__taken" id="taken-b"></span>
+                </div>
+            </div>
+            <div class="hud__buttons">
+                <button class="icon-btn" id="undo-btn" type="button" aria-label="Undo" title="Undo (U)">
+                    <svg><use href="#i-undo" /></svg>
+                </button>
+                <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game (N)">
+                    <svg><use href="#i-new" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="levels" role="group" aria-label="Opponent">
+            <button class="level" type="button" data-opponent="easy">Easy</button>
+            <button class="level" type="button" data-opponent="normal">Normal</button>
+            <button class="level" type="button" data-opponent="hard">Hard</button>
+            <button class="level" type="button" data-opponent="duo">2 players</button>
         </div>
-    </div>
-    <script src="script.js"></script>
+
+        <div class="board-area">
+            <div class="board-wrap">
+                <div class="coords coords--cols" aria-hidden="true" id="coords-cols"></div>
+                <div class="coords coords--rows" aria-hidden="true" id="coords-rows"></div>
+                <div class="board">
+                    <!-- 棋盤線：交叉點在 (5 + 10 × 行, 5 + 10 × 列)，河界與九宮在 script.js 畫 -->
+                    <svg class="lines" id="lines" viewBox="0 0 90 100" aria-hidden="true"></svg>
+                    <div class="cells" id="cells" role="group" aria-label="Board" aria-describedby="status"></div>
+                </div>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">Chinese Chess</h1>
+                    <p class="overlay__text">Checkmate the opposing general. Full xiangqi rules — palace, river, blocked
+                        horses, cannon jumps and flying generals.</p>
+                    <table class="keys only-fine">
+                        <tr><td><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd> <kbd>Space</kbd></td><td>Select and move</td></tr>
+                        <tr><td><kbd>Esc</kbd></td><td>Cancel selection</td></tr>
+                        <tr><td><kbd>U</kbd> <kbd>N</kbd></td><td>Undo · New game</td></tr>
+                    </table>
+                    <p class="overlay__text only-coarse">Tap a piece, then tap where it goes — or drag it.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay overlay--result" id="overlay-over" hidden>
+                    <div class="result-card">
+                        <h2 class="overlay__title" id="over-title">You win</h2>
+                        <p class="final-reason" id="over-reason"></p>
+                        <p class="final-detail" id="over-detail"></p>
+                        <p class="final-note" id="over-note"></p>
+                        <button class="btn" type="button" data-action="restart">Play again</button>
+                    </div>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">The current game will be lost.</p>
+                    <button class="btn" type="button" data-action="confirm">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
+            </div>
+
+            <div class="info">
+                <p class="turn" id="turn"></p>
+                <p class="note" id="note"></p>
+                <ol class="moves" id="moves" aria-label="Moves"></ol>
+            </div>
+        </div>
+
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
