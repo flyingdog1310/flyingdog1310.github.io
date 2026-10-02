@@ -3,60 +3,82 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#121213">
     <title>2048</title>
+    <link rel="stylesheet" href="../../shared/tokens.css">
+    <link rel="stylesheet" href="../../shared/game-shell.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="game-container">
-        <div class="game-header">
-            <h1 class="title">2048</h1>
-        </div>
-        
-        <div class="game-info">
-            <div class="info-box">
-                <h3>Score</h3>
-                <div id="score" class="score-value">0</div>
-            </div>
-            <div class="info-box">
-                <h3>Best Score</h3>
-                <div id="best-score" class="score-value">0</div>
+<body class="stage">
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></symbol>
+        <symbol id="i-new" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7" /><path d="M20 4v7h-7" /></symbol>
+    </svg>
+
+    <main class="g2048" data-state="ready">
+        <header class="hud">
+            <dl class="stats">
+                <div class="stat stat--score">
+                    <dt>Score</dt>
+                    <dd><span id="score">0</span><span class="gain" id="gain" aria-hidden="true"></span></dd>
+                </div>
+                <div class="stat stat--best">
+                    <dt>Best</dt>
+                    <dd id="best">–</dd>
+                </div>
+            </dl>
+            <button class="icon-btn" id="undo-btn" type="button" aria-label="Undo last move" title="Undo (U)" disabled>
+                <svg><use href="#i-undo" /></svg>
+            </button>
+            <button class="icon-btn" id="new-btn" type="button" aria-label="New game" title="New game">
+                <svg><use href="#i-new" /></svg>
+            </button>
+        </header>
+
+        <div class="board-area" id="board-area">
+            <div class="board" id="board" aria-label="2048 board" aria-describedby="status">
+                <div class="cells" aria-hidden="true"></div>
+                <div class="tiles" id="tiles" aria-hidden="true"></div>
+
+                <div class="overlay" id="overlay-ready">
+                    <h1 class="overlay__title">2048</h1>
+                    <p class="overlay__text only-fine">Slide the tiles with the arrow keys or <span class="nowrap"><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></span>. Matching numbers merge into one. Reach 2048 to win.</p>
+                    <p class="overlay__text only-coarse">Swipe to slide the tiles. Matching numbers merge into one. Reach 2048 to win.</p>
+                    <button class="btn" type="button" data-action="start">Start game</button>
+                </div>
+
+                <div class="overlay" id="overlay-won" hidden>
+                    <h2 class="overlay__title">You made 2048</h2>
+                    <p class="final-score" id="won-score">0</p>
+                    <p class="final-note">Keep going for a higher score</p>
+                    <button class="btn" type="button" data-action="continue">Keep going</button>
+                    <button class="btn btn--quiet" type="button" data-action="new">New game</button>
+                </div>
+
+                <div class="overlay" id="overlay-over" hidden>
+                    <h2 class="overlay__title">No moves left</h2>
+                    <p class="final-score" id="final-score">0</p>
+                    <p class="final-note" id="final-note"></p>
+                    <button class="btn" type="button" data-action="new">Try again</button>
+                    <button class="btn btn--quiet" type="button" data-action="undo">Undo last move</button>
+                </div>
+
+                <div class="overlay" id="overlay-confirm" hidden>
+                    <h2 class="overlay__title">Start over?</h2>
+                    <p class="overlay__text">Your current game will be lost.</p>
+                    <button class="btn" type="button" data-action="new-confirmed">New game</button>
+                    <button class="btn btn--quiet" type="button" data-action="cancel">Cancel</button>
+                </div>
             </div>
         </div>
 
-        <div class="game-board">
-            <div class="grid">
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-                <div class="cell"></div>
-            </div>
-        </div>
+        <p class="hint only-fine"><kbd>U</kbd> undoes your last move</p>
+        <p class="visually-hidden" id="status" aria-live="polite"></p>
+    </main>
 
-        <button class="restart-btn" id="restart-btn" onclick="restartGame()">Restart Game</button>
-
-        <div class="game-over" id="game-over">
-            <div class="modal-content">
-                <h2>Game Over!</h2>
-                <p>Final Score: <span id="final-score">0</span></p>
-                <button id="play-again-btn" onclick="restartGame()">Play Again</button>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>

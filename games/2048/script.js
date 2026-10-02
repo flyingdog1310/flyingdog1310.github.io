@@ -1,359 +1,356 @@
-// Game Config
-const GRID_SIZE = 4;
-const GRID_PADDING = 15;
-const ANIMATION_DURATION = 150;
+// 2048：畫面與操作。遊戲規則在 core.js
+import { SIZE, createGame } from './core.js';
+import { highScore, onSwipe } from '../../shared/game-utils.js';
 
-class Game2048 {
-    constructor() {
-        this.grid = [];
-        this.score = 0;
-        this.bestScore = localStorage.getItem('bestScore') || 0;
-        this.gameOver = false;
-        this.isAnimating = false;
-        this.tiles = [];
-        
-        this.initializeElements();
-        this.setupEventListeners();
-        this.initializeGame();
-    }
+const RESTART_GRACE_MS = 800;
+// 滑動動畫的長度（與 style.css 的 transition 一致），合併來源在這之後移除
+const SLIDE_MS = 110;
+// 結束 / 勝利畫面在最後一步動畫播完後才出現
+const OVERLAY_DELAY_MS = 450;
+const SAVE_KEY = 'jsgames:2048:game';
 
-    initializeElements() {
-        this.gridContainer = document.querySelector('.grid');
-        this.scoreDisplay = document.getElementById('score');
-        this.bestScoreDisplay = document.getElementById('best-score');
-        this.gameOverDisplay = document.getElementById('game-over');
-        this.finalScoreDisplay = document.getElementById('final-score');
-        this.restartBtn = document.getElementById('restart-btn');
-        this.playAgainBtn = document.getElementById('play-again-btn');
-    }
+const $ = (id) => document.getElementById(id);
+const root = document.querySelector('.g2048');
+const tilesLayer = $('tiles');
+const statusText = $('status');
+const undoButton = $('undo-btn');
+const overlays = {
+    ready: $('overlay-ready'),
+    won: $('overlay-won'),
+    over: $('overlay-over'),
+    confirm: $('overlay-confirm'),
+};
 
-    setupEventListeners() {
-        // Keyboard controls
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowUp':
-                    e.preventDefault();
-                    this.move('up');
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    this.move('down');
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    this.move('left');
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    this.move('right');
-                    break;
-            }
-        });
+const best = highScore('2048');
+// 舊版把最高分存在 bestScore，第一次開啟時搬過來
+try {
+    const legacy = Number.parseInt(localStorage.getItem('bestScore'), 10);
+    if (Number.isFinite(legacy) && legacy > 0) best.submit(legacy);
+} catch {
+    // localStorage 不可用時略過
+}
 
-        // Touch controls
-        let touchStartX, touchStartY;
-        document.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        });
+const formatNumber = (n) => n.toLocaleString('en-US');
 
-        document.addEventListener('touchend', (e) => {
-            if (!touchStartX || !touchStartY) return;
+// 背景格子
+document.querySelector('.cells').append(...Array.from({ length: SIZE * SIZE }, () => document.createElement('span')));
 
-            const touchEndX = e.changedTouches[0].clientX;
-            const touchEndY = e.changedTouches[0].clientY;
+// ---------- 存檔：進行中的局面存在 localStorage，關掉再開可以接著玩 ----------
 
-            const dx = touchEndX - touchStartX;
-            const dy = touchEndY - touchStartY;
-
-            if (Math.abs(dx) > Math.abs(dy)) {
-                if (dx > 0) this.move('right');
-                else this.move('left');
-            } else {
-                if (dy > 0) this.move('down');
-                else this.move('up');
-            }
-        });
-
-        // Restart button
-        this.restartBtn.addEventListener('click', () => this.restartGame());
-        this.playAgainBtn.addEventListener('click', () => this.restartGame());
-    }
-
-    initializeGame() {
-        // Create Initial Grid
-        for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-            this.grid[i] = 0;
-        }
-
-        // Add Two Initial Tiles
-        this.addRandomTile();
-        this.addRandomTile();
-
-        // Update Display
-        this.updateDisplay();
-    }
-
-    addRandomTile() {
-        const emptyCells = this.grid.reduce((acc, cell, index) => {
-            if (cell === 0) acc.push(index);
-            return acc;
-        }, []);
-
-        if (emptyCells.length > 0) {
-            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            this.grid[randomCell] = Math.random() < 0.9 ? 2 : 4;
-        }
-    }
-
-    updateDisplay() {
-        // Get All Cells
-        const cells = document.querySelectorAll('.cell');
-        // Clear All Cell Content
-        cells.forEach((cell) => (cell.innerHTML = ''));
-        this.tiles = [];
-
-        // Update Score
-        this.scoreDisplay.textContent = this.score;
-        this.bestScoreDisplay.textContent = this.bestScore;
-
-        // Insert Tiles Based on Grid State
-        this.grid.forEach((value, index) => {
-            if (value !== 0) {
-                const tile = document.createElement('div');
-                tile.className = `tile tile-${value}`;
-                tile.textContent = value;
-                cells[index].appendChild(tile);
-                this.tiles.push(tile);
-            }
-        });
-    }
-
-    async move(direction) {
-        if (this.gameOver || this.isAnimating) return;
-
-        let moved = false;
-
-        // Process Movement Based on Direction
-        switch (direction) {
-            case 'up':
-                moved = this.moveUp();
-                break;
-            case 'down':
-                moved = this.moveDown();
-                break;
-            case 'left':
-                moved = this.moveLeft();
-                break;
-            case 'right':
-                moved = this.moveRight();
-                break;
-        }
-
-        // If Movement Occurred, Add New Tile
-        if (moved) {
-            this.isAnimating = true;
-
-            // Update All Tiles Position
-            this.updateDisplay();
-
-            // Wait for Animation to Complete
-            await new Promise((resolve) => setTimeout(resolve, ANIMATION_DURATION));
-
-            this.addRandomTile();
-            this.updateDisplay();
-
-            // Check if Game is Over
-            if (this.isGameOver()) {
-                this.gameOver = true;
-                this.finalScoreDisplay.textContent = this.score;
-                this.gameOverDisplay.classList.add('active');
-            }
-
-            this.isAnimating = false;
-        }
-    }
-
-    moveUp() {
-        let moved = false;
-        for (let col = 0; col < GRID_SIZE; col++) {
-            for (let row = 1; row < GRID_SIZE; row++) {
-                const index = row * GRID_SIZE + col;
-                if (this.grid[index] !== 0) {
-                    let currentRow = row;
-                    while (currentRow > 0) {
-                        const currentIndex = currentRow * GRID_SIZE + col;
-                        const prevIndex = (currentRow - 1) * GRID_SIZE + col;
-
-                        if (this.grid[prevIndex] === 0) {
-                            this.grid[prevIndex] = this.grid[currentIndex];
-                            this.grid[currentIndex] = 0;
-                            currentRow--;
-                            moved = true;
-                        } else if (this.grid[prevIndex] === this.grid[currentIndex]) {
-                            this.grid[prevIndex] *= 2;
-                            this.grid[currentIndex] = 0;
-                            this.score += this.grid[prevIndex];
-                            if (this.score > this.bestScore) {
-                                this.bestScore = this.score;
-                                localStorage.setItem('bestScore', this.bestScore);
-                            }
-                            moved = true;
-                            break;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return moved;
-    }
-
-    moveDown() {
-        let moved = false;
-        for (let col = 0; col < GRID_SIZE; col++) {
-            for (let row = GRID_SIZE - 2; row >= 0; row--) {
-                const index = row * GRID_SIZE + col;
-                if (this.grid[index] !== 0) {
-                    let currentRow = row;
-                    while (currentRow < GRID_SIZE - 1) {
-                        const currentIndex = currentRow * GRID_SIZE + col;
-                        const nextIndex = (currentRow + 1) * GRID_SIZE + col;
-
-                        if (this.grid[nextIndex] === 0) {
-                            this.grid[nextIndex] = this.grid[currentIndex];
-                            this.grid[currentIndex] = 0;
-                            currentRow++;
-                            moved = true;
-                        } else if (this.grid[nextIndex] === this.grid[currentIndex]) {
-                            this.grid[nextIndex] *= 2;
-                            this.grid[currentIndex] = 0;
-                            this.score += this.grid[nextIndex];
-                            if (this.score > this.bestScore) {
-                                this.bestScore = this.score;
-                                localStorage.setItem('bestScore', this.bestScore);
-                            }
-                            moved = true;
-                            break;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return moved;
-    }
-
-    moveLeft() {
-        let moved = false;
-        for (let row = 0; row < GRID_SIZE; row++) {
-            for (let col = 1; col < GRID_SIZE; col++) {
-                const index = row * GRID_SIZE + col;
-                if (this.grid[index] !== 0) {
-                    let currentCol = col;
-                    while (currentCol > 0) {
-                        const currentIndex = row * GRID_SIZE + currentCol;
-                        const prevIndex = row * GRID_SIZE + (currentCol - 1);
-
-                        if (this.grid[prevIndex] === 0) {
-                            this.grid[prevIndex] = this.grid[currentIndex];
-                            this.grid[currentIndex] = 0;
-                            currentCol--;
-                            moved = true;
-                        } else if (this.grid[prevIndex] === this.grid[currentIndex]) {
-                            this.grid[prevIndex] *= 2;
-                            this.grid[currentIndex] = 0;
-                            this.score += this.grid[prevIndex];
-                            if (this.score > this.bestScore) {
-                                this.bestScore = this.score;
-                                localStorage.setItem('bestScore', this.bestScore);
-                            }
-                            moved = true;
-                            break;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return moved;
-    }
-
-    moveRight() {
-        let moved = false;
-        for (let row = 0; row < GRID_SIZE; row++) {
-            for (let col = GRID_SIZE - 2; col >= 0; col--) {
-                const index = row * GRID_SIZE + col;
-                if (this.grid[index] !== 0) {
-                    let currentCol = col;
-                    while (currentCol < GRID_SIZE - 1) {
-                        const currentIndex = row * GRID_SIZE + currentCol;
-                        const nextIndex = row * GRID_SIZE + (currentCol + 1);
-
-                        if (this.grid[nextIndex] === 0) {
-                            this.grid[nextIndex] = this.grid[currentIndex];
-                            this.grid[currentIndex] = 0;
-                            currentCol++;
-                            moved = true;
-                        } else if (this.grid[nextIndex] === this.grid[currentIndex]) {
-                            this.grid[nextIndex] *= 2;
-                            this.grid[currentIndex] = 0;
-                            this.score += this.grid[nextIndex];
-                            if (this.score > this.bestScore) {
-                                this.bestScore = this.score;
-                                localStorage.setItem('bestScore', this.bestScore);
-                            }
-                            moved = true;
-                            break;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return moved;
-    }
-
-    isGameOver() {
-        // Check for empty cells
-        if (this.grid.includes(0)) return false;
-
-        // Check for possible merges
-        for (let row = 0; row < GRID_SIZE; row++) {
-            for (let col = 0; col < GRID_SIZE; col++) {
-                const current = this.grid[row * GRID_SIZE + col];
-                
-                // Check right neighbor
-                if (col < GRID_SIZE - 1 && current === this.grid[row * GRID_SIZE + (col + 1)]) {
-                    return false;
-                }
-                
-                // Check bottom neighbor
-                if (row < GRID_SIZE - 1 && current === this.grid[(row + 1) * GRID_SIZE + col]) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    restartGame() {
-        this.grid = [];
-        this.score = 0;
-        this.gameOver = false;
-        this.isAnimating = false;
-        this.tiles = [];
-        this.gameOverDisplay.classList.remove('active');
-        this.initializeGame();
+function loadSaved() {
+    try {
+        return JSON.parse(localStorage.getItem(SAVE_KEY));
+    } catch {
+        return null;
     }
 }
 
-// Initialize game when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new Game2048();
+function save() {
+    try {
+        if (game.over) localStorage.removeItem(SAVE_KEY);
+        else localStorage.setItem(SAVE_KEY, JSON.stringify(game.toJSON()));
+    } catch {
+        // 無痕模式等情況存不了就算了
+    }
+}
+
+function clearSave() {
+    try {
+        localStorage.removeItem(SAVE_KEY);
+    } catch {
+        // 略過
+    }
+}
+
+// ---------- 方塊 ----------
+
+let state = 'ready';
+let game = null;
+let overAt = 0;
+let overlayTimer = 0;
+// id → 方塊元素
+const tileEls = new Map();
+// 合併後要移除的來源方塊
+let leaving = [];
+
+function makeTile(id, value, index, extraClass = '') {
+    const el = document.createElement('div');
+    el.className = `tile ${extraClass}`.trim();
+    el.dataset.v = value;
+    el.dataset.digits = String(value).length;
+    place(el, index);
+    const face = document.createElement('div');
+    face.className = 'tile__face';
+    face.textContent = value;
+    el.append(face);
+    tilesLayer.append(el);
+    tileEls.set(id, el);
+    return el;
+}
+
+function place(el, index) {
+    el.style.setProperty('--x', index % SIZE);
+    el.style.setProperty('--y', Math.floor(index / SIZE));
+}
+
+// 上一步的動畫還沒播完就收尾，避免連續操作時殘留
+function settle() {
+    for (const el of leaving) el.remove();
+    leaving = [];
+    for (const el of tileEls.values()) el.classList.remove('tile--new', 'tile--merged');
+}
+
+// 整個盤面重畫（開局、讀檔、復原）
+function renderBoard() {
+    settle();
+    tilesLayer.replaceChildren();
+    tileEls.clear();
+    game.cells.forEach((tile, index) => {
+        if (tile) makeTile(tile.id, tile.value, index);
+    });
+}
+
+function animate(result) {
+    settle();
+    const mergedFrom = new Set(result.merges.flatMap((m) => m.from));
+    for (const { id, to } of result.slides) {
+        const el = tileEls.get(id);
+        if (!el) continue;
+        place(el, to);
+        if (mergedFrom.has(id)) {
+            tileEls.delete(id);
+            leaving.push(el);
+        }
+    }
+    const toRemove = leaving;
+    setTimeout(() => {
+        for (const el of toRemove) el.remove();
+        leaving = leaving.filter((el) => !toRemove.includes(el));
+    }, SLIDE_MS);
+    for (const merge of result.merges) makeTile(merge.id, merge.value, merge.to, 'tile--merged');
+    if (result.spawned) makeTile(result.spawned.id, result.spawned.value, result.spawned.index, 'tile--new');
+}
+
+// ---------- 分數列 ----------
+
+const shown = {};
+
+function renderHud() {
+    // 開始畫面後面是示意盤面，分數顯示 0
+    const score = formatNumber(state === 'ready' ? 0 : game.score);
+    if (shown.score !== score) {
+        shown.score = score;
+        $('score').textContent = score;
+    }
+    const record = best.get();
+    const bestText = record === null ? '–' : formatNumber(record);
+    if (shown.best !== bestText) {
+        shown.best = bestText;
+        $('best').textContent = bestText;
+    }
+    undoButton.disabled = !game.canUndo || state === 'ready';
+}
+
+function showGain(points) {
+    const gain = $('gain');
+    gain.textContent = `+${points}`;
+    gain.classList.remove('is-showing');
+    void gain.offsetWidth;
+    gain.classList.add('is-showing');
+}
+
+// ---------- 狀態 ----------
+
+function setState(next) {
+    state = next;
+    root.dataset.state = next;
+    for (const [name, element] of Object.entries(overlays)) element.hidden = name !== next;
+    renderHud();
+}
+
+function showOverlayLater(next) {
+    clearTimeout(overlayTimer);
+    overlayTimer = setTimeout(() => {
+        if (next === 'over') {
+            const isRecord = best.submit(game.score);
+            $('final-score').textContent = formatNumber(game.score);
+            const note = $('final-note');
+            const record = best.get();
+            note.textContent = isRecord
+                ? `Highest tile ${game.maxTile()} · New best score`
+                : `Highest tile ${game.maxTile()} · Best ${formatNumber(record ?? 0)}`;
+            note.classList.toggle('is-record', isRecord);
+            overAt = performance.now();
+        } else if (next === 'won') {
+            $('won-score').textContent = formatNumber(game.score);
+        }
+        setState(next);
+        overlays[next].querySelector('.btn')?.focus({ preventScroll: true });
+    }, OVERLAY_DELAY_MS);
+}
+
+function newGame() {
+    clearTimeout(overlayTimer);
+    clearSave();
+    game = createGame();
+    renderBoard();
+    save();
+    for (const key of Object.keys(shown)) delete shown[key];
+    document.activeElement?.blur();
+    setState('playing');
+    announce('New game');
+}
+
+function resumeSaved(saved) {
+    game = createGame({ state: saved });
+    renderBoard();
+    setState('playing');
+}
+
+function requestNewGame() {
+    // 才剛開始或已經結束就直接開新局，否則先確認
+    if (state === 'playing' && game.score > 0) setState('confirm');
+    else newGame();
+}
+
+function undo() {
+    if (!game.undo()) return;
+    clearTimeout(overlayTimer);
+    renderBoard();
+    save();
+    setState('playing');
+    announce('Undid last move');
+}
+
+// ---------- 移動 ----------
+
+const DIR_NAMES = { up: 'Up', down: 'Down', left: 'Left', right: 'Right' };
+
+function announce(text) {
+    statusText.textContent = text;
+}
+
+function move(dir) {
+    if (state !== 'playing') return;
+    const result = game.move(dir);
+    if (!result) return;
+    animate(result);
+    if (result.gained > 0) {
+        showGain(result.gained);
+        best.submit(game.score);
+    }
+    save();
+    renderHud();
+
+    const merged = result.merges.map((m) => m.value).sort((a, b) => b - a);
+    announce(
+        `${DIR_NAMES[dir]}. ${merged.length ? `Merged ${merged.join(', ')}. ` : ''}Score ${formatNumber(game.score)}.` +
+            (result.over ? ' No moves left.' : result.reachedGoal ? ' You made 2048.' : '')
+    );
+
+    if (result.reachedGoal && !game.keepPlaying) showOverlayLater('won');
+    else if (result.over) showOverlayLater('over');
+}
+
+// ---------- 操作 ----------
+
+const KEYS = {
+    ArrowUp: 'up',
+    ArrowDown: 'down',
+    ArrowLeft: 'left',
+    ArrowRight: 'right',
+    w: 'up',
+    s: 'down',
+    a: 'left',
+    d: 'right',
+};
+const keyOf = (event) => (event.key.length === 1 ? event.key.toLowerCase() : event.key);
+
+addEventListener('keydown', (event) => {
+    if (event.altKey || event.metaKey || (event.ctrlKey && event.key.toLowerCase() !== 'z')) return;
+    const key = keyOf(event);
+    const dir = KEYS[key];
+    if (state === 'playing') {
+        if (dir) {
+            event.preventDefault();
+            if (!event.repeat) move(dir);
+        } else if (key === 'u' || (event.ctrlKey && key === 'z')) {
+            event.preventDefault();
+            undo();
+        }
+        return;
+    }
+    if (state === 'confirm' && key === 'Escape') {
+        setState('playing');
+        return;
+    }
+    if (state === 'over' && (key === 'u' || (event.ctrlKey && key === 'z'))) {
+        event.preventDefault();
+        undo();
+        return;
+    }
+    const onButton = event.target instanceof HTMLButtonElement;
+    if (key === 'Enter' && !onButton && !event.repeat) {
+        event.preventDefault();
+        if (state === 'over' && performance.now() - overAt < RESTART_GRACE_MS) return;
+        if (state === 'ready' || state === 'over') newGame();
+        else if (state === 'won') continuePlaying();
+    }
 });
+
+function continuePlaying() {
+    game.continueAfterWin();
+    save();
+    document.activeElement?.blur();
+    setState('playing');
+}
+
+document.addEventListener('click', (event) => {
+    const action = event.target.closest('[data-action]')?.dataset.action;
+    switch (action) {
+        case 'start':
+            newGame();
+            break;
+        case 'continue':
+            continuePlaying();
+            break;
+        case 'new':
+        case 'new-confirmed':
+            newGame();
+            break;
+        case 'cancel':
+            setState('playing');
+            break;
+        case 'undo':
+            undo();
+            break;
+    }
+});
+
+$('new-btn').addEventListener('click', requestNewGame);
+undoButton.addEventListener('click', undo);
+
+// 觸控 / 滑鼠：在盤面區域滑動
+onSwipe($('board-area'), (dir) => move(dir), { threshold: 24 });
+
+// ---------- 啟動：有存檔就接著玩，否則顯示開始畫面與示意盤面 ----------
+
+function demoGame() {
+    return createGame({
+        state: {
+            size: SIZE,
+            cells: [2, 0, 4, 2, 8, 16, 2, 0, 64, 32, 128, 4, 1024, 512, 256, 8],
+            score: 12_384,
+        },
+    });
+}
+
+// 存檔格式不對時 createGame 會直接開新局
+const saved = loadSaved();
+if (Array.isArray(saved?.cells) && saved.cells.some((v) => v > 0)) {
+    resumeSaved(saved);
+} else {
+    game = demoGame();
+    renderBoard();
+    setState('ready');
+}
