@@ -1,132 +1,1008 @@
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #121213;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
+/* 西洋棋：共用 tokens / game-shell 之外，只寫這款遊戲特有的版面與顏色 */
+
+:root {
+    --sq-light: #ebecd0;
+    --sq-dark: #739552;
+    --rim-light: #34382f;
+    --rim-dark: #1d1f1a;
+    --coord: rgba(226, 232, 210, 0.7);
+    /* 棋子：白方奶油色、黑方深棕灰；--pd 是棋子上的細節線條 */
+    --white-fill: #f8f5ec;
+    --white-line: #24211d;
+    --black-fill: #2b2926;
+    --black-line: #0d0c0b;
+    --black-detail: #e8e2d4;
+    /* 分數列上的黑子：深色底上外框要淡一點才看得出是黑子 */
+    --black-rim: #8f897f;
+    /* 選取、上一步、可以走到的格子、被將軍 */
+    --select: rgba(255, 226, 64, 0.5);
+    --last: rgba(255, 214, 51, 0.36);
+    --hint: rgba(22, 32, 12, 0.3);
+    --check: #ff3b30;
+    --movable: rgba(255, 196, 0, 0.85);
+
+    --gap: 0.75rem;
+    --page-pad: 1rem;
+    /* 盤面最大寬度 */
+    --board-max: 36rem;
+    /* 盤面下方提示文字與棋譜的高度 */
+    --info-h: 5.25rem;
+    /* 外框（放座標）佔寬度的比例 */
+    --rim: 0.05;
 }
 
-.game-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.game-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.game-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin: 24px 0 0 0;
-}
-
-button {
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-button:hover {
-    background-color: #4a7d45;
-}
-
-.board-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#chessboard {
+.chess {
     display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    width: min(80vw, 600px);
-    aspect-ratio: 1;
-    border: 2px solid #3d3d3d;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--gap);
+    height: 100dvh;
+    padding: var(--page-pad);
+    padding-bottom: max(var(--page-pad), env(safe-area-inset-bottom));
+    box-sizing: border-box;
 }
 
-.square {
-    aspect-ratio: 1;
-    width: 100%;
-    height: 100%;
+/* ---- 分數列：你（或白）吃掉的子 · 和局 · 電腦（或黑）吃掉的子，輪到的一方加上底線 ---- */
+.hud {
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: clamp(24px, 5vw, 48px);
+    gap: 0.625rem;
+    width: var(--board-max);
+    max-width: 100%;
+}
+
+.score {
+    display: grid;
+    flex: 1;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0.375rem;
+    min-width: 0;
+}
+
+.side {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.35rem;
+    padding: 0.375rem 0.625rem 0.4rem;
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+    min-width: 0;
+    transition: box-shadow 200ms ease;
+}
+
+.side--right {
+    grid-template-columns: 1fr auto;
+    text-align: right;
+}
+
+body.stage .side__piece {
+    grid-row: 2;
+    grid-column: 1;
+    width: 1.6rem;
+    height: 1.6rem;
+    fill: var(--white-fill);
+    stroke: var(--white-line);
+    stroke-width: 1.5;
+    --pd: var(--white-line);
+}
+
+body.stage .side[data-side='b'] .side__piece {
+    fill: var(--black-fill);
+    stroke: var(--black-rim);
+    --pd: var(--black-detail);
+}
+
+body.stage .side--right .side__piece {
+    grid-column: 2;
+}
+
+.side__name {
+    grid-row: 1;
+    grid-column: 1 / -1;
+    overflow: hidden;
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side__wins {
+    font-variant-numeric: tabular-nums;
+}
+
+/* 吃掉的子：同種的疊在一起，後面接子力差 */
+.side__taken {
+    grid-row: 2;
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 1.6rem;
+    overflow: hidden;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.side--right .side__taken {
+    grid-column: 1;
+    flex-direction: row-reverse;
+}
+
+body.stage .side__taken svg {
+    flex: none;
+    width: 1.6rem;
+    height: 1.6rem;
+    margin-right: -0.8rem;
+    stroke-width: 1.6;
+}
+
+body.stage .side__taken svg.is-w {
+    fill: var(--white-fill);
+    stroke: var(--white-line);
+    --pd: var(--white-line);
+}
+
+body.stage .side__taken svg.is-b {
+    fill: var(--black-fill);
+    stroke: var(--black-rim);
+    --pd: var(--black-detail);
+}
+
+body.stage .side__taken svg.is-gap {
+    margin-left: 0.4rem;
+}
+
+body.stage .side--right .side__taken svg {
+    margin: 0 0 0 -0.8rem;
+}
+
+body.stage .side--right .side__taken svg.is-gap {
+    margin-right: 0.4rem;
+}
+
+.side__lead {
+    margin-right: 0.9rem;
+}
+
+.side--right .side__lead {
+    margin: 0 0 0 0.9rem;
+}
+
+.side--draw {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 0.5rem;
+    background: none;
+    box-shadow: none;
+}
+
+.side--draw .side__count {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+}
+
+.chess[data-state='playing'][data-turn='w'] .side[data-side='w'],
+.chess[data-state='playing'][data-turn='b'] .side[data-side='b'] {
+    box-shadow:
+        inset 0 0 0 1px var(--color-divider),
+        inset 0 -3px 0 var(--color-text-soft);
+}
+
+/* 被將軍的一方：底線變紅 */
+.chess[data-state='playing'][data-check='w'] .side[data-side='w'],
+.chess[data-state='playing'][data-check='b'] .side[data-side='b'] {
+    box-shadow:
+        inset 0 0 0 1px var(--color-divider),
+        inset 0 -3px 0 var(--check);
+}
+
+.hud__buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.icon-btn:disabled:hover {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+}
+
+/* ---- 對手選單 ---- */
+.levels {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface);
+    box-shadow: inset 0 0 0 1px var(--color-divider);
+}
+
+.level {
+    padding: 0.4rem 0.85rem;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
-    user-select: none;
 }
 
-.square.white {
-    background-color: #2d2d2d;
+.level:hover {
+    color: var(--color-text);
 }
 
-.square.black {
-    background-color: #1a1a1a;
+.level[aria-pressed='true'] {
+    background: var(--color-control-hover);
+    color: var(--color-text);
 }
 
-.square.selected {
-    background-color: #538d4e;
+.level:focus-visible {
+    outline: 2px solid var(--color-text);
+    outline-offset: 1px;
 }
 
-.square.valid-move {
-    background-color: #4a7d45;
+/* ---- 盤面：8 × 8，依可用空間縮放 ---- */
+.board-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+    container-type: size;
 }
 
-.turn-indicator {
-    font-size: 18px;
-    color: #ffffff;
+.board-wrap {
+    position: relative;
+    --size: min(100cqw, 100cqh - var(--info-h), var(--board-max));
+    flex: none;
+    width: var(--size);
+    height: var(--size);
+    padding: calc(var(--size) * var(--rim));
+    border-radius: calc(var(--size) * 0.025);
+    background: linear-gradient(160deg, var(--rim-light), var(--rim-dark));
+    box-sizing: border-box;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 18px 40px rgba(0, 0, 0, 0.5);
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+.board {
+    position: relative;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 1000;
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+/* 盤邊的座標：下方 a–h、左邊 1–8（執黑時上下左右反過來） */
+.coords {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #2d2d2d;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    min-width: 300px;
+    display: grid;
+    color: var(--coord);
+    font-size: clamp(0.5625rem, calc(var(--size) * 0.024), 0.75rem);
+    font-weight: 600;
+    pointer-events: none;
 }
 
-.modal-content h2 {
-    margin-top: 0;
-    color: #ffffff;
+.coords span {
+    display: grid;
+    place-items: center;
 }
 
-.modal-content p {
-    font-size: 20px;
-    margin: 20px 0;
-    color: #ffffff;
+.coords--cols {
+    bottom: 0;
+    left: calc(var(--size) * var(--rim));
+    right: calc(var(--size) * var(--rim));
+    height: calc(var(--size) * var(--rim));
+    grid-template-columns: repeat(8, 1fr);
 }
 
-@media (max-width: 600px) {
-    .game-controls {
-        flex-direction: column;
-        gap: 10px;
+.coords--rows {
+    left: 0;
+    top: calc(var(--size) * var(--rim));
+    bottom: calc(var(--size) * var(--rim));
+    width: calc(var(--size) * var(--rim));
+    grid-template-rows: repeat(8, 1fr);
+}
+
+.cells {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    /* 拖曳棋子時不要捲動或縮放頁面 */
+    touch-action: none;
+}
+
+.cell {
+    position: relative;
+    padding: 0;
+    border: none;
+    background: var(--sq-light);
+    color: inherit;
+    font: inherit;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+.cell.is-dark {
+    background: var(--sq-dark);
+}
+
+.chess[data-input='on'] .cell:is(.is-movable, .is-next, .is-selected) {
+    cursor: pointer;
+}
+
+/* 格子上的色層：上一步、選取、被將軍 */
+.cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.cell.is-trail::before {
+    background: var(--last);
+}
+
+.cell.is-selected::before {
+    background: var(--select);
+}
+
+.cell.is-check::before {
+    background: radial-gradient(circle, var(--check) 0%, rgba(255, 59, 48, 0.75) 30%, rgba(255, 59, 48, 0) 72%);
+}
+
+/* 棋子 */
+body.stage .piece {
+    position: absolute;
+    z-index: 1;
+    inset: 3%;
+    width: 94%;
+    height: 94%;
+    opacity: 0;
+    overflow: visible;
+    fill: var(--white-fill);
+    stroke: var(--white-line);
+    stroke-width: 1.5;
+    --pd: var(--white-line);
+    filter: drop-shadow(0 calc(var(--size) * 0.003) calc(var(--size) * 0.002) rgba(0, 0, 0, 0.35));
+    pointer-events: none;
+    transition: scale 140ms ease;
+}
+
+.cell[data-piece] .piece {
+    opacity: 1;
+}
+
+body.stage .cell[data-color='b'] .piece,
+body.stage .ghost.is-b {
+    fill: var(--black-fill);
+    stroke: var(--black-line);
+    --pd: var(--black-detail);
+}
+
+/* 被吃掉的子：在走過來的棋子下面淡出 */
+body.stage .ghost {
+    position: absolute;
+    z-index: 0;
+    inset: 3%;
+    width: 94%;
+    height: 94%;
+    overflow: visible;
+    fill: var(--white-fill);
+    stroke: var(--white-line);
+    stroke-width: 1.5;
+    --pd: var(--white-line);
+    pointer-events: none;
+    animation: vanish 240ms ease-in var(--vanish-delay, 0ms) forwards;
+}
+
+@keyframes vanish {
+    to {
+        opacity: 0;
+        scale: 0.6;
+    }
+}
+
+/* 被將軍時能解將的棋子（輪到的一方能動的子）加上細細的黃框 */
+.cell.is-movable::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    box-shadow: inset 0 0 0 calc(var(--size) * 0.005) var(--movable);
+    pointer-events: none;
+}
+
+@media (hover: hover) {
+    .chess[data-input='on'] .cell.can-move:hover::before {
+        background: rgba(255, 255, 255, 0.16);
     }
 
-    .turn-indicator {
-        font-size: 16px;
+    .chess[data-input='on'] .cell.can-move:hover .piece {
+        scale: 1.06;
+    }
+}
+
+.cell.is-selected .piece {
+    scale: 1.06;
+}
+
+/* 可以走到的格子：中央一個圓點；可以吃的子：四周一圈 */
+.cell.is-next::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    inset: 35%;
+    border-radius: 50%;
+    background: var(--hint);
+    pointer-events: none;
+}
+
+.cell.is-next.is-capture::after {
+    inset: 2%;
+    background: none;
+    box-shadow: inset 0 0 0 calc(var(--size) * 0.009) var(--hint);
+}
+
+@media (hover: hover) {
+    .chess[data-input='on'] .cell.is-next:hover::after {
+        inset: 0;
+        border-radius: 0;
+        background: rgba(22, 32, 12, 0.18);
+        box-shadow: none;
+    }
+}
+
+/* 移動中 / 拖曳中的棋子蓋在其他格子上面 */
+.cell.is-moving,
+.cell.is-drag {
+    z-index: 3;
+}
+
+.cell.is-drag .piece {
+    scale: 1.2;
+    transition: scale 120ms ease;
+    filter: drop-shadow(0 calc(var(--size) * 0.012) calc(var(--size) * 0.01) rgba(0, 0, 0, 0.45));
+}
+
+.cell:focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: -3px;
+    z-index: 2;
+}
+
+/* 點到不能動的子：搖一下 */
+.cell.is-rejected .piece {
+    animation: rejected 300ms ease-in-out;
+}
+
+.cell.is-rejected:not([data-piece]) {
+    animation: rejected-bg 300ms ease-in-out;
+}
+
+@keyframes rejected {
+    25%,
+    75% {
+        translate: -3px 0;
+    }
+    50% {
+        translate: 3px 0;
+    }
+}
+
+@keyframes rejected-bg {
+    50% {
+        filter: brightness(0.8);
+    }
+}
+
+/* 升變時新的棋子彈出來 */
+.cell.is-promoted .piece {
+    animation: promoted 380ms cubic-bezier(0.3, 0.7, 0.4, 1.4) var(--promo-delay, 0ms) backwards;
+}
+
+@keyframes promoted {
+    from {
+        scale: 0.4;
+        opacity: 0.4;
+    }
+}
+
+/* 結束：輸的一方的棋子變暗，被將死的王倒下 */
+.chess:not([data-state='ready'])[data-result='w'] .cell[data-color='b'] .piece,
+.chess:not([data-state='ready'])[data-result='b'] .cell[data-color='w'] .piece {
+    filter: brightness(0.55) saturate(0.6);
+    transition: filter 400ms ease 300ms;
+}
+
+.cell.is-mated .piece {
+    rotate: 75deg;
+    transition: rotate 500ms cubic-bezier(0.5, 0, 0.6, 1.3) 350ms;
+}
+
+/* ---- 升變的選擇：在落點那一行由盤邊往內排出四個棋子 ---- */
+.promo {
+    position: absolute;
+    z-index: 4;
+    inset: 0;
+}
+
+.promo__veil {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 9, 11, 0.5);
+    animation: fade-in 160ms ease-out;
+}
+
+.promo__list {
+    position: absolute;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    width: 12.5%;
+    height: 50%;
+    border-radius: 6px;
+    background: var(--color-surface-raised);
+    box-shadow:
+        0 0 0 1px var(--color-border-strong),
+        0 10px 28px rgba(0, 0, 0, 0.6);
+    animation: fade-in 160ms ease-out;
+}
+
+.promo__btn {
+    position: relative;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.promo__btn:hover,
+.promo__btn:focus-visible {
+    background: var(--color-control-hover);
+}
+
+.promo__btn:focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: -3px;
+}
+
+body.stage .promo__btn svg {
+    position: absolute;
+    inset: 5%;
+    width: 90%;
+    height: 90%;
+    fill: var(--white-fill);
+    stroke: var(--white-line);
+    stroke-width: 1.5;
+    --pd: var(--white-line);
+    transition: scale 120ms ease;
+}
+
+body.stage .promo__list.is-b .promo__btn svg {
+    fill: var(--black-fill);
+    stroke: var(--black-line);
+    --pd: var(--black-detail);
+}
+
+.promo__btn:hover svg {
+    scale: 1.08;
+}
+
+/* ---- 盤面下方：輪到誰、連勝紀錄、棋譜 ---- */
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+    width: min(100%, var(--board-max));
+    height: var(--info-h);
+    text-align: center;
+}
+
+.turn {
+    margin: 0;
+    min-height: 1.4em;
+    font-size: 1.0625rem;
+    font-weight: 700;
+}
+
+.turn.is-cpu {
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.turn.is-check {
+    color: var(--check);
+}
+
+.chess:not([data-state='playing']) .turn {
+    visibility: hidden;
+}
+
+.note {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+.note.is-warning {
+    color: var(--color-highlight);
+}
+
+/* 棋譜：一行，捲到最新的一步 */
+.moves {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 100%;
+    min-height: 1.75rem;
+    margin: 0.125rem 0 0;
+    padding: 0.25rem 0.625rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    background: var(--color-surface);
+    box-sizing: border-box;
+    list-style: none;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.moves::-webkit-scrollbar {
+    display: none;
+}
+
+.moves.is-scrolled {
+    mask-image: linear-gradient(to right, transparent, #000 2rem);
+}
+
+.moves:empty {
+    visibility: hidden;
+}
+
+.moves li {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.moves__num {
+    color: var(--color-text-faint);
+}
+
+.moves__san {
+    color: var(--color-text-secondary);
+}
+
+.moves__san.is-last {
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+/* ---- 覆蓋畫面 ---- */
+.overlay {
+    z-index: 5;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+#overlay-ready {
+    background: rgba(9, 9, 11, 0.72);
+    backdrop-filter: none;
+}
+
+/* 結果：盤面保持可見，文字放在不透明的卡片上，放在盤面下方 */
+.overlay--result {
+    justify-content: flex-end;
+    padding-bottom: 5%;
+    background: rgba(9, 9, 11, 0.25);
+    backdrop-filter: none;
+    animation: fade-in 300ms ease-out;
+}
+
+/* 結果卡片放在不擋住被將死的王的一側 */
+.overlay--result.is-top {
+    justify-content: flex-start;
+    padding: 5% 1rem 1rem;
+}
+
+.result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 1rem 1.5rem 1.125rem;
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow:
+        0 0 0 1px var(--color-border),
+        0 18px 40px rgba(0, 0, 0, 0.55);
+    animation: rise 320ms cubic-bezier(0.3, 0.7, 0.4, 1.2);
+}
+
+.chess[data-outcome='win'] .result-card .overlay__title {
+    color: var(--color-highlight);
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+
+@keyframes rise {
+    from {
+        transform: translateY(12px) scale(0.96);
+        opacity: 0;
+    }
+}
+
+.overlay__title {
+    font-size: 1.75rem;
+}
+
+.result-card .overlay__title {
+    margin-bottom: 0;
+}
+
+.final-reason {
+    margin: 0;
+    color: var(--color-text-soft);
+    font-weight: 600;
+}
+
+.overlay__text {
+    max-width: 24rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+    color: var(--color-text-secondary);
+}
+
+.overlay .keys {
+    margin-bottom: 0.5rem;
+}
+
+.final-detail {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.result-card .final-note {
+    margin: 0 0 0.5rem;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+}
+
+.final-note.is-record {
+    color: var(--color-highlight);
+    font-weight: 600;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* 盤面不大時（例如首頁縮圖的畫面）開始畫面的說明縮小，按鍵表才不會擠成兩行 */
+@container (max-height: 560px) {
+    .overlay .keys {
+        font-size: 0.75rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cell.is-rejected .piece,
+    .cell.is-rejected:not([data-piece]),
+    .cell.is-promoted .piece,
+    .promo__veil,
+    .promo__list {
+        animation: none;
+    }
+
+    .cell.is-mated .piece {
+        transition: none;
+    }
+
+    body.stage .ghost {
+        animation-duration: 1ms;
+    }
+}
+
+@media (max-width: 559px) {
+    :root {
+        --gap: 0.625rem;
+        --page-pad: 0.75rem;
+    }
+
+    .level {
+        padding: 0.4rem 0.7rem;
+    }
+
+    .overlay__title {
+        font-size: 1.5rem;
+    }
+
+    .overlay__text {
+        font-size: 0.875rem;
+        line-height: 1.45;
+    }
+
+    .overlay .keys {
+        font-size: 0.8125rem;
+    }
+
+    /* 盤面小，卡片也縮小，少擋幾列 */
+    .overlay--result {
+        padding: 0.5rem;
+    }
+
+    .result-card {
+        gap: 0.2rem;
+        padding: 0.625rem 1rem 0.75rem;
+    }
+
+    .result-card .overlay__title {
+        font-size: 1.25rem;
+    }
+
+    .final-reason {
+        font-size: 0.875rem;
+    }
+
+    .result-card .final-note {
+        margin-bottom: 0.375rem;
+    }
+
+    .result-card .btn {
+        min-width: 8rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* 窄螢幕放不下勝場：只留名稱（勝 / 和 / 負在結果卡片上） */
+@media (max-width: 419px) {
+    .side__wins {
+        display: none;
+    }
+
+    /* 放不下吃掉的子：只留子力差 */
+    body.stage .side__taken svg {
+        display: none;
+    }
+}
+
+@media (max-width: 359px) {
+    .level {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+
+    .side {
+        padding-inline: 0.4rem;
+    }
+}
+
+/* 橫拿手機：分數、對手選單、提示文字與棋譜放左邊一欄，盤面用滿高度 */
+@media (orientation: landscape) and (max-height: 500px) {
+    :root {
+        --info-h: 0px;
+    }
+
+    .chess {
+        position: relative;
+        grid-template-columns: minmax(0, 17rem) auto;
+        grid-template-rows: auto auto 1fr;
+        justify-content: center;
+        align-items: start;
+        column-gap: 1.5rem;
+    }
+
+    .hud {
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .score {
+        flex-basis: 100%;
+    }
+
+    /* 左邊一欄放不下吃掉的子：只留子力差 */
+    body.stage .side__taken svg {
+        display: none;
+    }
+
+    .levels {
+        justify-self: stretch;
+        flex-wrap: wrap;
+        justify-content: center;
+        border-radius: 18px;
+    }
+
+    .board-area {
+        grid-column: 2;
+        grid-row: 1 / -1;
+        width: calc(100dvh - 2 * var(--page-pad));
+        height: 100%;
+    }
+
+    .info {
+        position: absolute;
+        left: var(--page-pad);
+        bottom: var(--page-pad);
+        width: 17rem;
+        height: auto;
+    }
+
+    .overlay__title {
+        margin-bottom: 0;
+        font-size: 1.375rem;
+    }
+
+    .overlay__text {
+        margin-bottom: 0.25rem;
+    }
+
+    .overlay .keys {
+        display: none;
+    }
+
+    .overlay--result {
+        padding: 0.5rem;
+    }
+
+    .result-card {
+        gap: 0.2rem;
+        padding: 0.625rem 1rem 0.75rem;
+    }
+
+    .result-card .overlay__title {
+        font-size: 1.25rem;
+    }
+
+    .result-card .final-note {
+        margin-bottom: 0.375rem;
+    }
+
+    .result-card .btn {
+        min-width: 8rem;
+        padding: 0.5rem 1rem;
     }
 }
