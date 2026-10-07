@@ -22,6 +22,7 @@ index.html, main.js, styles.css   Home page (game list from games.json)
 games/<name>/                      One folder per game
 shared/                            Design tokens, shared game UI and utilities
 stock/                             Personal stock portfolio page
+bar-exam/                          Bar exam (律師一試) past-paper quiz
 scripts/                           Dev tools (thumbnails, style snapshots) using local Chrome
 docs/                              Renovation plan and progress
 ```

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-GitHub Pages 靜態網站（https://flyingdog1310.github.io/）：首頁遊戲集、21 款瀏覽器遊戲、一個實際在用的股票頁。
+GitHub Pages 靜態網站（https://flyingdog1310.github.io/）：首頁遊戲集、21 款瀏覽器遊戲、一個實際在用的股票頁、律師一試考古題頁（`bar-exam/`）。
 沒有建置步驟、沒有執行期相依套件；所有 JS 都是原生 ES module 或一般 script，直接由瀏覽器載入。
 
 翻新計畫與進度：`docs/ROADMAP.md`（勾選清單）、`docs/IMPLEMENTATION.md`（問題編號與技術細節）。
@@ -35,6 +35,12 @@ npm run stock:fixtures && npm run stock:golden   # 從真實 Google Sheet 更新
 - **準確優先於速度**：不快取 Sheet 資料（不用 localStorage、fetch 用 `cache: 'no-store'`），畫面上的數字一律是本次開頁後抓到的。
 - 改 `styles.css` / `script.js` / `lib.js` 時要更新 `index.html` 裡的 `?v=` 版本參數。
 - 測試 fixture 直接用真實 Sheet 資料（repo 公開，使用者不介意）。
+
+## 律師考古題（`bar-exam/`）
+
+- 題目資料 `data/<年>.json` 由 `bar-exam/tools/build_data.py` 從考選部 PDF 產生（需 PyMuPDF，用法見檔頭）；不要手改 JSON。
+- 詳解不轉載（網友著作），只連到阿摩題目頁（`yamol` 欄位）。
+- 作答紀錄存 localStorage `bar-exam:<年>:<科目 id>`；改 `styles.css` / `script.js` / `lib.js` 時更新 `index.html` 的 `?v=`。
 
 ## 共用資源（`shared/`）
 

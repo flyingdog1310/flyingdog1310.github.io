@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>律師一試考古題</title>
+    <meta name="description" content="115年律師考試第一試選擇題線上作答，作答後立即公布官方答案">
+    <link rel="stylesheet" href="../shared/tokens.css?v=1">
+    <link rel="stylesheet" href="styles.css?v=1">
+    <script type="module" src="script.js?v=1"></script>
+</head>
+<body>
+    <div class="page">
+        <header class="masthead">
+            <p class="eyebrow" id="examDate">律師考試第一試</p>
+            <h1 id="examTitle">律師一試考古題</h1>
+        </header>
+
+        <nav class="papers" id="papers" aria-label="科目"></nav>
+
+        <section class="toolbar" aria-label="作答進度">
+            <div class="stats" id="stats" aria-live="polite"></div>
+            <div class="toolbar__actions">
+                <div class="filters" role="radiogroup" aria-label="顯示">
+                    <button type="button" class="chip" data-filter="all" role="radio">全部</button>
+                    <button type="button" class="chip" data-filter="todo" role="radio">未答</button>
+                    <button type="button" class="chip" data-filter="wrong" role="radio">錯題</button>
+                </div>
+                <button type="button" class="text-btn" id="retryWrong">重做錯題</button>
+                <button type="button" class="text-btn" id="resetPaper">清除這一科</button>
+            </div>
+        </section>
+
+        <div class="progress" aria-hidden="true"><div class="progress__bar" id="progressBar"></div></div>
+
+        <main>
+            <p class="status" id="status" role="status">載入中…</p>
+            <article class="card" id="card" hidden>
+                <div class="card__meta">
+                    <span class="qno" id="qno"></span>
+                    <span class="paper-name" id="paperName"></span>
+                </div>
+                <div class="stem" id="stem"></div>
+                <div class="options" id="options" role="group" aria-label="選項"></div>
+                <div class="feedback" id="feedback" aria-live="polite" hidden></div>
+                <div class="nav">
+                    <button type="button" class="nav-btn" id="prevBtn">← 上一題</button>
+                    <button type="button" class="nav-btn nav-btn--primary" id="nextBtn">下一題 →</button>
+                </div>
+            </article>
+
+            <details class="overview" id="overview">
+                <summary>題號總覽</summary>
+                <div class="grid" id="grid"></div>
+            </details>
+        </main>
+
+        <footer class="footnote">
+            <p class="only-fine">鍵盤：<kbd>A</kbd>–<kbd>D</kbd> 或 <kbd>1</kbd>–<kbd>4</kbd> 作答，<kbd>←</kbd> <kbd>→</kbd> 換題。</p>
+            <p>試題與標準答案取自<a id="sourceLink" href="https://wwwq.moex.gov.tw/exam/wFrmExamQandASearch.aspx" target="_blank" rel="noopener">考選部考畢試題查詢</a>；詳解連到<a href="https://yamol.tw/" target="_blank" rel="noopener">阿摩線上測驗</a>的題目頁，內容由網友提供，僅供參考。</p>
+            <p>作答紀錄只存在這台裝置的瀏覽器。</p>
+        </footer>
+    </div>
+</body>
+</html>
