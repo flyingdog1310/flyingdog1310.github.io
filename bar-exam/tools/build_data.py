@@ -3,7 +3,7 @@
 用法（需要 PyMuPDF：python3 -m venv .venv && .venv/bin/pip install pymupdf）：
     .venv/bin/python bar-exam/tools/build_data.py
 
-換年度時改下面的 YEAR、EXAM_DATE、MOEX_CODE（考選部「考試代碼」）與 PAPERS 最後一欄（阿摩試卷編號，
+換年度時改下面的 YEAR、EXAM_DATE、CUTOFF（一試錄取分數，放榜後才有）、MOEX_CODE（考選部「考試代碼」）與 PAPERS 最後一欄（阿摩試卷編號，
 在 yamol.tw 搜尋該年「司法官特種考試_三等_司法官及律師」可找到，四科各一個）。
 題目是考選部公告的試題（依著作權法第 9 條不受著作權保護）；詳解不轉載，只連到阿摩的題目頁。
 """
@@ -22,6 +22,14 @@ YEAR = 115
 MOEX_CODE = '115110'
 MOEX_CLASS = '302'  # 高等考試_律師
 EXAM_DATE = '2026-08-01'
+# 第一試錄取標準（到考人數前 33%）；榜示後手動填入，滿分 600（300 題、每題 2 分）
+CUTOFF = {
+    'score': 364,
+    'max': 600,
+    'examinees': 10844,
+    'passed': 3632,
+    'source': 'https://www.public.com.tw/exam-legalstaff/lawyer-quota',
+}
 OUT = Path(__file__).resolve().parent.parent / 'data' / f'{YEAR}.json'
 
 # (考選部科目代碼, id, 名稱, 範圍, 阿摩試卷編號)
@@ -190,6 +198,7 @@ def main():
         'year': YEAR,
         'title': f'{YEAR}年專門職業及技術人員高等考試律師考試（第一試）',
         'date': EXAM_DATE,
+        'cutoff': CUTOFF,
         'papers': papers,
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')) + '\n')

@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import {
     answerLabel,
     clearWrong,
+    cutoffTarget,
     filterIndexes,
     isCorrect,
     parseProgress,
@@ -115,4 +116,24 @@ test('115 年資料：四科共 300 題，每題四個選項與答案', () => {
         civil: 'CCACBCDABC',
         commercial: 'BBDCDDCCAA',
     });
+});
+
+test('cutoffTarget：錄取分數換算成答對題數', () => {
+    const papers = [
+        { id: 'a', questions: Array(75) },
+        { id: 'b', questions: Array(75) },
+        { id: 'c', questions: Array(80) },
+        { id: 'd', questions: Array(70) },
+    ];
+    const t = cutoffTarget({ score: 364, max: 600 }, papers);
+    assert.equal(t.total, 300);
+    assert.equal(t.needed, 182);
+    assert.equal(t.rate, 182 / 300);
+    assert.deepEqual(t.perPaper, { a: 46, b: 46, c: 49, d: 42 });
+    // 錄取分數不是每題分數的整數倍時，無條件進位
+    assert.equal(cutoffTarget({ score: 365, max: 600 }, papers).needed, 183);
+});
+
+test('115 年資料：錄取標準', () => {
+    assert.deepEqual({ score: data.cutoff.score, max: data.cutoff.max }, { score: 364, max: 600 });
 });

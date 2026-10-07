@@ -96,6 +96,15 @@ export function clearWrong(questions, answers) {
     return out;
 }
 
+// 一試錄取分數換算成要答對的題數：全卷每題同分，滿分 / 總題數 = 每題分數
+export function cutoffTarget(cutoff, papers) {
+    const total = papers.reduce((sum, p) => sum + p.questions.length, 0);
+    const needed = Math.ceil(cutoff.score / (cutoff.max / total));
+    const rate = needed / total;
+    const perPaper = Object.fromEntries(papers.map((p) => [p.id, Math.round(p.questions.length * rate)]));
+    return { total, needed, rate, perPaper };
+}
+
 export function yamolUrl(itemId) {
     return `https://yamol.tw/item-${itemId}.htm`;
 }

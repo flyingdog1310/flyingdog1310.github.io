@@ -70,6 +70,49 @@ button {
     line-height: 1.35;
 }
 
+/* ---- 進二試門檻 ---- */
+.cutoff {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-highlight);
+    border-radius: 10px;
+}
+
+.cutoff[hidden] {
+    display: none;
+}
+
+.cutoff__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.cutoff__tag {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-highlight);
+}
+
+.cutoff__detail {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-text-subtle);
+}
+
+.cutoff__detail a {
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+}
+
 /* ---- 科目切換 ---- */
 .papers {
     display: grid;
@@ -136,7 +179,8 @@ button {
 
 .stats {
     display: flex;
-    gap: 14px;
+    flex-wrap: wrap;
+    gap: 4px 14px;
     font-size: 14px;
     color: var(--color-text-muted);
     font-variant-numeric: tabular-nums;

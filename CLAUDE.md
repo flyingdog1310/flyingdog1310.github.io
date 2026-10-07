@@ -40,6 +40,7 @@ npm run stock:fixtures && npm run stock:golden   # 從真實 Google Sheet 更新
 
 - 題目資料 `data/<年>.json` 由 `bar-exam/tools/build_data.py` 從考選部 PDF 產生（需 PyMuPDF，用法見檔頭）；不要手改 JSON。
 - 詳解不轉載（網友著作），只連到阿摩題目頁（`yamol` 欄位）。
+- 一試錄取分數（`CUTOFF`）放榜後手動填入 `build_data.py`，頁面換算成「要答對幾題」。
 - 作答紀錄存 localStorage `bar-exam:<年>:<科目 id>`；改 `styles.css` / `script.js` / `lib.js` 時更新 `index.html` 的 `?v=`。
 
 ## 共用資源（`shared/`）

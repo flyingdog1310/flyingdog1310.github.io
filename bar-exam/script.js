@@ -3,6 +3,7 @@ import {
     LETTERS,
     answerLabel,
     clearWrong,
+    cutoffTarget,
     filterIndexes,
     isCorrect,
     parseProgress,
@@ -13,7 +14,7 @@ import {
 } from './lib.js';
 
 const YEAR = 115;
-const DATA_URL = `data/${YEAR}.json?v=1`;
+const DATA_URL = `data/${YEAR}.json?v=2`;
 // 科目按鈕上的短名稱
 const SHORT_NAMES = { public: '公法', criminal: '刑法', civil: '民法', commercial: '商法・英文' };
 const PAPER_KEY = 'bar-exam:paper';
@@ -23,6 +24,9 @@ const $ = (id) => document.getElementById(id);
 const els = {
     examDate: $('examDate'),
     examTitle: $('examTitle'),
+    cutoff: $('cutoff'),
+    cutoffMain: $('cutoffMain'),
+    cutoffDetail: $('cutoffDetail'),
     papers: $('papers'),
     stats: $('stats'),
     progressBar: $('progressBar'),
@@ -46,6 +50,8 @@ const EXTERNAL_ICON =
     '<path d="M9 3h4v4M13 3 7.5 8.5M12 9.5V13H3V4h3.5"/></svg>';
 
 let data = null;
+// 一試錄取標準換算的答對題數；資料沒有錄取分數時為 null
+let target = null;
 let paperIdx = 0;
 let filter = 'all';
 // 剛作答的題目：在「未答」篩選下答完後仍要顯示，直到換題
@@ -102,6 +108,30 @@ function renderPapers() {
     els.papers.setAttribute('role', 'tablist');
 }
 
+// 正確率達到錄取門檻標綠、未達標紅
+function rateClass(s) {
+    if (!target || s.rate === null) return '';
+    return s.rate >= target.rate ? 'is-correct' : 'is-wrong';
+}
+
+function renderCutoff() {
+    const { cutoff, papers } = data;
+    if (!cutoff) return;
+    target = cutoffTarget(cutoff, papers);
+    const pct = (target.rate * 100).toFixed(1);
+    els.cutoffMain.textContent = `平均要答對約 ${pct}%，${target.total} 題中答對 ${target.needed} 題`;
+    const perPaper = papers
+        .map((p) => `${SHORT_NAMES[p.id]} ${target.perPaper[p.id]}/${p.questions.length}`)
+        .join('・');
+    els.cutoffDetail.innerHTML =
+        `${data.year}年一試錄取標準 ${cutoff.score} 分（滿分 ${cutoff.max}，每題 ${cutoff.max / target.total} 分；` +
+        `到考 ${cutoff.examinees.toLocaleString()} 人取前 33%，${cutoff.passed.toLocaleString()} 人及格）。` +
+        '各科約：<span class="cutoff__papers"></span> <a href="" target="_blank" rel="noopener">資料來源</a>';
+    els.cutoffDetail.querySelector('.cutoff__papers').textContent = perPaper + '。';
+    els.cutoffDetail.querySelector('a').href = cutoff.source;
+    els.cutoff.hidden = false;
+}
+
 function renderStats() {
     const s = summarize(paper().questions, state().answers);
     const rate = s.rate === null ? '—' : `${Math.round(s.rate * 100)}%`;
@@ -109,7 +139,8 @@ function renderStats() {
         <span>已答 <b>${s.answered}</b>/${s.total}</span>
         <span class="is-correct">對 <b>${s.correct}</b></span>
         <span class="is-wrong">錯 <b>${s.wrong}</b></span>
-        <span>正確率 <b>${rate}</b></span>`;
+        <span class="${rateClass(s)}">正確率 <b>${rate}</b></span>
+        ${target ? `<span>門檻約 <b>${target.perPaper[paper().id]}</b> 題</span>` : ''}`;
     els.progressBar.style.width = `${(s.answered / s.total) * 100}%`;
     els.retryWrong.hidden = s.wrong === 0;
     els.resetPaper.hidden = s.answered === 0;
@@ -343,6 +374,7 @@ async function init() {
     els.examTitle.textContent = '律師第一試 考古題';
     document.title = `${data.year}年律師一試考古題`;
 
+    renderCutoff();
     for (const p of data.papers) progress.set(p.id, parseProgress(storageGet(progressKey(p.id)), p.questions));
     const savedPaper = data.papers.findIndex((p) => p.id === storageGet(PAPER_KEY));
     paperIdx = savedPaper >= 0 ? savedPaper : 0;
